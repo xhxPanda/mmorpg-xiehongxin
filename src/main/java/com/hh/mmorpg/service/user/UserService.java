@@ -4,6 +4,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.hh.mmorpg.domain.CMDdomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.event.Event;
+import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 
 import io.netty.channel.Channel;
@@ -13,14 +18,17 @@ public class UserService {
 	public static final UserService INSTANCE = new UserService();
 
 	private ConcurrentHashMap<Integer, User> userChannelMap;
-	private ConcurrentHashMap<Channel, Integer> channelUserMap;
+	private ConcurrentHashMap<String, Integer> channelUserMap;
 
 	private UserService() {
-		userChannelMap = new ConcurrentHashMap<Integer, User>();
+		this.userChannelMap = new ConcurrentHashMap<Integer, User>();
+		this.channelUserMap = new ConcurrentHashMap<String, Integer>();
+
+		EventHandlerManager.INSATNCE.register(this);
 	}
 
 	public void doLoginOrRegister(CMDdomain cmddomain) {
-		if (cmddomain.getStringParam("cmd").equals(UserExtension.NOTIFY_LOGIN)) {
+		if (cmddomain.getStringParam("cmd").equals(UserExtension.LOGIN)) {
 			doLogin(cmddomain);
 		} else {
 			doRegister(cmddomain);
@@ -32,27 +40,42 @@ public class UserService {
 		String password = cmddomain.getStringParam("p");
 		User user = new User(userId, password);
 
-		UserDao.INSTANCE.insertUser(user);
-
-		user.setChannel(cmddomain.getChannel());
-		userChannelMap.put(user.getUserId(), user);
-		ReplyDomain replyDomain = new ReplyDomain(1);
-		replyDomain.setIntDomain("uid", user.getUserId());
-		UserExtension.notifyRegister(cmddomain.getChannel(), replyDomain);
+		int result = UserDao.INSTANCE.insertUser(user);
+		if (result > 0) {
+			doLogin(user, cmddomain.getChannel());
+		}
 	}
 
 	private void doLogin(CMDdomain cmddomain) {
+
 		int userId = cmddomain.getIntParam("uid");
 		String password = cmddomain.getStringParam("p");
+
 		User user = UserDao.INSTANCE.selectUser(userId, password);
 		if (user == null) {
 			UserExtension.notifyLogin(cmddomain.getChannel(), ReplyDomain.FAILE);
 		}
-		user.setChannel(cmddomain.getChannel());
-		userChannelMap.put(user.getUserId(), user);
+
+		doLogin(user, cmddomain.getChannel());
+
 		ReplyDomain replyDomain = new ReplyDomain(1);
 		replyDomain.setIntDomain("uid", user.getUserId());
 		UserExtension.notifyLogin(cmddomain.getChannel(), replyDomain);
+	}
+
+	private void doLogin(User user, Channel channel) {
+
+		int userId = user.getUserId();
+
+		// 顶下线
+		if (userChannelMap.containsKey(userId)) {
+			Channel oldChannel = userChannelMap.get(userId).getChannel();
+			userChannelMap.get(userId).setChannel(channel);
+			channelUserMap.remove(oldChannel.id().asShortText());
+		}
+
+		channelUserMap.put(channel.id().asShortText(), user.getUserId());
+		userChannelMap.put(user.getUserId(), user);
 	}
 
 	public User getUser(Integer userId) {
@@ -60,7 +83,23 @@ public class UserService {
 		return userChannelMap.get(userId);
 	}
 
-	public User getUser(Channel channel) {
-		return userChannelMap.get(channelUserMap.get(channel));
+	public void userLost(Channel channel) {
+		int userId = channelUserMap.remove(channel.id().asShortText());
+		User user = userChannelMap.remove(userId);
+		if (user.getChannel() != null && user.getChannel().isOpen()) {
+			user.getChannel().close();
+		}
+
+		// 抛出用户离线事件
+		UserLostData data = new UserLostData(user);
+		EventHandlerManager.INSATNCE.methodInvoke(EventType.USER_LOST, new EventDealData<UserLostData>(data));
+	}
+
+	@Event(eventType = EventType.USER_LOST)
+	public void handleUserLost(EventDealData<UserLostData> data) {
+		UserLostData userLostData = data.getData();
+		int userId = userLostData.getUser().getUserId();
+
+		System.out.println("userId为：" + userId + "的用户下线了");
 	}
 }

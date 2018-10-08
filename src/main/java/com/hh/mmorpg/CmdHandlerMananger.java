@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,15 +16,47 @@ import com.hh.mmorpg.domain.User;
 
 public class CmdHandlerMananger {
 
+	public static final CmdHandlerMananger INSATANCE = new CmdHandlerMananger();
+
 	private Map<Integer, ServiceHandler> methodMap;
 
-	public void init() throws ClassNotFoundException {
+	private CmdHandlerMananger() {
+		methodMap = new HashMap<Integer, ServiceHandler>();
+
+		init();
+
+	}
+
+//	public void beforInvoke() {
+//
+//	}
+
+	public void invokeHandler(String cmd, User user, CMDdomain cmdDomain) {
+		int serviceId = getServiceId(cmd);
+		ServiceHandler handler = methodMap.get(serviceId);
+		if (handler == null) {
+			return;
+		}
+		handler.invodeMethod(cmd, user, cmdDomain);
+	}
+
+//	public void afterInvoke() {
+//
+//	}
+
+	private void init() {
 		String packageName = CmdHandlerMananger.class.getPackage().getName();
 
 		List<String> classNames = getClassName(packageName, true);
 
 		for (String name : classNames) {
-			Class<?> c = Class.forName(name);
+			Class<?> c = null;
+			try {
+				c = Class.forName(name);
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			Extension extension = (Extension) c.getAnnotation(Extension.class);
 			if (extension == null) {
@@ -41,6 +74,7 @@ public class CmdHandlerMananger {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				methodMap.put(extension.id(), handler);
 			}
 
 			for (Method method : c.getMethods()) {
@@ -55,7 +89,7 @@ public class CmdHandlerMananger {
 		}
 	}
 
-	public List<String> getClassName(String packageName, boolean childPackage) {
+	private List<String> getClassName(String packageName, boolean childPackage) {
 		List<String> fileNames = null;
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		String packagePath = packageName.replace(".", "/");
@@ -90,20 +124,6 @@ public class CmdHandlerMananger {
 		}
 		return myClassName;
 	}
-
-//	public void beforInvoke() {
-//
-//	}
-
-	public void invokeHandler(String cmd, User user, CMDdomain cmdDomain) {
-		int serviceId = getServiceId(cmd);
-		ServiceHandler handler = methodMap.get(serviceId);
-		handler.invodeMethod(cmd, user, cmdDomain);
-	}
-
-//	public void afterInvoke() {
-//
-//	}
 
 	private int getServiceId(String cmd) {
 		return Integer.parseInt(cmd.split("_")[0]);

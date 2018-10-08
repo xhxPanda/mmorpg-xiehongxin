@@ -1,5 +1,6 @@
 package com.hh.mmorpg.manager;
 
+import com.hh.mmorpg.CmdHandlerMananger;
 import com.hh.mmorpg.domain.CMDdomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -21,7 +22,7 @@ public class CMDmanager {
 				if (user == null) {
 					ExtensionSender.INSTANCE.sendReply(cmddomain.getChannel(), ReplyDomain.FAILE);
 				}
-				
+				CmdHandlerMananger.INSATANCE.invokeHandler(cmd, user, cmddomain);
 			}
 		}
 	}

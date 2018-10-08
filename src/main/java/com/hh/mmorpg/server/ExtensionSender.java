@@ -11,10 +11,12 @@ public class ExtensionSender {
 	public static final ExtensionSender INSTANCE = new ExtensionSender();
 
 	public void sendReply(Channel channel, ReplyDomain replyDomain) {
-		channel.writeAndFlush(replyDomain.parseJsonObject());
+		channel.writeAndFlush(new TextWebSocketFrame(replyDomain.parseJsonObject()));
 	}
 
 	public void sendReply(User user, ReplyDomain replyDomain) {
-		user.getChannel().writeAndFlush(new TextWebSocketFrame(replyDomain.parseJsonObject()));
+		Channel channel = user.getChannel();
+		if (channel != null)
+			channel.writeAndFlush(new TextWebSocketFrame(replyDomain.parseJsonObject()));
 	}
 }

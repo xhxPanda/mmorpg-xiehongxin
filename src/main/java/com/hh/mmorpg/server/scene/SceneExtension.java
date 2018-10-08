@@ -20,17 +20,16 @@ public class SceneExtension {
 
 	@CmdService(cmd = JOIN_SCENE)
 	public void joinScene(User user, CMDdomain cmdDomain) {
-		int oldSceneId = cmdDomain.getIntParam("osi");
 		int sceneId = cmdDomain.getIntParam("si");
 
-		ReplyDomain replyDomain = service.userJoinScene(user, oldSceneId, sceneId);
+		ReplyDomain replyDomain = service.userJoinScene(user, sceneId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
-	public static void notifyUserEnter(User user, String cmd) {
+	public static void notifyUser(User user, int userId, String cmd) {
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", cmd);
-
+		replyDomain.setIntDomain("uid", userId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 }

@@ -3,6 +3,7 @@ package com.hh.mmorpg.server;
 import com.alibaba.fastjson.JSONObject;
 import com.hh.mmorpg.domain.CMDdomain;
 import com.hh.mmorpg.manager.CMDmanager;
+import com.hh.mmorpg.service.user.UserService;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,7 +21,6 @@ public class MessageHandler extends SimpleChannelInboundHandler<TextWebSocketFra
 		JSONObject jsonObject = JSONObject.parseObject(cmdData);
 
 		CMDmanager.INSTANCE.dealCMD(new CMDdomain(channel, jsonObject));
-//		ctx.channel().writeAndFlush(new TextWebSocketFrame("服务时间：" + LocalDateTime.now()));
 	}
 
 	@Override
@@ -30,6 +30,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<TextWebSocketFra
 
 	@Override
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+		UserService.INSTANCE.userLost(ctx.channel());
 		System.out.println("handlerRemoved：" + ctx.channel().id().asLongText());
 	}
 
