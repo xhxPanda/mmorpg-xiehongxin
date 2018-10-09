@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenes>
+	<scene id="1" name="遗忘之地" neighborScenes="2,3">
+		<npcs>
+			<npc id="1" name="古尔丹"></npc>
+			<npc id="2" name="血煞女王"></npc>
+		</npcs>
+		<monsters>
+			<monster id="1" name="遗忘者的士兵" count="7" freshTime="20"></monster>
+			<monster id="2" name="遗忘者的将军" count="7" freshTime="20"></monster>
+		</monsters>
+	</scene>
+	<scene id="2" name="龙穴" neighborScenes="1">
+		<npcs>
+			<npc id="3" name="约翰"></npc>
+			<npc id="4" name="老将军"></npc>
+		</npcs>
+		<monsters>
+			<monster id="3" name="火龙" count="7" freshTime="20"></monster>
+			<monster id="4" name="冰龙" count="7" freshTime="20"></monster>
+		</monsters>
+	</scene>
+	<scene id="2" name="峡谷" neighborScenes="1">
+		<npcs>
+			<npc id="5" name="峡谷帝君"></npc>
+			<npc id="6" name="帝君部下"></npc>
+		</npcs>
+		<monsters>
+			<monster id="5" name=" 峡谷亡灵 " count="7" freshTime="20"></monster>
+			<monster id="6" name="峡谷战士" count="7" freshTime="20"></monster>
+		</monsters>
+	</scene>
+</scenes>

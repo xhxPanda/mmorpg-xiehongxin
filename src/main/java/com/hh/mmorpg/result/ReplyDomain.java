@@ -1,6 +1,8 @@
 package com.hh.mmorpg.result;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
@@ -29,6 +31,19 @@ public class ReplyDomain {
 		domainMap.put(key, value);
 	}
 
+	public void setListDomain(String key, Collection<?> list) {
+		StringBuffer buffer = new StringBuffer();
+		
+		for(Object t : list) {
+			if(buffer.length() > 0) {
+				buffer.append(",");
+			}
+			buffer.append(t.toString());
+		}
+		
+		domainMap.put(key, buffer.toString());
+	}
+	
 	public void setBoolDomain(String key, boolean value) {
 		domainMap.put(key, value);
 	}
@@ -37,8 +52,8 @@ public class ReplyDomain {
 		JSONObject jsonObject = new JSONObject(domainMap);
 		return jsonObject.toJSONString();
 	}
-	
+
 	public boolean isSuccess() {
-		return (Integer)domainMap.get("r") == 1;
+		return (Integer) domainMap.get("r") == 1;
 	}
 }

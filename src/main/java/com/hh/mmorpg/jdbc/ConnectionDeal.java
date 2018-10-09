@@ -58,10 +58,12 @@ public class ConnectionDeal {
 		ResultSet result = null;
 		try {
 			pstmt = (PreparedStatement) conn.prepareStatement(sql);
-			for (int i = 0; i < params.length; i++) {
-				pstmt.setObject(i + 1, params[i]);
+			if(params != null & params.length > 0) {
+				for (int i = 0; i < params.length; i++) {
+					pstmt.setObject(i + 1, params[i]);
+				}
 			}
-
+			
 			result = pstmt.executeQuery();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -72,7 +74,7 @@ public class ConnectionDeal {
 		while (result.next()) {
 			list.add(builder.build(result));
 		}
-		return getObjectList(result, builder);
+		return list;
 	}
 
 	private Object getObject(ResultSet result, ResultBuilder<?> builder) {

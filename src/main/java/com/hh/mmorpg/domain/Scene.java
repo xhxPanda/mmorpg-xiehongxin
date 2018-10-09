@@ -3,13 +3,17 @@ package com.hh.mmorpg.domain;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.scene.SceneExtension;
+import com.hh.mmorpg.server.scene.SceneUserCache;
+import com.hh.mmorpg.service.user.UserService;
 
 public class Scene {
 
@@ -17,7 +21,10 @@ public class Scene {
 	private String name;
 	private List<Integer> neighborSceneIds;
 
-	private ConcurrentHashMap<Integer, User> userMap;
+	private ConcurrentHashMap<Integer, SceneUserCache> userMap;
+
+	private Map<Integer, NpcRole> npcRoleMap;
+	private ConcurrentHashMap<Integer, Monster> monsterMap;
 
 	public Scene(int id, String name, String neighborScenestrs) {
 		this.id = id;
@@ -29,34 +36,53 @@ public class Scene {
 			neighborSceneIds.add(Integer.parseInt(s));
 		}
 
-		this.userMap = new ConcurrentHashMap<Integer, User>();
+		this.userMap = new ConcurrentHashMap<Integer, SceneUserCache>();
+		monsterMap = new ConcurrentHashMap<>();
 	}
 
 	public boolean isCanEnter(int id) {
 		return neighborSceneIds.contains(id);
 	}
 
-	public ReplyDomain userEnterScene(User user) {
-		if (userMap.containsKey(user.getUserId())) {
+	public ReplyDomain userEnterScene(SceneUserCache sceneUserCache) {
+		if (userMap.containsKey(sceneUserCache.getUserId())) {
 			return ReplyDomain.FAILE;
 		}
-		userMap.put(user.getUserId(), user);
-		notifyOtherUser(user.getUserId(), SceneExtension.NOTIFY_USER_ENTER);
+
+		userMap.put(sceneUserCache.getUserId(), sceneUserCache);
+		notifyOtherUser(sceneUserCache.getUserId(), SceneExtension.NOTIFY_USER_ENTER);
 		return ReplyDomain.SUCCESS;
 	}
 
-	public void userLeaveScene(User user) {
-		userMap.remove(user.getUserId());
+	public SceneUserCache userLeaveScene(User user) {
+		SceneUserCache cache = userMap.remove(user.getUserId());
 		notifyOtherUser(user.getUserId(), SceneExtension.NOTIFY_USER_LEAVE);
+		return cache;
 	}
 
 	private void notifyOtherUser(int userId, String cmd) {
-		for (Entry<Integer, User> entry : userMap.entrySet()) {
+		for (Entry<Integer, SceneUserCache> entry : userMap.entrySet()) {
 			if (entry.getValue().getUserId() != userId) {
-				SceneExtension.notifyUser(entry.getValue(), userId, cmd);
+				SceneExtension.notifyUser(UserService.INSTANCE.getUser(entry.getValue().getUserId()), userId, cmd);
 			}
 
 		}
+	}
+
+	public Map<Integer, NpcRole> getNpcRoleMap() {
+		return npcRoleMap;
+	}
+
+	public ConcurrentHashMap<Integer, Monster> getMonsterMap() {
+		return monsterMap;
+	}
+
+	public void setNpcRoleMap(Map<Integer, NpcRole> npcRoleMap) {
+		this.npcRoleMap = npcRoleMap;
+	}
+
+	public void setMonsterMap(Map<Integer, Monster> monsterMap) {
+		this.monsterMap.putAll(monsterMap);
 	}
 
 	public int getId() {
@@ -71,7 +97,7 @@ public class Scene {
 		return neighborSceneIds;
 	}
 
-	public ConcurrentHashMap<Integer, User> getUserMap() {
+	public ConcurrentHashMap<Integer, SceneUserCache> getUserMap() {
 		return userMap;
 	}
 

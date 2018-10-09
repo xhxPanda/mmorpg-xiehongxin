@@ -2,8 +2,8 @@ package com.hh.mmorpg.domain;
 
 public class NpcRole {
 
-	private int id;
-	private String name;
+	int id;
+	String name;
 
 	public NpcRole(int id, String name) {
 		super();
@@ -17,6 +17,11 @@ public class NpcRole {
 
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public String toString() {
+		return "NpcRole [id=" + id + ", name=" + name + "]";
 	}
 
 }

@@ -54,13 +54,13 @@ public class UserService {
 		User user = UserDao.INSTANCE.selectUser(userId, password);
 		if (user == null) {
 			UserExtension.notifyLogin(cmddomain.getChannel(), ReplyDomain.FAILE);
+		} else {
+			doLogin(user, cmddomain.getChannel());
+
+			ReplyDomain replyDomain = new ReplyDomain(1);
+			replyDomain.setIntDomain("uid", user.getUserId());
+			UserExtension.notifyLogin(cmddomain.getChannel(), replyDomain);
 		}
-
-		doLogin(user, cmddomain.getChannel());
-
-		ReplyDomain replyDomain = new ReplyDomain(1);
-		replyDomain.setIntDomain("uid", user.getUserId());
-		UserExtension.notifyLogin(cmddomain.getChannel(), replyDomain);
 	}
 
 	private void doLogin(User user, Channel channel) {
@@ -72,6 +72,8 @@ public class UserService {
 			Channel oldChannel = userChannelMap.get(userId).getChannel();
 			userChannelMap.get(userId).setChannel(channel);
 			channelUserMap.remove(oldChannel.id().asShortText());
+		} else {
+			user.setChannel(channel);
 		}
 
 		channelUserMap.put(channel.id().asShortText(), user.getUserId());
