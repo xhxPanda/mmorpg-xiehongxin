@@ -39,6 +39,8 @@ public class RoleExtension {
 	public void useRole(User user, CMDdomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam("ri");
 		ReplyDomain reply = service.userUseRole(user, roleId);
+		
+		reply.setStringDomain("cmd", USER_ROLE);
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
 

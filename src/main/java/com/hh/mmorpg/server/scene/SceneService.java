@@ -75,6 +75,7 @@ public class SceneService {
 		
 		domain.setIntDomain("id", sceneId);
 		domain.setStringDomain("n", scene.getName());
+		domain.setListDomain("u", scene.getUserMap().values());
 		domain.setListDomain("npc", scene.getNpcRoleMap().values());
 		domain.setListDomain("m", scene.getMonsterMap().values());
 
@@ -85,7 +86,10 @@ public class SceneService {
 	@Event(eventType = EventType.USER_LOST)
 	public void handleUserLost(EventDealData<UserLostData> data) {
 		UserLostData userLostData = data.getData();
-		int sceneId = sceneUserMap.get(userLostData.getUser().getUserId());
+		Integer sceneId = sceneUserMap.remove(userLostData.getUser().getUserId());
+		if(sceneId == null) {
+			return;
+		}
 		Scene scene = sceneMap.get(sceneId);
 
 		scene.userLeaveScene(userLostData.getUser());

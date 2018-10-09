@@ -2,6 +2,7 @@ package com.hh.mmorpg.domain;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
@@ -11,6 +12,8 @@ public class Role {
 	private int id;
 	private String name;
 	private int roleId;
+	
+	private List<Buff> buff;
 
 	public Role(int userId, int id, String name, int roleId) {
 		this.userId = userId;

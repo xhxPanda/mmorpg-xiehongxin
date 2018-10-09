@@ -13,6 +13,11 @@ import com.google.common.cache.LoadingCache;
 import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.event.Event;
+import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 
 public class RoleService {
@@ -21,8 +26,8 @@ public class RoleService {
 
 	// 热点数据，用户角色数据缓存
 	private LoadingCache<Integer, Map<Integer, Role>> cache = CacheBuilder.newBuilder()
-			.refreshAfterWrite(10, TimeUnit.MINUTES).expireAfterAccess(10, TimeUnit.MINUTES).maximumSize(1000).
-			build(new CacheLoader<Integer, Map<Integer, Role>>() {
+			.refreshAfterWrite(10, TimeUnit.MINUTES).expireAfterAccess(10, TimeUnit.MINUTES).maximumSize(1000)
+			.build(new CacheLoader<Integer, Map<Integer, Role>>() {
 				@Override
 				/** 当本地缓存命没有中时，调用load方法获取结果并将结果缓存 **/
 				public Map<Integer, Role> load(Integer appKey) {
@@ -35,6 +40,8 @@ public class RoleService {
 
 	private RoleService() {
 		userRoleMap = new ConcurrentHashMap<>();
+
+		EventHandlerManager.INSATNCE.register(this);
 	}
 
 	public ReplyDomain getAllRole(User user) {
@@ -65,14 +72,14 @@ public class RoleService {
 	public ReplyDomain getUserUsingRole(User user) {
 		ReplyDomain replyDomain = ReplyDomain.SUCCESS;
 		Role role = getUserUsingRole(user.getUserId());
-		if(role != null) {
+		if (role != null) {
 			replyDomain.setStringDomain("role", role.toString());
 		} else {
 			replyDomain.setStringDomain("role", "");
 		}
 		return replyDomain;
 	}
-	
+
 	public Role getUserUsingRole(int userId) {
 		Role role = userRoleMap.get(userId);
 		return role;
@@ -86,7 +93,7 @@ public class RoleService {
 		if (i < 0) {
 			return ReplyDomain.FAILE;
 		}
-		
+
 		getUserAllRole(user.getUserId()).put(role.getId(), role);
 		return ReplyDomain.SUCCESS;
 	}
@@ -107,6 +114,16 @@ public class RoleService {
 		Map<Integer, Role> map = roles.stream().collect(Collectors.toMap(Role::getId, a -> a));
 
 		return map;
+	}
+
+	// 用户下线，把他的缓存删除
+	@Event(eventType = EventType.USER_LOST)
+	public void handleUserLost(EventDealData<UserLostData> data) {
+		UserLostData userLostData = data.getData();
+		
+		int userId = userLostData.getUser().getUserId();
+		userRoleMap.remove(userId);
+		System.out.println("删除用户缓存使用角色");
 	}
 
 }
