@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<items>
+	<item id="1" name="红药" effect="3:200" cd="2000" buffs="" />
+	<item id="2" name="蓝药" effect="4:200" cd="2000" buffs="" />
+	<item id="3" name="回血蘑菇" effect="4:200" cd="2000" buffs="5" />
+</items>

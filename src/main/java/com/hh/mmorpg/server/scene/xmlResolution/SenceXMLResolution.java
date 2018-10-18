@@ -10,12 +10,14 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.hh.mmorpg.Increment.IncrementManager;
+import com.hh.mmorpg.domain.Attribute;
 import com.hh.mmorpg.domain.Monster;
 import com.hh.mmorpg.domain.NpcRole;
+import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.Scene;
 
 public class SenceXMLResolution {
-	
+
 	public static final SenceXMLResolution INSTANCE = new SenceXMLResolution();
 
 	@SuppressWarnings("unchecked")
@@ -58,27 +60,40 @@ public class SenceXMLResolution {
 			Map<Integer, Monster> monsterMap = new HashMap<>();
 			Element monsterEle = element.element("monsters");
 			List<Element> monsters = monsterEle.elements("monster");
-			for (Element npc : monsters) {
-				String monsterName = npc.attributeValue("name");
-				int monsterId = Integer.parseInt(npc.attributeValue("id"));
-				int freshTime = Integer.parseInt(npc.attributeValue("freshTime"));
-				int count = Integer.parseInt(npc.attributeValue("count"));
-				for(int i=0;i<count;i++) {
+			for (Element monsterchlEle : monsters) {
+				String monsterName = monsterchlEle.attributeValue("name");
+				int monsterId = Integer.parseInt(monsterchlEle.attributeValue("id"));
+				int freshTime = Integer.parseInt(monsterchlEle.attributeValue("freshTime"));
+				int count = Integer.parseInt(monsterchlEle.attributeValue("count"));
+				String attributeStr = monsterchlEle.attributeValue("attribute");
+				String skillsStr = monsterchlEle.attributeValue("skills");
+
+
+				for (int i = 0; i < count; i++) {
 					int uniqueId = IncrementManager.INSTANCE.increase("monster");
 					Monster monster = new Monster(monsterId, uniqueId, monsterName, freshTime);
+
+					Map<Integer, Attribute> attributeMap = new HashMap<>();
+					for (String strList : attributeStr.split(",")) {
+						String str[] = strList.split(":");
+						Attribute attribute = new Attribute(Integer.parseInt(str[0]), Integer.parseInt(str[2]), str[1]);
+						attributeMap.put(attribute.getId(), attribute);
+					}
+
+					Map<Integer, RoleSkill> roleSkillMap = new HashMap<>();
+					for (String strList : skillsStr.split(",")) {
+						int skillId = Integer.parseInt(strList);
+						roleSkillMap.put(skillId, new RoleSkill(skillId));
+					}
+					monster.setAttributeMap(attributeMap);
+					monster.setSkillMap(roleSkillMap);
 					monsterMap.put(monster.getUniqueId(), monster);
 				}
-
 			}
-
 			scene.setMonsterMap(monsterMap);
 			scene.setNpcRoleMap(npcMap);
 		}
 		return map;
 	}
-
-//	public static final void main(String args[]) {
-//		SenceXMLResolution.resolution();
-//	}
 
 }

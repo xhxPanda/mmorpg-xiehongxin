@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- lastTime：持续时间 
+	isBuff：是否增益 
+	target 0，自身；1，队友；2，怪物 
+	heartbeatTime：间隔时间 
+	attribute：影响的属性 -->
+<buffs>
+	<buff id="1" name="普攻" delay="0" lastTime="0" heartbeatTime="0"
+		isBuff="false" attribute="3:30" effect="1" />
+	<buff id="2" name="中毒" delay="0" lastTime="20000"
+		heartbeatTime="1000" isBuff="false" attribute="3:30" effect="1" />
+	<buff id="3" name="强力攻击" delay="0" lastTime="0" heartbeatTime="0"
+		isBuff="false" attribute="3:100" effect="1" />
+	<buff id="4" name="护甲" delay="0" lastTime="20000"
+		heartbeatTime="0" isBuff="true" attribute="4:30" effect="3" />
+</buffs>

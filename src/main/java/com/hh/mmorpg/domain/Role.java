@@ -2,24 +2,34 @@ package com.hh.mmorpg.domain;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
-public class Role {
+public class Role extends LivingThing {
 
 	private int userId;
 	private int id;
 	private String name;
 	private int roleId;
-	
-	private List<Buff> buff;
+
+	private Map<Integer, Material> materialMap;
+	private Map<Integer, UserClothes> equipmentMap;
 
 	public Role(int userId, int id, String name, int roleId) {
+		super(roleId, id);
 		this.userId = userId;
 		this.id = id;
 		this.name = name;
 		this.roleId = roleId;
+		this.materialMap = new HashMap<>();
+
+		this.equipmentMap = new HashMap<>();
+		for (int i = 1; i <= 7; i++) {
+			equipmentMap.put(i, null);
+		}
 	}
 
 	public int getUserId() {
@@ -53,7 +63,77 @@ public class Role {
 
 	@Override
 	public String toString() {
-		return "Role [userId=" + userId + ", id=" + id + ", name=" + name + "]";
+		return "Role [userId=" + userId + ", id=" + id + ", name=" + name + ", roleId=" + roleId + ", equipmentMap="
+				+ equipmentMap + "]";
 	}
 
+	@Override
+	public void afterDead() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void addMaterial(Material material) {
+		if (materialMap.get(material.getId()) == null) {
+			materialMap.put(material.getId(), material);
+		} else {
+			materialMap.get(material.getId()).changeQuantity(material.getQuantity());
+		}
+	}
+
+	public Material findMaterial(int materialId) {
+		// TODO Auto-generated method stub
+		return materialMap.get(materialId);
+	}
+
+	public boolean isContainMaterial(int materialId) {
+		return materialMap.containsKey(materialId);
+	}
+
+	public void setEquipment(UserClothes clothes) {
+		int clothesType = clothes.getType();
+		if (equipmentMap.containsKey(clothesType)) {
+			UserClothes userClothes = equipmentMap.remove(clothesType);
+
+			// 卸下服装
+			for (Entry<Integer, Integer> entry : userClothes.getAttributeMap().entrySet()) {
+				effectAttribute(entry.getKey(), -entry.getValue());
+			}
+			userClothes.setInUsed(false);
+			materialMap.put(userClothes.getId(), userClothes);
+		}
+
+		// 装备服装
+		equipmentMap.put(clothes.getType(), clothes);
+		for (Entry<Integer, Integer> entry : clothes.getAttributeMap().entrySet()) {
+			effectAttribute(entry.getKey(), entry.getValue());
+		}
+		clothes.setInUsed(true);
+		materialMap.remove(clothes.getId());
+	}
+
+	public void addMaterial(Map<Integer, Material> materialMap) {
+		materialMap.putAll(materialMap);
+	}
+
+	public Map<Integer, UserClothes> getEquipmentMap() {
+		return equipmentMap;
+	}
+
+	public void setEquipmentMap(Map<Integer, UserClothes> equipmentMap) {
+		this.equipmentMap = equipmentMap;
+	}
+
+	public void decMaterial(int id, int quantity) {
+		Material material = materialMap.get(id);
+		if (material.getQuantity() == 1) {
+			materialMap.remove(id);
+		} else {
+			material.changeQuantity(quantity);
+		}
+	}
+
+	public Material getMaterial(int materialId) {
+		return materialMap.get(materialId);
+	}
 }

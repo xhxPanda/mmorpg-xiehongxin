@@ -14,12 +14,17 @@ public class SceneExtension {
 
 	private static final String JOIN_SCENE = "2_1";
 	private static final String GET_SCENE_USER = "2_2";
-	private static final String CHAT_TO_NPC = "2_3";
-	private static final String KILL_MONSTER = "2_4";
+	private static final String ATTACK_MONSTER = "2_3";
+//	private static final String MONSTER_ATTACK_USER = "2_4";
+//	private static final String CHAT_TO_NPC = "2_5";
 
 	public static final String NOTIFY_USER_ENTER = "2_100";
 	public static final String NOTIFY_USER_LEAVE = "2_101";
 	public static final String NOTIFY_USER_MONSTER_BE_KILLED = "2_102";
+	public static final String NOTIFY_MONSTER_DIED = "2_103";
+	public static final String NOTIFT_USER_DIED = "2_104";
+	public static final String ATTACK_STATUS_CHANGE = "2_105";
+//	private static final String USER_STATUS_CHANGE = "2_106";
 
 	@CmdService(cmd = JOIN_SCENE)
 	public void joinScene(User user, CMDdomain cmdDomain) {
@@ -38,18 +43,20 @@ public class SceneExtension {
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
-	public static void notifyUser(User user, int userId, String cmd) {
-		ReplyDomain replyDomain = new ReplyDomain();
-		replyDomain.setStringDomain("cmd", cmd);
-		replyDomain.setIntDomain("uid", userId);
+	@CmdService(cmd = ATTACK_MONSTER)
+	public void attackMonster(User user, CMDdomain cmdDomain) {
+		int skillId = cmdDomain.getIntParam("ski");
+		int monsterId = cmdDomain.getIntParam("mi");
+
+		ReplyDomain replyDomain = service.attackMonster(user, skillId, monsterId);
+
+		replyDomain.setStringDomain("cmd", ATTACK_MONSTER);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
-	public static void notifyUserMonsterBeKilled(User user, int userId, int monsterId) {
-		ReplyDomain replyDomain = new ReplyDomain();
-		replyDomain.setStringDomain("cmd", NOTIFY_USER_MONSTER_BE_KILLED);
-		replyDomain.setIntDomain("uid", userId);
-		replyDomain.setIntDomain("mid", monsterId);
+	public static void notifyUser(User user, ReplyDomain replyDomain) {
+		replyDomain.setIntDomain("uid", user.getUserId());
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
-	}
+	} 
+
 }

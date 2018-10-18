@@ -27,10 +27,6 @@ public class CmdHandlerMananger {
 
 	}
 
-//	public void beforInvoke() {
-//
-//	}
-
 	public void invokeHandler(String cmd, User user, CMDdomain cmdDomain) {
 		int serviceId = getServiceId(cmd);
 		ServiceHandler handler = methodMap.get(serviceId);
@@ -39,10 +35,6 @@ public class CmdHandlerMananger {
 		}
 		handler.invodeMethod(cmd, user, cmdDomain);
 	}
-
-//	public void afterInvoke() {
-//
-//	}
 
 	private void init() {
 		String packageName = CmdHandlerMananger.class.getPackage().getName();
@@ -75,17 +67,17 @@ public class CmdHandlerMananger {
 					e.printStackTrace();
 				}
 				methodMap.put(extension.id(), handler);
-			}
+				for (Method method : c.getMethods()) {
+					CmdService annotation = method.getAnnotation(CmdService.class);
+					if (annotation == null) {
+						continue;
+					}
 
-			for (Method method : c.getMethods()) {
-				CmdService annotation = method.getAnnotation(CmdService.class);
-				if (annotation == null) {
-					continue;
+					String cmdKey = annotation.cmd();
+					handler.addMethod(cmdKey, method);
 				}
-
-				String cmdKey = annotation.cmd();
-				handler.addMethod(cmdKey, method);
 			}
+
 		}
 	}
 

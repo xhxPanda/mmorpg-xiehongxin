@@ -1,50 +1,35 @@
 package com.hh.mmorpg.domain;
 
-public class Monster extends NpcRole {
+public class Monster extends LivingThing {
 
-	private int uniqueId;
+	private String name;
 	private int freshTime;
-	private long beKilledTime;
-	private int status;
 
 	public Monster(int id, int uniqueId, String name, int freshTime) {
-		super(id, name);
-		this.uniqueId = uniqueId;
+		super(id, uniqueId);
+		this.name = name;
 		this.freshTime = freshTime;
-	}
-
-	public long getBeKilledTime() {
-		return beKilledTime;
-	}
-
-	public void setBeKilledTime(long beKilledTime) {
-		this.beKilledTime = beKilledTime;
-	}
-
-	public int getUniqueId() {
-		return uniqueId;
 	}
 
 	public int getFreshTime() {
 		return freshTime;
 	}
 
-	public int getStatus() {
-		return status;
-	}
-
-	public void setUniqueId(int uniqueId) {
-		this.uniqueId = uniqueId;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
+	public String getName() {
+		return name;
 	}
 
 	@Override
 	public String toString() {
-		return "Monster [uniqueId=" + uniqueId + ", beKilledTime=" + beKilledTime + ", status=" + status + ", name=" + name +  "]";
+		return "Monster [name=" + name + ", freshTime=" + freshTime +", id=" + getUniqueId() + ", hp=" + getAttribute(3).getValue() + ", mp=" + getAttribute(4).getValue() + " ]";
 	}
 
+	@Override
+	public void afterDead() {
+		// TODO Auto-generated method stub
+		
+		setStatus(false);
+		setBeKilledTime(System.currentTimeMillis());
+	}
 
 }

@@ -3,7 +3,9 @@ package com.hh.mmorpg.server.scene;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.hh.mmorpg.domain.Monster;
 import com.hh.mmorpg.domain.Role;
+import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.Event;
@@ -12,8 +14,10 @@ import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
+import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.server.scene.xmlResolution.SenceXMLResolution;
+import com.hh.mmorpg.server.skill.SkillService;
 
 public class SceneService {
 
@@ -38,7 +42,11 @@ public class SceneService {
 		SceneUserCache sceneUserCache = null;
 
 		Integer oldSceneId = sceneUserMap.get(userId);
+		
 		if (oldSceneId != null) {
+			if(oldSceneId == sceneId) {
+				return ReplyDomain.SUCCESS;
+			}
 			Scene scene = sceneMap.get(oldSceneId);
 			if (!scene.isCanEnter(sceneId)) {
 				return new ReplyDomain(CAN_NOT_ENTER);
@@ -64,15 +72,15 @@ public class SceneService {
 		// TODO Auto-generated method stub
 		int userId = user.getUserId();
 
-		ReplyDomain domain = ReplyDomain.SUCCESS;
-		
+		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
+
 		Integer sceneId = sceneUserMap.get(userId);
 		if (sceneId == null) {
 			return ReplyDomain.FAILE;
 		}
 
 		Scene scene = sceneMap.get(sceneId);
-		
+
 		domain.setIntDomain("id", sceneId);
 		domain.setStringDomain("n", scene.getName());
 		domain.setListDomain("u", scene.getUserMap().values());
@@ -82,12 +90,53 @@ public class SceneService {
 		return domain;
 	}
 
+	public ReplyDomain attackMonster(User user, int skillId, int monsterId) {
+		// TODO Auto-generated method stub
+		int userId = user.getUserId();
+		Integer sceneId = sceneUserMap.get(userId);
+		if (sceneId == null) {
+			return ReplyDomain.FAILE;
+		}
+		
+		Scene scene = sceneMap.get(sceneId);
+		if (scene == null) {
+			return ReplyDomain.FAILE;
+		}
+		
+		Monster monster = scene.getMonster(monsterId);
+		if (monster == null) {
+			return ReplyDomain.FAILE;
+		}
+		
+		if(monster.isDead()) {
+			return ReplyDomain.HAS_DEAD;
+		}
+		
+		Role role = scene.getUserRole(userId);
+		RoleSkill roleSkill = role.getRoleSkill(skillId);
+		if(roleSkill == null) {
+			return ReplyDomain.FAILE;
+		}
+		long now = System.currentTimeMillis();
+		ReplyDomain replyDomain = SkillService.INSTANCE.dealSkillEffect(roleSkill, role, monster, now);
+		if(replyDomain.isSuccess()) {
+			roleSkill.setLastUseTime(now);
+		}
+		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
+		return domain;
+	}
+		
+	// 获取用户所在的场景
+	public Scene getUserScene(int userId) {
+		return sceneMap.get(userId);
+	}
+
 	// 用户下线，把他的缓存删除
 	@Event(eventType = EventType.USER_LOST)
 	public void handleUserLost(EventDealData<UserLostData> data) {
 		UserLostData userLostData = data.getData();
 		Integer sceneId = sceneUserMap.remove(userLostData.getUser().getUserId());
-		if(sceneId == null) {
+		if (sceneId == null) {
 			return;
 		}
 		Scene scene = sceneMap.get(sceneId);

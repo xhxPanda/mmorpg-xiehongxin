@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skills>
+	<skill id="1" name="普攻" cd="0" effectAttribute="3:-20"
+		selfEffectAttribute="" needMp="20">
+	</skill>
+	<skill id="2" name="坚如磐石" cd="2000" effectAttribute=""
+		selfEffectAttribute="1:20" needMp="20">
+	</skill>
+	<skill id="3" name="毒牙" cd="1000" effectAttribute="3:-200"
+		selfEffectAttribute="3:20" needMp="20">
+		<buff id="4" probability="100" />
+	</skill>
+</skills>

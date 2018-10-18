@@ -3,11 +3,13 @@ package com.hh.mmorpg.domain;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -21,10 +23,12 @@ public class Scene {
 	private String name;
 	private List<Integer> neighborSceneIds;
 
-	private ConcurrentHashMap<Integer, SceneUserCache> userMap;
+	private static ConcurrentHashMap<Integer, SceneUserCache> userMap = new ConcurrentHashMap<>();
 
 	private Map<Integer, NpcRole> npcRoleMap;
 	private ConcurrentHashMap<Integer, Monster> monsterMap;
+
+	private ScheduledExecutorService executorService;
 
 	public Scene(int id, String name, String neighborScenestrs) {
 		this.id = id;
@@ -35,9 +39,9 @@ public class Scene {
 		for (String s : strs) {
 			neighborSceneIds.add(Integer.parseInt(s));
 		}
-
-		this.userMap = new ConcurrentHashMap<Integer, SceneUserCache>();
-		monsterMap = new ConcurrentHashMap<>();
+		this.monsterMap = new ConcurrentHashMap<>();
+		this.executorService = Executors.newSingleThreadScheduledExecutor();
+		start();
 	}
 
 	public boolean isCanEnter(int id) {
@@ -50,23 +54,41 @@ public class Scene {
 		}
 
 		userMap.put(sceneUserCache.getUserId(), sceneUserCache);
-		notifyOtherUser(sceneUserCache.getUserId(), SceneExtension.NOTIFY_USER_ENTER);
+		ReplyDomain domain = new ReplyDomain();
+		domain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_ENTER);
+		notifyOtherUser(sceneUserCache.getUserId(), domain);
 		return ReplyDomain.SUCCESS;
 	}
 
 	public SceneUserCache userLeaveScene(User user) {
 		SceneUserCache cache = userMap.remove(user.getUserId());
-		notifyOtherUser(user.getUserId(), SceneExtension.NOTIFY_USER_LEAVE);
+		ReplyDomain domain = new ReplyDomain();
+		domain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_LEAVE);
+		notifyOtherUser(user.getUserId(), domain);
 		return cache;
 	}
 
-	private void notifyOtherUser(int userId, String cmd) {
+	public static void notifyOtherUser(int useId, ReplyDomain domain) {
 		for (Entry<Integer, SceneUserCache> entry : userMap.entrySet()) {
-			if (entry.getValue().getUserId() != userId) {
-				SceneExtension.notifyUser(UserService.INSTANCE.getUser(entry.getValue().getUserId()), userId, cmd);
-			}
+			if (entry.getValue().getUserId() != useId) {
 
+				SceneExtension.notifyUser(UserService.INSTANCE.getUser(entry.getValue().getUserId()), domain);
+			}
 		}
+	}
+
+	public static void notifyAllUser(ReplyDomain domain) {
+		for (Entry<Integer, SceneUserCache> entry : userMap.entrySet()) {
+			SceneExtension.notifyUser(UserService.INSTANCE.getUser(entry.getValue().getUserId()), domain);
+		}
+	}
+
+	public Role getUserRole(int userId) {
+		return userMap.get(userId).getRole();
+	}
+
+	public Monster getMonster(int monsterId) {
+		return monsterMap.get(monsterId);
 	}
 
 	public Map<Integer, NpcRole> getNpcRoleMap() {
@@ -99,6 +121,44 @@ public class Scene {
 
 	public ConcurrentHashMap<Integer, SceneUserCache> getUserMap() {
 		return userMap;
+	}
+
+	public void start() {
+		// 场景心跳
+		executorService.scheduleAtFixedRate(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				for (Monster monster : monsterMap.values()) {
+					if (monster.isDead()) {
+						long now = System.currentTimeMillis();
+						if (now - monster.getBeKilledTime() < monster.getFreshTime()) {
+							continue;
+						} else {
+
+						}
+					} else {
+						monster.takeEffect();
+					}
+
+				}
+
+				for (SceneUserCache cache : userMap.values()) {
+					cache.getRole().takeEffect();
+
+					if (cache.getRole().isDead()) {
+						ReplyDomain domain = new ReplyDomain();
+						domain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_DIED);
+						notifyOtherUser(cache.getUserId(), domain);
+					}
+				}
+			}
+		}, 0, 20, TimeUnit.MILLISECONDS);
+	}
+
+	public void shutdown() {
+		executorService.shutdown();
 	}
 
 	public static final ResultBuilder<Scene> BUILDER = new ResultBuilder<Scene>() {

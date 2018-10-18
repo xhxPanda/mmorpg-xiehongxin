@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<roleAttribute>
+	<role id="1" name="骑士"
+		attribute="1:攻击力:3000,2:防御力:3000,3:hp:3000,4:mp:3000" skills="1,3"></role>
+	<role id="2" name="剑客"
+		attribute="1:攻击力:3000,2:防御力:3000,3:hp:3000,4:mp:3000" skills="1"></role>
+</roleAttribute>

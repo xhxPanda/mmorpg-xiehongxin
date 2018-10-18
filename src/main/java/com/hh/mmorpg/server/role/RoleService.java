@@ -12,17 +12,25 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.Role;
+import com.hh.mmorpg.domain.RoleDomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.domain.UserClothes;
+import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
+import com.hh.mmorpg.result.ResultCode;
+import com.hh.mmorpg.server.clothes.RoleClothesDao;
+import com.hh.mmorpg.server.item.RoleItemDao;
 
 public class RoleService {
 
 	public static final RoleService INSTANCE = new RoleService();
+
+	private Map<Integer, RoleDomain> roleDomainMap;
 
 	// 热点数据，用户角色数据缓存
 	private LoadingCache<Integer, Map<Integer, Role>> cache = CacheBuilder.newBuilder()
@@ -40,6 +48,7 @@ public class RoleService {
 
 	private RoleService() {
 		userRoleMap = new ConcurrentHashMap<>();
+		roleDomainMap = RoleXmlResolutionManager.INSTANCE.resolution();
 
 		EventHandlerManager.INSATNCE.register(this);
 	}
@@ -49,28 +58,29 @@ public class RoleService {
 		int userId = user.getUserId();
 
 		Map<Integer, Role> map = getUserAllRole(userId);
-		ReplyDomain replyDomain = ReplyDomain.SUCCESS;
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setListDomain("rs", map.values());
 		return replyDomain;
 	}
 
 	public ReplyDomain userUseRole(User user, int roleId) {
 		int userId = user.getUserId();
+		if (userRoleMap.get(userId) != null) {
+			return ReplyDomain.SUCCESS;
+		}
+
 		Role role = getUserRole(userId, roleId);
 		if (role == null) {
 			return ReplyDomain.FAILE;
 		}
-
-		if (userRoleMap.get(userId) != null) {
-			return ReplyDomain.FAILE;
-		}
+		assemblingRole(role);
 		userRoleMap.put(userId, role);
 
 		return ReplyDomain.SUCCESS;
 	}
 
 	public ReplyDomain getUserUsingRole(User user) {
-		ReplyDomain replyDomain = ReplyDomain.SUCCESS;
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		Role role = getUserUsingRole(user.getUserId());
 		if (role != null) {
 			replyDomain.setStringDomain("role", role.toString());
@@ -93,9 +103,35 @@ public class RoleService {
 		if (i < 0) {
 			return ReplyDomain.FAILE;
 		}
-
+		assemblingRole(role);
 		getUserAllRole(user.getUserId()).put(role.getId(), role);
 		return ReplyDomain.SUCCESS;
+	}
+
+	public RoleDomain getRoleDomain(int roleId) {
+		return roleDomainMap.get(roleId);
+	}
+
+	private void assemblingRole(Role role) {
+		int roleId = role.getId();
+		RoleDomain roleDomain = getRoleDomain(role.getRoleId());
+		role.setAttributeMap(roleDomain.getAttributeMap());
+		role.setSkillMap(roleDomain.getRoleSkillMap());
+
+		List<UserClothes> userClothesList = RoleClothesDao.INSTANCE.getAllUserClothes(roleId);
+		List<UserItem> userItemList = RoleItemDao.INSTANCE.getAllItem(roleId);
+
+		for (UserClothes userClothes : userClothesList) {
+			if (userClothes.isInUsed()) {
+				role.setEquipment(userClothes);
+			} else {
+				role.addMaterial(userClothes);
+			}
+		}
+
+		for (UserItem userItem : userItemList) {
+			role.addMaterial(userItem);
+		}
 	}
 
 	private Role getUserRole(int userId, int roleId) {
@@ -120,7 +156,7 @@ public class RoleService {
 	@Event(eventType = EventType.USER_LOST)
 	public void handleUserLost(EventDealData<UserLostData> data) {
 		UserLostData userLostData = data.getData();
-		
+
 		int userId = userLostData.getUser().getUserId();
 		userRoleMap.remove(userId);
 		System.out.println("删除用户缓存使用角色");
