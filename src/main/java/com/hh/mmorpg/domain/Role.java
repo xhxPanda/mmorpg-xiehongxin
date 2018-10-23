@@ -5,8 +5,14 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import com.hh.mmorpg.jdbc.ResultBuilder;
+
+/**
+ * 
+ * @author xhx
+ * 用户角色
+ *
+ */
 
 public class Role extends LivingThing {
 
@@ -16,7 +22,7 @@ public class Role extends LivingThing {
 	private int roleId;
 
 	private Map<Integer, Material> materialMap;
-	private Map<Integer, UserClothes> equipmentMap;
+	private Map<Integer, UserEquipment> equipmentMap;
 
 	public Role(int userId, int id, String name, int roleId) {
 		super(roleId, id);
@@ -63,8 +69,8 @@ public class Role extends LivingThing {
 
 	@Override
 	public String toString() {
-		return "Role [userId=" + userId + ", id=" + id + ", name=" + name + ", roleId=" + roleId + ", equipmentMap="
-				+ equipmentMap + "]";
+		return "Role [userId=" + userId + ", id=" + id + ", name=" + name + ", roleId=" + roleId + ", hp="
+				+ equipmentMap.get(3) + ", hp=" + equipmentMap.get(4) + "]";
 	}
 
 	@Override
@@ -90,10 +96,10 @@ public class Role extends LivingThing {
 		return materialMap.containsKey(materialId);
 	}
 
-	public void setEquipment(UserClothes clothes) {
+	public void setEquipment(UserEquipment clothes) {
 		int clothesType = clothes.getType();
 		if (equipmentMap.containsKey(clothesType)) {
-			UserClothes userClothes = equipmentMap.remove(clothesType);
+			UserEquipment userClothes = equipmentMap.remove(clothesType);
 
 			// 卸下服装
 			for (Entry<Integer, Integer> entry : userClothes.getAttributeMap().entrySet()) {
@@ -116,11 +122,11 @@ public class Role extends LivingThing {
 		materialMap.putAll(materialMap);
 	}
 
-	public Map<Integer, UserClothes> getEquipmentMap() {
+	public Map<Integer, UserEquipment> getEquipmentMap() {
 		return equipmentMap;
 	}
 
-	public void setEquipmentMap(Map<Integer, UserClothes> equipmentMap) {
+	public void setEquipmentMap(Map<Integer, UserEquipment> equipmentMap) {
 		this.equipmentMap = equipmentMap;
 	}
 
@@ -136,4 +142,5 @@ public class Role extends LivingThing {
 	public Material getMaterial(int materialId) {
 		return materialMap.get(materialId);
 	}
+
 }

@@ -11,11 +11,8 @@ import com.hh.mmorpg.domain.LivingThing;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleBuff;
 import com.hh.mmorpg.domain.RoleSkill;
-import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.SkillDomain;
 import com.hh.mmorpg.result.ReplyDomain;
-import com.hh.mmorpg.result.ResultCode;
-import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.skill.xmlResolution.SkillXmlResolution;
 
 public class SkillService {
@@ -52,11 +49,6 @@ public class SkillService {
 			beAttackedObject.addBuff(buff);
 		}
 		
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
-		replyDomain.setStringDomain("攻击的人", attackedObject.toString());
-		replyDomain.setStringDomain("被攻击对象", beAttackedObject.toString());
-		replyDomain.setStringDomain("cmd", SceneExtension.ATTACK_STATUS_CHANGE);
-		Scene.notifyAllUser(replyDomain);
 		return ReplyDomain.SUCCESS;
 	}
 

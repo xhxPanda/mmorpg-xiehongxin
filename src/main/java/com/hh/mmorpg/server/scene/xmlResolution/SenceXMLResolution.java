@@ -71,7 +71,7 @@ public class SenceXMLResolution {
 
 				for (int i = 0; i < count; i++) {
 					int uniqueId = IncrementManager.INSTANCE.increase("monster");
-					Monster monster = new Monster(monsterId, uniqueId, monsterName, freshTime);
+					Monster monster = new Monster(monsterId, uniqueId, monsterName, freshTime, id);
 
 					Map<Integer, Attribute> attributeMap = new HashMap<>();
 					for (String strList : attributeStr.split(",")) {

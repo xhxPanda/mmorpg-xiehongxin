@@ -5,7 +5,7 @@ import java.util.Map;
 import com.hh.mmorpg.domain.ClothesDomain;
 import com.hh.mmorpg.domain.Material;
 import com.hh.mmorpg.domain.Role;
-import com.hh.mmorpg.domain.UserClothes;
+import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.ClothesXmlResolutionManager;
 
@@ -28,7 +28,7 @@ public class ClothesMaterialHandle extends AbstractMaterialHandler {
 		}
 		ClothesDomain clothesDomain = clothesDomainMap.get(id);
 
-		UserClothes userClothes = new UserClothes(role.getId(), clothesDomain.getName(), id,
+		UserEquipment userClothes = new UserEquipment(role.getId(), clothesDomain.getName(), id,
 				clothesDomain.getMaxDurability(), clothesDomain.getMaxDurability(), clothesDomain.getAttributes(),
 				System.currentTimeMillis());
 

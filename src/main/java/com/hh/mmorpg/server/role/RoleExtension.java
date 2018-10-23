@@ -17,8 +17,6 @@ public class RoleExtension {
 	private static final String USER_ROLE = "3_3";
 	private static final String GET_USER_NOW_ROLE = "3_4";
 
-	private static final String NOTIFY_SKILL_CMD_FINISH = "3_100";
-
 	@CmdService(cmd = GET_ALL_ROLE)
 	public void getAllRole(User user, CMDdomain cmdDomain) {
 
@@ -50,4 +48,5 @@ public class RoleExtension {
 	public void getUserNowRolet(User user, CMDdomain cmdDomain) {
 		service.getUserUsingRole(user);
 	}
+	
 }

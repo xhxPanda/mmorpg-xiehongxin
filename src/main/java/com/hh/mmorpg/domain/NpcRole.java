@@ -1,5 +1,9 @@
 package com.hh.mmorpg.domain;
 
+/*
+ * npc
+ */
+
 public class NpcRole {
 
 	int id;

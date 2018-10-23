@@ -2,6 +2,12 @@ package com.hh.mmorpg.domain;
 
 import java.util.HashMap;
 
+/**
+ * 
+ * @author xhx 
+ * 怪物定义实体类
+ */
+
 public class MonsterDomain {
 
 	private int id;

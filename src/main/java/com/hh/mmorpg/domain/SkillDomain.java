@@ -2,6 +2,12 @@ package com.hh.mmorpg.domain;
 
 import java.util.Map;
 
+/**
+ * 
+ * @author xhx
+ * 技能定义实体类
+ */
+
 public class SkillDomain {
 
 	private int id;

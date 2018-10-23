@@ -14,7 +14,7 @@ import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleDomain;
 import com.hh.mmorpg.domain.User;
-import com.hh.mmorpg.domain.UserClothes;
+import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
@@ -118,10 +118,10 @@ public class RoleService {
 		role.setAttributeMap(roleDomain.getAttributeMap());
 		role.setSkillMap(roleDomain.getRoleSkillMap());
 
-		List<UserClothes> userClothesList = RoleClothesDao.INSTANCE.getAllUserClothes(roleId);
+		List<UserEquipment> userClothesList = RoleClothesDao.INSTANCE.getAllUserClothes(roleId);
 		List<UserItem> userItemList = RoleItemDao.INSTANCE.getAllItem(roleId);
 
-		for (UserClothes userClothes : userClothesList) {
+		for (UserEquipment userClothes : userClothesList) {
 			if (userClothes.isInUsed()) {
 				role.setEquipment(userClothes);
 			} else {
@@ -134,7 +134,7 @@ public class RoleService {
 		}
 	}
 
-	private Role getUserRole(int userId, int roleId) {
+	public Role getUserRole(int userId, int roleId) {
 		try {
 			return cache.get(userId).get(roleId);
 		} catch (ExecutionException e) {

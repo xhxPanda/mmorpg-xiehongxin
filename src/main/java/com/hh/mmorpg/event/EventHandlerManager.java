@@ -39,12 +39,11 @@ public class EventHandlerManager {
 			}
 			
 			addHandle(claz, method, annotation.eventType());
-
 		}
 	}
 
 	private void addHandle(Object claz, Method method, int id) {
-		List<EventHandler> handlers = methodMap.get(id);
+ 		List<EventHandler> handlers = methodMap.get(id);
 		if (handlers == null) {
 			handlers = new ArrayList<>();
 			methodMap.put(id, handlers);

@@ -107,10 +107,6 @@ public abstract class LivingThing {
 				}
 				
 				buff.setLastUsedTime(now);
-				if (isDead()) {
-					afterDead();
-					return;
-				}
 			}
 		}
 
@@ -139,11 +135,12 @@ public abstract class LivingThing {
 	public int effectAttribute(int key, int value) {
 		Attribute attribute = attributeMap.get(key);
 
+		int newValue = attribute.changeValue(value);
 		if (isDead()) {
 			afterDead();
 		}
 
-		return attribute.changeValue(value);
+		return newValue;
 	}
 
 	public void resurrection() {
@@ -153,8 +150,8 @@ public abstract class LivingThing {
 	public void resoreAttribute(int key, int value, boolean isBuff) {
 		Attribute attribute = attributeMap.get(key);
 		attribute.changeValue(value);
-
 	}
 
 	public abstract void afterDead();
+	
 }

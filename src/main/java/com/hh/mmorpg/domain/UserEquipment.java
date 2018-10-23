@@ -7,9 +7,8 @@ import java.util.Map;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
-public class UserClothes extends Material {
+public class UserEquipment extends Material {
 
-	private int roleId;
 	private String name;
 	private int clothesId;
 	private boolean inUsed;
@@ -17,10 +16,9 @@ public class UserClothes extends Material {
 	private int durability;
 	private Map<Integer, Integer> attributeMap;
 
-	public UserClothes(int roleId, String name, int clothesId, int maxDurability, int durability, String attributes,
+	public UserEquipment(int roleId, String name, int clothesId, int maxDurability, int durability, String attributes,
 			long gainTime) {
 		super(roleId, name, clothesId, MaterialType.CLOTHES_TYPE_ID, 1, gainTime);
-		this.roleId = roleId;
 		this.inUsed = false;
 		this.maxDurability = maxDurability;
 		this.durability = durability;
@@ -29,10 +27,6 @@ public class UserClothes extends Material {
 			String s[] = str.split(":");
 			attributeMap.put(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
 		}
-	}
-
-	public int getRoleId() {
-		return roleId;
 	}
 
 	public int getClothesId() {
@@ -62,17 +56,21 @@ public class UserClothes extends Material {
 	public Map<Integer, Integer> getAttributeMap() {
 		return attributeMap;
 	}
+	
+	public void dropDurability() {
+		this.durability -= 1;
+	}
 
 	@Override
 	public String toString() {
-		return "UserClothes [roleId=" + roleId + ", name=" + name + ", clothesId=" + clothesId + ", maxDurability="
+		return "UserClothes [name=" + name + ", clothesId=" + clothesId + ", maxDurability="
 				+ maxDurability + ", durability=" + durability + "]";
 	}
 
-	public static final ResultBuilder<UserClothes> BUILDER = new ResultBuilder<UserClothes>() {
+	public static final ResultBuilder<UserEquipment> BUILDER = new ResultBuilder<UserEquipment>() {
 
 		@Override
-		public UserClothes build(ResultSet result) throws SQLException {
+		public UserEquipment build(ResultSet result) throws SQLException {
 			// TODO Auto-generated method stub
 			int roleId = result.getInt(1);
 			int id = result.getInt(2);
@@ -81,7 +79,7 @@ public class UserClothes extends Material {
 			String attributeStr = result.getString(5);
 			int maxDurability = result.getInt(6);
 			int durability = result.getInt(7);
-			return new UserClothes(roleId, name, id, maxDurability, durability, attributeStr, gainTime);
+			return new UserEquipment(roleId, name, id, maxDurability, durability, attributeStr, gainTime);
 		}
 	};
 }

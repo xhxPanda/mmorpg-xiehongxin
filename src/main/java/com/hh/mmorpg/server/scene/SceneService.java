@@ -122,6 +122,11 @@ public class SceneService {
 		if(replyDomain.isSuccess()) {
 			roleSkill.setLastUseTime(now);
 		}
+		
+		ReplyDomain notifyReplyDomain = new ReplyDomain();
+		notifyReplyDomain.setStringDomain("m", monster.toString());
+		notifyReplyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BE_ATTACK);
+		scene.notifyAllUser(notifyReplyDomain);
 		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
 		return domain;
 	}

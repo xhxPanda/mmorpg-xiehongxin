@@ -68,7 +68,7 @@ public class Scene {
 		return cache;
 	}
 
-	public static void notifyOtherUser(int useId, ReplyDomain domain) {
+	public void notifyOtherUser(int useId, ReplyDomain domain) {
 		for (Entry<Integer, SceneUserCache> entry : userMap.entrySet()) {
 			if (entry.getValue().getUserId() != useId) {
 
@@ -77,7 +77,7 @@ public class Scene {
 		}
 	}
 
-	public static void notifyAllUser(ReplyDomain domain) {
+	public void notifyAllUser(ReplyDomain domain) {
 		for (Entry<Integer, SceneUserCache> entry : userMap.entrySet()) {
 			SceneExtension.notifyUser(UserService.INSTANCE.getUser(entry.getValue().getUserId()), domain);
 		}
@@ -147,14 +147,17 @@ public class Scene {
 				for (SceneUserCache cache : userMap.values()) {
 					cache.getRole().takeEffect();
 
-					if (cache.getRole().isDead()) {
-						ReplyDomain domain = new ReplyDomain();
-						domain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_DIED);
-						notifyOtherUser(cache.getUserId(), domain);
-					}
+					// 加红蓝
+					cache.getRole().effectAttribute(3, 2);
+					cache.getRole().effectAttribute(4, 2);
+
+					ReplyDomain domain = new ReplyDomain();
+					domain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_ATTRIBUATE_CHANGE);
+					notifyAllUser(domain);
+
 				}
 			}
-		}, 0, 20, TimeUnit.MILLISECONDS);
+		}, 0, 1, TimeUnit.SECONDS);
 	}
 
 	public void shutdown() {

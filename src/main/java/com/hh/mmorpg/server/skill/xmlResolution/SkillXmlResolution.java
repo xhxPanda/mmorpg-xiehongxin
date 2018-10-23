@@ -64,7 +64,6 @@ public class SkillXmlResolution {
 				for (String str : selfEffectAttributeList) {
 					selfEffectAttributeMap.put(Integer.parseInt(str.split(":")[0]), Integer.parseInt(str.split(":")[1]));
 				}
-
 			}
 
 			SkillDomain skillDomain = new SkillDomain(id, name, cd, effectAttributeMap,

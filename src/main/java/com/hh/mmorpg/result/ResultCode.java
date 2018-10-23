@@ -9,5 +9,6 @@ public class ResultCode {
 	public static final int REPEAT_CLOTHES = -4;
 	public static final int NOT_ENOUGH = -5;
 	public static final int HAS_DEAD = -6;
+	public static final int MP_NOT_ENOUGH = -7;
 
 }

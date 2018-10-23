@@ -2,11 +2,11 @@
 <buffs>
 	<buff id="3" name="护甲" isBuff="true" attribute="2:30"
 		defindAttribute="2:10" lastTime="20000" heartbeatTime="0"
-		isCanResore="false" />
+		isCanResore="true" />
 	<buff id="4" name="中毒" isBuff="true" attribute="3:200"
 		defindAttribute="2:10" lastTime="20000" heartbeatTime="0"
 		isCanResore="false" />
 	<buff id="5" name="缓慢回血" isBuff="true" attribute="3:30"
 		defindAttribute="2:10" lastTime="20000" heartbeatTime="0"
-		isCanResore="true" />
+		isCanResore="false" />
 </buffs>
