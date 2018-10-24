@@ -9,11 +9,11 @@ import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.ClothesXmlResolutionManager;
 
-public class ClothesMaterialHandle extends AbstractMaterialHandler {
+public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 
 	private Map<Integer, ClothesDomain> clothesDomainMap;
 
-	public ClothesMaterialHandle() {
+	public EquipmentMaterialHandle() {
 		clothesDomainMap = ClothesXmlResolutionManager.INSTANCE.resolution();
 	}
 
@@ -42,16 +42,6 @@ public class ClothesMaterialHandle extends AbstractMaterialHandler {
 
 		int id = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
-
-		if (!role.isContainMaterial(id)) {
-			return ReplyDomain.FAILE;
-		}
-
-		Material material = role.findMaterial(id);
-
-		if (material == null || needNum > material.getQuantity()) {
-			return ReplyDomain.NOT_ENOUGH;
-		}
 
 		role.decMaterial(id, needNum);
 

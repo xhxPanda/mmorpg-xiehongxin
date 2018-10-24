@@ -18,7 +18,7 @@ public class UserEquipment extends Material {
 
 	public UserEquipment(int roleId, String name, int clothesId, int maxDurability, int durability, String attributes,
 			long gainTime) {
-		super(roleId, name, clothesId, MaterialType.CLOTHES_TYPE_ID, 1, gainTime);
+		super(roleId, name, clothesId, MaterialType.EQUIPMENT_TYPE_ID, 1, gainTime);
 		this.inUsed = false;
 		this.maxDurability = maxDurability;
 		this.durability = durability;
@@ -56,15 +56,15 @@ public class UserEquipment extends Material {
 	public Map<Integer, Integer> getAttributeMap() {
 		return attributeMap;
 	}
-	
+
 	public void dropDurability() {
 		this.durability -= 1;
 	}
 
 	@Override
 	public String toString() {
-		return "UserClothes [name=" + name + ", clothesId=" + clothesId + ", maxDurability="
-				+ maxDurability + ", durability=" + durability + "]";
+		return "UserClothes [name=" + name + ", clothesId=" + clothesId + ", maxDurability=" + maxDurability
+				+ ", durability=" + durability + "]";
 	}
 
 	public static final ResultBuilder<UserEquipment> BUILDER = new ResultBuilder<UserEquipment>() {
