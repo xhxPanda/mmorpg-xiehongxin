@@ -1,4 +1,4 @@
-package com.hh.mmorpg.server.domain;
+package com.hh.mmorpg.domain;
 
 public class ItemDomain {
 

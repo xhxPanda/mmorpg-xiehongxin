@@ -1,7 +1,9 @@
 package com.hh.mmorpg.server.email;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -13,6 +15,7 @@ import com.hh.mmorpg.domain.Email;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
+import com.hh.mmorpg.server.masterial.MasterialService;
 import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.service.user.UserService;
 
@@ -27,7 +30,7 @@ public class EmailService {
 				@Override
 				/** 当本地缓存命没有中时，调用load方法获取结果并将结果缓存 **/
 				public Map<Integer, Email> load(Integer appKey) {
-					return getRoleAllEmail(appKey);
+					return getRoleAllEmailFromDB(appKey);
 				}
 
 			});
@@ -45,22 +48,79 @@ public class EmailService {
 		int id = IncrementManager.INSTANCE.increase("email");
 		Email email = new Email(role.getId(), id, content, bonusStr, false, senderRole.getId(), senderRole.getName());
 
-		sendEmail(email);
+		sendEmail(email, recipientRoleId, recipientId);
 
-		User recipient = UserService.INSTANCE.getUser(recipientId);
-		if (recipient != null) {
+		return ReplyDomain.SUCCESS;
+	}
 
+	public Map<Integer, Email> getRoleEmail(int roleId) {
+		Map<Integer, Email> emailMap = new HashMap<>();
+		try {
+			emailMap = cache.get(roleId);
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		return emailMap;
+	}
+
+	public ReplyDomain readEmail(User user, int emailId) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+		Map<Integer, Email> emailMap = getRoleEmail(role.getId());
+		if (emailMap == null || emailMap.size() == 0) {
+			return ReplyDomain.SUCCESS;
+		}
+		Email email = emailMap.get(emailId);
+		if (email.isRead())
+			return ReplyDomain.SUCCESS;
+
+		if (!email.isRead() && !email.getBonus().isEmpty())
+			return ReplyDomain.SUCCESS;
+
+		email.setRead(true);
+		EmailDao.INSTANCE.updateEmail(email);
 		return ReplyDomain.SUCCESS;
 	}
 
-	public ReplyDomain sendEmail(Email email) {
+	public ReplyDomain getEmailBonus(User user, int emailId) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+		Map<Integer, Email> emailMap = getRoleEmail(role.getId());
+		if (emailMap == null || emailMap.size() == 0) {
+			return ReplyDomain.FAILE;
+		}
+
+		Email email = emailMap.get(emailId);
+		if (email.isRead())
+			return ReplyDomain.SUCCESS;
+
+		if (email.getBonus().isEmpty())
+			return ReplyDomain.FAILE;
+
+		MasterialService.INSTANCE.gainMasteral(user, role, email.getBonus());
+		return ReplyDomain.SUCCESS;
+	}
+
+	private ReplyDomain sendEmail(Email email, int recipientRoleId, int recipientId) {
 		EmailDao.INSTANCE.sendEmail(email);
-
+		notifyUserGetEmail(email, recipientRoleId, recipientId);
 		return ReplyDomain.SUCCESS;
 	}
 
-	private Map<Integer, Email> getRoleAllEmail(Integer roleId) {
+	private void notifyUserGetEmail(Email email, int recipientRoleId, int recipientId) {
+		User user = UserService.INSTANCE.getUser(recipientId);
+		if (user == null) {
+			return;
+		}
+
+		if (RoleService.INSTANCE.isUserRoleOnline(recipientId, recipientRoleId)) {
+			// 加入缓存中
+			getRoleEmail(recipientRoleId).put(email.getId(), email);
+			// notify
+			EmailExtension.notifyUserGetEmail(user, email);
+		}
+	}
+
+	private Map<Integer, Email> getRoleAllEmailFromDB(Integer roleId) {
 		// TODO Auto-generated method stub
 
 		List<Email> roles = EmailDao.INSTANCE.getRoleEmail(roleId);

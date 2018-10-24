@@ -134,6 +134,10 @@ public class RoleService {
 		}
 	}
 
+	public boolean isUserRoleOnline(int userId, int roleId) {
+		return getUserUsingRole(userId).getId() == roleId;
+	}
+	
 	public Role getUserRole(int userId, int roleId) {
 		try {
 			return cache.get(userId).get(roleId);

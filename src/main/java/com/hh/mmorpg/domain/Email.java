@@ -54,6 +54,16 @@ public class Email {
 		return senderRoleName;
 	}
 
+	public void setRead(boolean read) {
+		this.read = read;
+	}
+
+	@Override
+	public String toString() {
+		return "Email [roleId=" + roleId + ", id=" + id + ", content=" + content + ", bonus=" + bonus + ", read=" + read
+				+ ", senderRoleId=" + senderRoleId + ", senderRoleName=" + senderRoleName + "]";
+	}
+
 	public static final ResultBuilder<Email> BUILDER = new ResultBuilder<Email>() {
 
 		@Override

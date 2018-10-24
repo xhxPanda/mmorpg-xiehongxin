@@ -2,11 +2,11 @@ package com.hh.mmorpg.server.masterial.handler;
 
 import java.util.Map;
 
+import com.hh.mmorpg.domain.ItemDomain;
 import com.hh.mmorpg.domain.Material;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.result.ReplyDomain;
-import com.hh.mmorpg.server.domain.ItemDomain;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.ItemXmlResolutionManager;
 
 public class ItemMasterialHandler extends AbstractMaterialHandler {
@@ -18,7 +18,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 	}
 
 	@Override
-	public ReplyDomain gainMaterial(Role role, String[] materialStr, int reason) {
+	public ReplyDomain gainMaterial(Role role, String[] materialStr) {
 		// TODO Auto-generated method stub
 
 		int id = Integer.parseInt(materialStr[1]);
@@ -33,7 +33,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 	}
 
 	@Override
-	public ReplyDomain decMasterial(Role role, String[] materialStr, int reason) {
+	public ReplyDomain decMasterial(Role role, String[] materialStr) {
 		// TODO Auto-generated method stub
 		int id = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);

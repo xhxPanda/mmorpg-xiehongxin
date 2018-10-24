@@ -18,7 +18,7 @@ public class ClothesMaterialHandle extends AbstractMaterialHandler {
 	}
 
 	@Override
-	public ReplyDomain gainMaterial(Role role, String[] materialStr, int reason) {
+	public ReplyDomain gainMaterial(Role role, String[] materialStr) {
 		// TODO Auto-generated method stub
 
 		int id = Integer.parseInt(materialStr[1]);
@@ -37,7 +37,7 @@ public class ClothesMaterialHandle extends AbstractMaterialHandler {
 	}
 
 	@Override
-	public ReplyDomain decMasterial(Role role, String[] materialStr, int reason) {
+	public ReplyDomain decMasterial(Role role, String[] materialStr) {
 		// TODO Auto-generated method stub
 
 		int id = Integer.parseInt(materialStr[1]);

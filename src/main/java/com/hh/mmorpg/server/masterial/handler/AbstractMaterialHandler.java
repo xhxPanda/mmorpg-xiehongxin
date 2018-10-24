@@ -5,8 +5,8 @@ import com.hh.mmorpg.result.ReplyDomain;
 
 public abstract class AbstractMaterialHandler {
 
-	public abstract ReplyDomain gainMaterial(Role role, String[] material, int reason);
+	public abstract ReplyDomain gainMaterial(Role role, String[] material);
 
-	public abstract ReplyDomain decMasterial(Role role, String[] material, int reason);
+	public abstract ReplyDomain decMasterial(Role role, String[] material);
 
 }

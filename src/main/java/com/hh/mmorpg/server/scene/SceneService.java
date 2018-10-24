@@ -136,6 +136,10 @@ public class SceneService {
 		return sceneMap.get(userId);
 	}
 
+	public Map<Integer, Scene> getSceneMap() {
+		return sceneMap;
+	}
+
 	// 用户下线，把他的缓存删除
 	@Event(eventType = EventType.USER_LOST)
 	public void handleUserLost(EventDealData<UserLostData> data) {

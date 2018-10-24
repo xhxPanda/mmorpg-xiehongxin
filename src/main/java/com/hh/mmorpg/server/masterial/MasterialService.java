@@ -18,7 +18,7 @@ public class MasterialService {
 		this.handlerMap = new HashMap<>();
 	}
 
-	public ReplyDomain gainMasteral(User user, Role role, String material, int reason) {
+	public ReplyDomain gainMasteral(User user, Role role, String material) {
 		String str[] = material.split(":");
 
 		int type = Integer.parseInt(str[0]);
@@ -26,7 +26,7 @@ public class MasterialService {
 			return ReplyDomain.FAILE;
 		}
 
-		ReplyDomain replyDomain = handlerMap.get(type).gainMaterial(role, str, reason);
+		ReplyDomain replyDomain = handlerMap.get(type).gainMaterial(role, str);
 		if (replyDomain.isSuccess()) {
 			ReplyDomain notify = replyDomain;
 			notify.setStringDomain("m", material);
@@ -36,14 +36,14 @@ public class MasterialService {
 		return replyDomain;
 	}
 
-	public ReplyDomain decMasterial(User user, Role role, String material, int reason) {
+	public ReplyDomain decMasterial(User user, Role role, String material) {
 		String str[] = material.split(":");
 
 		int type = Integer.parseInt(str[0]);
 		if (handlerMap.get(type) == null) {
 			return ReplyDomain.FAILE;
 		}
-		ReplyDomain replyDomain = handlerMap.get(type).decMasterial(role, str, reason);
+		ReplyDomain replyDomain = handlerMap.get(type).decMasterial(role, str);
 		if (replyDomain.isSuccess()) {
 			ReplyDomain notify = replyDomain;
 			notify.setStringDomain("m", material);

@@ -9,7 +9,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.hh.mmorpg.server.domain.ItemDomain;
+import com.hh.mmorpg.domain.ItemDomain;
+
 
 public class ItemXmlResolutionManager {
 

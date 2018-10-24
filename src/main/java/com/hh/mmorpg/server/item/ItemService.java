@@ -26,7 +26,7 @@ public class ItemService {
 			return ReplyDomain.FAILE;
 		}
 
-		ReplyDomain replyDomain = MasterialService.INSTANCE.decMasterial(user, role, itemStr, 1);
+		ReplyDomain replyDomain = MasterialService.INSTANCE.decMasterial(user, role, itemStr);
 		if (!replyDomain.isSuccess()) {
 			return ReplyDomain.FAILE;
 		}
