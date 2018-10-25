@@ -3,12 +3,14 @@ package com.hh.mmorpg.domain;
 public class Goods {
 
 	private int id;
-	private String material;
+	private String name;
+	private String item;
 	private String price;
 
-	public Goods(int id, String material, String price) {
+	public Goods(int id, String name, String item, String price) {
 		this.id = id;
-		this.material = material;
+		this.name = name;
+		this.item = item;
 		this.price = price;
 	}
 
@@ -16,8 +18,12 @@ public class Goods {
 		return id;
 	}
 
-	public String getMaterial() {
-		return material;
+	public String getName() {
+		return name;
+	}
+
+	public String getItem() {
+		return item;
 	}
 
 	public String getPrice() {

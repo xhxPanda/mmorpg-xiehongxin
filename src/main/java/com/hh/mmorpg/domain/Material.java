@@ -9,14 +9,12 @@ public class Material {
 	private int id;
 	private int type;
 	private AtomicInteger quantity;
-	private long gainTime;
 
-	public Material(int roleId, String name, int id, int type, int quantity, long gainTime) {
+	public Material(int roleId, String name, int id, int type, int quantity) {
 		this.name = name;
 		this.id = id;
 		this.type = type;
 		this.quantity = new AtomicInteger(quantity);
-		this.gainTime = System.currentTimeMillis();
 		this.roleId = roleId;
 	}
 
@@ -28,9 +26,6 @@ public class Material {
 		return type;
 	}
 
-	public long getGainTime() {
-		return gainTime;
-	}
 
 	public String getName() {
 		return name;

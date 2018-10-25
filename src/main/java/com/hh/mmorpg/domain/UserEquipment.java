@@ -15,10 +15,11 @@ public class UserEquipment extends Material {
 	private int maxDurability;
 	private int durability;
 	private Map<Integer, Integer> attributeMap;
+	private long gainTime;
 
 	public UserEquipment(int roleId, String name, int clothesId, int maxDurability, int durability, String attributes,
 			long gainTime) {
-		super(roleId, name, clothesId, MaterialType.EQUIPMENT_TYPE_ID, 1, gainTime);
+		super(roleId, name, clothesId, MaterialType.EQUIPMENT_TYPE_ID, 1);
 		this.inUsed = false;
 		this.maxDurability = maxDurability;
 		this.durability = durability;
@@ -27,6 +28,8 @@ public class UserEquipment extends Material {
 			String s[] = str.split(":");
 			attributeMap.put(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
 		}
+		
+		this.gainTime = gainTime;
 	}
 
 	public int getClothesId() {
@@ -59,6 +62,10 @@ public class UserEquipment extends Material {
 
 	public void dropDurability() {
 		this.durability -= 1;
+	}
+
+	public long getGainTime() {
+		return gainTime;
 	}
 
 	@Override

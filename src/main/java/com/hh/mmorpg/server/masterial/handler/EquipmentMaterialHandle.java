@@ -3,7 +3,6 @@ package com.hh.mmorpg.server.masterial.handler;
 import java.util.Map;
 
 import com.hh.mmorpg.domain.ClothesDomain;
-import com.hh.mmorpg.domain.Material;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -41,9 +40,8 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 		// TODO Auto-generated method stub
 
 		int id = Integer.parseInt(materialStr[1]);
-		int needNum = Integer.parseInt(materialStr[2]);
 
-		role.decMaterial(id, needNum);
+		role.decMaterial(id, 1);
 
 		return ReplyDomain.SUCCESS;
 	}

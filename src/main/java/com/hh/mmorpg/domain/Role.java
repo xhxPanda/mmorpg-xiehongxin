@@ -10,7 +10,7 @@ import com.hh.mmorpg.jdbc.ResultBuilder;
 /**
  * 
  * @author xhx
- * 用户角色
+  *  用户角色
  *
  */
 
@@ -22,6 +22,8 @@ public class Role extends LivingThing {
 	private int roleId;
 
 	private Map<Integer, Material> materialMap;
+	
+	// 装备栏
 	private Map<Integer, UserEquipment> equipmentMap;
 
 	public Role(int userId, int id, String name, int roleId) {

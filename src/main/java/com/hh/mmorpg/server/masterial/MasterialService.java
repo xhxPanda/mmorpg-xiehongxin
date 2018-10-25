@@ -12,8 +12,14 @@ import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.handler.AbstractMaterialHandler;
 import com.hh.mmorpg.server.masterial.handler.EquipmentMaterialHandle;
 import com.hh.mmorpg.server.masterial.handler.ItemMasterialHandler;
+import com.hh.mmorpg.server.masterial.handler.xmlManager.GoodsXmlResolutionManager;
 import com.hh.mmorpg.server.role.RoleService;
 
+/**
+ * 
+ * @author xhx
+ * 
+ */
 public class MasterialService {
 
 	public static final MasterialService INSTANCE = new MasterialService();
@@ -22,9 +28,12 @@ public class MasterialService {
 	private Map<Integer, Goods> goodsMap;
 
 	private MasterialService() {
+		// 配置material不同的handler
 		this.handlerMap = new HashMap<>();
 		handlerMap.put(MaterialType.EQUIPMENT_TYPE_ID, new EquipmentMaterialHandle());
 		handlerMap.put(MaterialType.ITEM_TYPE_ID, new ItemMasterialHandler());
+
+		goodsMap = GoodsXmlResolutionManager.INSTANCE.resolution();
 	}
 
 	public ReplyDomain buyGoods(User user, int goodsId, int num) {
@@ -37,7 +46,7 @@ public class MasterialService {
 			return decResult;
 		}
 
-		ReplyDomain gainResult = gainMasteral(user, role, goods.getMaterial());
+		ReplyDomain gainResult = gainMasteral(user, role, goods.getItem());
 		if (!gainResult.isSuccess()) {
 			return gainResult;
 		}

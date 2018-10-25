@@ -15,11 +15,12 @@ public class UserItem extends Material {
 	private Map<Integer, Integer> effectAttributeMap;
 	private List<Integer> buffList;
 	private long cd;
+	private long gainTime;
 
 	public UserItem(int roleId, String name, int id, int quantity, long gainTime, long lastUsedTime, String effect,
 			String buffs, long cd) {
 		// TODO Auto-generated constructor stub
-		super(roleId, name, id, MaterialType.ITEM_TYPE_ID, quantity, gainTime);
+		super(roleId, name, id, MaterialType.ITEM_TYPE_ID, quantity);
 		this.lastUsedTime = lastUsedTime;
 
 		this.effectAttributeMap = new HashMap<>();
@@ -37,6 +38,7 @@ public class UserItem extends Material {
 		}
 
 		this.cd = cd;
+		this.gainTime = gainTime;
 	}
 
 	public Map<Integer, Integer> getEffectAttributeMap() {
@@ -61,6 +63,10 @@ public class UserItem extends Material {
 
 	public boolean isPartCD() {
 		return (System.currentTimeMillis() - lastUsedTime) > cd;
+	}
+
+	public long getGainTime() {
+		return gainTime;
 	}
 
 	public static final ResultBuilder<UserItem> BUILDER = new ResultBuilder<UserItem>() {
