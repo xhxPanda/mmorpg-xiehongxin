@@ -6,6 +6,7 @@ import com.hh.mmorpg.domain.ClothesDomain;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.result.ReplyDomain;
+import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.ClothesXmlResolutionManager;
 
 public class EquipmentMaterialHandle extends AbstractMaterialHandler {
@@ -27,11 +28,13 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 		}
 		ClothesDomain clothesDomain = clothesDomainMap.get(id);
 
-		UserEquipment userClothes = new UserEquipment(role.getId(), clothesDomain.getName(), id,
+		UserEquipment userEquipment = new UserEquipment(role.getId(), clothesDomain.getName(), id,
 				clothesDomain.getMaxDurability(), clothesDomain.getMaxDurability(), clothesDomain.getAttributes(),
 				System.currentTimeMillis());
 
-		role.addMaterial(userClothes);
+		role.addMaterial(userEquipment);
+
+		MaterialDao.INSTANCE.updateRoleEquiment(userEquipment);
 		return ReplyDomain.SUCCESS;
 	}
 
@@ -40,9 +43,8 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 		// TODO Auto-generated method stub
 
 		int id = Integer.parseInt(materialStr[1]);
-
 		role.decMaterial(id, 1);
-
+		MaterialDao.INSTANCE.deleteRoleEquiment(role.getId(), id);
 		return ReplyDomain.SUCCESS;
 	}
 

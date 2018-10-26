@@ -3,10 +3,10 @@ package com.hh.mmorpg.server.masterial.handler;
 import java.util.Map;
 
 import com.hh.mmorpg.domain.ItemDomain;
-import com.hh.mmorpg.domain.Material;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.result.ReplyDomain;
+import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.ItemXmlResolutionManager;
 
 public class ItemMasterialHandler extends AbstractMaterialHandler {
@@ -25,9 +25,11 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 		int needNum = Integer.parseInt(materialStr[2]);
 
 		ItemDomain itemDomain = itemDomainMap.get(id);
-		role.addMaterial(new UserItem(role.getId(), itemDomain.getName(), id, needNum, 0,
-				System.currentTimeMillis(), itemDomain.getEffectAttribuate(), itemDomain.getBuffs(),
-				itemDomain.getCd()));
+		UserItem userItem = new UserItem(role.getId(), itemDomain.getName(), id, needNum, 0, System.currentTimeMillis(),
+				itemDomain.getEffectAttribuate(), itemDomain.getBuffs(), itemDomain.getCd());
+		role.addMaterial(userItem);
+
+		MaterialDao.INSTANCE.updateRoleItem(userItem);
 
 		return ReplyDomain.SUCCESS;
 	}
@@ -42,12 +44,12 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 			return ReplyDomain.FAILE;
 		}
 
-		Material material = role.findMaterial(id);
+		UserItem material = (UserItem) role.findMaterial(id);
 
 		if (material == null || needNum > material.getQuantity()) {
 			return ReplyDomain.NOT_ENOUGH;
 		}
-
+		MaterialDao.INSTANCE.updateRoleItem(material);
 		role.decMaterial(id, needNum);
 
 		return null;

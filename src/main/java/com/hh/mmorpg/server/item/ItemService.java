@@ -6,7 +6,7 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.result.ReplyDomain;
-import com.hh.mmorpg.server.masterial.MasterialService;
+import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.server.skill.SkillService;
 
@@ -26,7 +26,7 @@ public class ItemService {
 			return ReplyDomain.FAILE;
 		}
 
-		ReplyDomain replyDomain = MasterialService.INSTANCE.decMasterial(user, role, itemStr);
+		ReplyDomain replyDomain = MaterialService.INSTANCE.decMasterial(user, role, itemStr);
 		if (!replyDomain.isSuccess()) {
 			return ReplyDomain.FAILE;
 		}

@@ -15,7 +15,7 @@ import com.hh.mmorpg.domain.Email;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
-import com.hh.mmorpg.server.masterial.MasterialService;
+import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.service.user.UserService;
 
@@ -96,7 +96,7 @@ public class EmailService {
 		if (email.getBonus().isEmpty())
 			return ReplyDomain.FAILE;
 
-		MasterialService.INSTANCE.gainMasteral(user, role, email.getBonus());
+		MaterialService.INSTANCE.gainMasteral(user, role, email.getBonus());
 		return ReplyDomain.SUCCESS;
 	}
 

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
@@ -28,7 +29,7 @@ public class UserEquipment extends Material {
 			String s[] = str.split(":");
 			attributeMap.put(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
 		}
-		
+
 		this.gainTime = gainTime;
 	}
 
@@ -66,6 +67,19 @@ public class UserEquipment extends Material {
 
 	public long getGainTime() {
 		return gainTime;
+	}
+
+	public String getAttributeStr() {
+		StringBuilder builder = new StringBuilder();
+
+		for (Entry<Integer, Integer> entry : attributeMap.entrySet()) {
+			if (builder.length() > 0) {
+				builder.append(",");
+			}
+			builder.append(entry.getKey()).append(":").append(entry.getValue());
+		}
+
+		return builder.toString();
 	}
 
 	@Override

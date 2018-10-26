@@ -20,6 +20,7 @@ import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
@@ -65,7 +66,10 @@ public class RoleService {
 
 	public ReplyDomain userUseRole(User user, int roleId) {
 		int userId = user.getUserId();
-		if (userRoleMap.get(userId) != null) {
+		Role oldRole = userRoleMap.get(userId);
+
+		// 使用了相同的角色，没什么变化
+		if (oldRole != null && oldRole.getId() == roleId) {
 			return ReplyDomain.SUCCESS;
 		}
 
@@ -73,8 +77,15 @@ public class RoleService {
 		if (role == null) {
 			return ReplyDomain.FAILE;
 		}
+
 		assemblingRole(role);
 		userRoleMap.put(userId, role);
+
+		if (oldRole != null) {
+			// 抛出替换角色的事件
+			RoleChangeData data = new RoleChangeData(userId, oldRole.getId(), roleId);
+			EventHandlerManager.INSATNCE.methodInvoke(EventType.ROLE_CHANGE, new EventDealData<RoleChangeData>(data));
+		}
 
 		return ReplyDomain.SUCCESS;
 	}
@@ -137,7 +148,7 @@ public class RoleService {
 	public boolean isUserRoleOnline(int userId, int roleId) {
 		return getUserUsingRole(userId).getId() == roleId;
 	}
-	
+
 	public Role getUserRole(int userId, int roleId) {
 		try {
 			return cache.get(userId).get(roleId);

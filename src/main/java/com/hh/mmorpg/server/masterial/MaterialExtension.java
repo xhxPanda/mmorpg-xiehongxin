@@ -8,7 +8,7 @@ import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
 @Extension(id = 5)
-public class MasterialExtension {
+public class MaterialExtension {
 
 	private static final String BUY_GOODS = "5_1";
 	private static final String SELL_GOODS = "5_2";
@@ -21,7 +21,7 @@ public class MasterialExtension {
 		int goodsId = cmDdomain.getIntParam("gi");
 		int num = cmDdomain.getIntParam("n");
 
-		ReplyDomain replyDomain = MasterialService.INSTANCE.buyGoods(user, goodsId, num);
+		ReplyDomain replyDomain = MaterialService.INSTANCE.buyGoods(user, goodsId, num);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 

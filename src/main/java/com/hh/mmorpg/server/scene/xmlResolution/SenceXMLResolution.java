@@ -40,8 +40,9 @@ public class SenceXMLResolution {
 			String name = element.attributeValue("name");
 			int id = Integer.parseInt(element.attributeValue("id"));
 			String neighborScenes = element.attributeValue("neighborScenes");
-
-			Scene scene = new Scene(id, name, neighborScenes);
+			boolean isCanBattle = Boolean.parseBoolean(element.attributeValue("isCanBattle"));
+			
+			Scene scene = new Scene(id, name, neighborScenes, isCanBattle);
 			map.put(scene.getId(), scene);
 
 			// 生成npc
@@ -68,7 +69,6 @@ public class SenceXMLResolution {
 				String attributeStr = monsterchlEle.attributeValue("attribute");
 				String skillsStr = monsterchlEle.attributeValue("skills");
 
-
 				for (int i = 0; i < count; i++) {
 					int uniqueId = IncrementManager.INSTANCE.increase("monster");
 					Monster monster = new Monster(monsterId, uniqueId, monsterName, freshTime, id);
@@ -88,6 +88,20 @@ public class SenceXMLResolution {
 					monster.setAttributeMap(attributeMap);
 					monster.setSkillMap(roleSkillMap);
 					monsterMap.put(monster.getUniqueId(), monster);
+
+					// 解析掉落物品的概率
+					Map<String, Integer> killFallItemMap = new HashMap<>();
+					Element killAndFallEle = element.element("killAndFall");
+
+					String fallStr = killAndFallEle.attributeValue("killAndFall");
+					String fallStrList[] = fallStr.split(",");
+
+					for (String s : fallStrList) {
+						String item = s.split("$")[0];
+						int possibility = Integer.parseInt(s.split("$")[1]);
+						killFallItemMap.put(item, possibility);
+					}
+					monster.setKillFallItemMap(killFallItemMap);
 				}
 			}
 			scene.setMonsterMap(monsterMap);

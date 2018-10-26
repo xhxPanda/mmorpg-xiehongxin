@@ -15,14 +15,13 @@ public class UserEquipmentService {
 		
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 		
-		UserEquipment clothes = (UserEquipment) role.findMaterial(clothesId);
-		if(clothes == null) {
+		UserEquipment equipment = (UserEquipment) role.findMaterial(clothesId);
+		if(equipment == null) {
 			return ReplyDomain.FAILE;
 		}
 		
-		role.setEquipment(clothes);
+		role.setEquipment(equipment);
 		
 		return ReplyDomain.SUCCESS;
 	}
-
 }

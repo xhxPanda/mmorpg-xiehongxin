@@ -1,8 +1,7 @@
 package com.hh.mmorpg.domain;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,7 +10,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.hh.mmorpg.jdbc.ResultBuilder;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.scene.SceneUserCache;
@@ -22,6 +20,9 @@ public class Scene {
 	private int id;
 	private String name;
 	private List<Integer> neighborSceneIds;
+	private boolean isCanBattle;
+
+	private Map<Integer, Map<Integer, MonsterBeKillBonus>> monsterBeKillBonusmap;
 
 	private static ConcurrentHashMap<Integer, SceneUserCache> userMap = new ConcurrentHashMap<>();
 
@@ -30,9 +31,10 @@ public class Scene {
 
 	private ScheduledExecutorService executorService;
 
-	public Scene(int id, String name, String neighborScenestrs) {
+	public Scene(int id, String name, String neighborScenestrs, boolean isCanBattle) {
 		this.id = id;
 		this.name = name;
+		this.isCanBattle = isCanBattle;
 		this.neighborSceneIds = new ArrayList<Integer>();
 
 		String[] strs = neighborScenestrs.split(",");
@@ -41,6 +43,7 @@ public class Scene {
 		}
 		this.monsterMap = new ConcurrentHashMap<>();
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
+		this.monsterBeKillBonusmap = new HashMap<>();
 		start();
 	}
 
@@ -123,6 +126,26 @@ public class Scene {
 		return userMap;
 	}
 
+	public SceneUserCache getSceneUserCache(int userId) {
+		return userMap.get(userId);
+	}
+
+	public boolean isCanBattle() {
+		return isCanBattle;
+	}
+
+	public void addRoleKillMonsterBonus(int roleId, MonsterBeKillBonus beKillBonus) {
+		monsterBeKillBonusmap.get(roleId).put(beKillBonus.getId(), beKillBonus);
+	}
+
+	public MonsterBeKillBonus getRoleKillMonsterBonus(int roleId, int bonusId) {
+		return monsterBeKillBonusmap.get(roleId).get(bonusId);
+	}
+	
+	public List<MonsterBeKillBonus> getRoleKillMonsterBonusInfo(int roleId) {
+		return new ArrayList<MonsterBeKillBonus>(monsterBeKillBonusmap.get(roleId).values());
+	}
+
 	public void start() {
 		// 场景心跳
 		executorService.scheduleAtFixedRate(new Runnable() {
@@ -164,14 +187,4 @@ public class Scene {
 		executorService.shutdown();
 	}
 
-	public static final ResultBuilder<Scene> BUILDER = new ResultBuilder<Scene>() {
-		@Override
-		public Scene build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
-			int id = result.getInt(1);
-			String name = result.getString(2);
-			String neighborScenestrs = result.getString(3);
-			return new Scene(id, name, neighborScenestrs);
-		}
-	};
 }

@@ -16,11 +16,14 @@ public class SceneExtension {
 	private static final String GET_SCENE_USER = "2_2";
 	private static final String ATTACK_MONSTER = "2_3";
 	private static final String ATTACK_ROLE = "2_4";
+	private static final String GET_ROLE_KILL_MONSTER_BONUS_INFO = "2_5";
+	private static final String GET_ROLE_KILL_MONSTER_BONUS = "2_6";
 
 	public static final String NOTIFY_USER_ENTER = "2_100";
 	public static final String NOTIFY_USER_LEAVE = "2_101";
 	public static final String NOTIFT_USER_ATTRIBUATE_CHANGE = "2_102";
 	public static final String NOTIFY_MONSTER_BE_ATTACK = "2_103";
+	public static final String NOTIFY_ROLE_MONSTER_BONUS_FALL = "2_104";
 
 	@CmdService(cmd = JOIN_SCENE)
 	public void joinScene(User user, CMDdomain cmdDomain) {
@@ -50,9 +53,22 @@ public class SceneExtension {
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
+	@CmdService(cmd = GET_ROLE_KILL_MONSTER_BONUS_INFO)
+	public void getRoleKillMonsterBonusInfo(User user, CMDdomain cmdDomain) {
+		ReplyDomain replyDomain = service.getRoleKillMonsterBonusInfo(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+
+	@CmdService(cmd = GET_ROLE_KILL_MONSTER_BONUS)
+	public void getRoleKillMonster(User user, CMDdomain cmdDomain) {
+		int bonusId = cmdDomain.getIntParam("bid");
+
+		ReplyDomain replyDomain = service.getRoleKillMonsterBonus(user, bonusId);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+
 	public static void notifyUser(User user, ReplyDomain replyDomain) {
 		replyDomain.setIntDomain("uid", user.getUserId());
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
-	} 
-
+	}
 }

@@ -4,16 +4,22 @@ import com.hh.mmorpg.event.EventData;
 
 public class MonsterDeadData extends EventData {
 
-	private int id;
+	private int monsterId;
+	private int killRoleId;
 	private int sceneId;
 
-	public MonsterDeadData(int id, int sceneId) {
-		this.id = id;
+	public MonsterDeadData(int monsterId, int killRoleId, int sceneId) {
+		this.monsterId = monsterId;
+		this.killRoleId = killRoleId;
 		this.sceneId = sceneId;
 	}
 
-	public int getId() {
-		return id;
+	public int getMonsterId() {
+		return monsterId;
+	}
+
+	public int getKillRoleId() {
+		return killRoleId;
 	}
 
 	public int getSceneId() {

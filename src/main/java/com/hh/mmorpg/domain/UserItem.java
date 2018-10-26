@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
@@ -67,6 +68,30 @@ public class UserItem extends Material {
 
 	public long getGainTime() {
 		return gainTime;
+	}
+
+	public String getAttributeStr() {
+		StringBuilder builder = new StringBuilder();
+
+		for (Entry<Integer, Integer> entry : effectAttributeMap.entrySet()) {
+			if (builder.length() > 0) {
+				builder.append(",");
+			}
+			builder.append(entry.getKey()).append(":").append(entry.getValue());
+		}
+
+		return builder.toString();
+	}
+
+	public String getBuffStr() {
+		StringBuilder builder = new StringBuilder();
+		for (Integer i : buffList) {
+			if (builder.length() > 0) {
+				builder.append(",");
+			}
+			builder.append(i);
+		}
+		return builder.toString();
 	}
 
 	public static final ResultBuilder<UserItem> BUILDER = new ResultBuilder<UserItem>() {

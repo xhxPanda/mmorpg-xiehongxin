@@ -20,14 +20,14 @@ import com.hh.mmorpg.server.role.RoleService;
  * @author xhx
  * 
  */
-public class MasterialService {
+public class MaterialService {
 
-	public static final MasterialService INSTANCE = new MasterialService();
+	public static final MaterialService INSTANCE = new MaterialService();
 
 	private Map<Integer, AbstractMaterialHandler> handlerMap;
 	private Map<Integer, Goods> goodsMap;
 
-	private MasterialService() {
+	private MaterialService() {
 		// 配置material不同的handler
 		this.handlerMap = new HashMap<>();
 		handlerMap.put(MaterialType.EQUIPMENT_TYPE_ID, new EquipmentMaterialHandle());
@@ -69,7 +69,7 @@ public class MasterialService {
 
 		ReplyDomain notify = replyDomain;
 		notify.setStringDomain("m", material);
-		MasterialExtension.notifyMaterialGain(user, notify);
+		MaterialExtension.notifyMaterialGain(user, notify);
 		return replyDomain;
 	}
 
@@ -92,7 +92,7 @@ public class MasterialService {
 
 		ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
 		notify.setStringDomain("m", material);
-		MasterialExtension.notifyMaterialDec(user, notify);
+		MaterialExtension.notifyMaterialDec(user, notify);
 
 		return ReplyDomain.SUCCESS;
 	}
