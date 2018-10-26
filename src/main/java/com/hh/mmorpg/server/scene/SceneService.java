@@ -133,14 +133,49 @@ public class SceneService {
 		}
 
 		ReplyDomain replyDomain = SkillService.INSTANCE.dealSkillEffect(roleSkill, role, monster, now);
-		if (replyDomain.isSuccess()) {
-			roleSkill.setLastUseTime(now);
+		if(!replyDomain.isSuccess()) {
+			return ReplyDomain.FAILE;
 		}
-
+		
 		ReplyDomain notifyReplyDomain = new ReplyDomain();
 		notifyReplyDomain.setStringDomain("m", monster.toString());
 		notifyReplyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BE_ATTACK);
 		scene.notifyAllUser(notifyReplyDomain);
+		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
+		return domain;
+	}
+
+	public ReplyDomain attackOtherRole(User user, int skillId, int otherUserId) {
+		int userId = user.getUserId();
+		Integer sceneId = sceneUserMap.get(userId);
+		if (sceneId == null) {
+			return ReplyDomain.FAILE;
+		}
+
+		Scene scene = sceneMap.get(sceneId);
+		if (scene == null) {
+			return ReplyDomain.FAILE;
+		}
+
+		if (!scene.isCanBattle()) {
+			return ReplyDomain.CAN_NOT_BATTLE;
+		}
+
+		Role role = scene.getUserRole(userId);
+		RoleSkill roleSkill = role.getRoleSkill(skillId);
+		if (roleSkill == null) {
+			return ReplyDomain.FAILE;
+		}
+
+		Role otherRole = scene.getUserRole(otherUserId);
+		if (otherRole == null) {
+			return ReplyDomain.FAILE;
+		}
+		long now = System.currentTimeMillis();
+		ReplyDomain replyDomain = SkillService.INSTANCE.dealSkillEffect(roleSkill, role, otherRole, now);
+		if(!replyDomain.isSuccess()) {
+			return ReplyDomain.FAILE;
+		}
 		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
 		return domain;
 	}

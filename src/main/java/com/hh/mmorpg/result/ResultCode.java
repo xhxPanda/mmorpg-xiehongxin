@@ -11,5 +11,6 @@ public class ResultCode {
 	public static final int HAS_DEAD = -6;
 	public static final int MP_NOT_ENOUGH = -7;
 	public static final int BONS_NOT_EXIT = -8;
+	public static final int CAN_NOT_BATTLE = -9;
 
 }

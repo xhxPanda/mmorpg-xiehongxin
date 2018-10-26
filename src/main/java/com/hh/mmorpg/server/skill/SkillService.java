@@ -27,14 +27,14 @@ public class SkillService {
 		buffMap = SkillXmlResolution.INSATNCE.buffResolution();
 	}
 
-	public ReplyDomain dealSkillEffect(RoleSkill roleSkill, LivingThing attackedObject,
-			LivingThing beAttackedObject, long now) {
+	public ReplyDomain dealSkillEffect(RoleSkill roleSkill, LivingThing attackedObject, LivingThing beAttackedObject,
+			long now) {
 		SkillDomain domain = getSkillDomain(roleSkill.getSkillId());
 
 		if (now - roleSkill.getLastUseTime() < domain.getCd()) {
 			return ReplyDomain.IN_CD;
 		}
-		
+
 		for (Entry<Integer, Integer> entry : domain.getEffectAttribute().entrySet()) {
 			beAttackedObject.effectAttribute(entry.getKey(), entry.getValue());
 		}
@@ -48,17 +48,19 @@ public class SkillService {
 			RoleBuff buff = dealBuffAttribute(buffDomain);
 			beAttackedObject.addBuff(buff);
 		}
-		
+
+		roleSkill.setLastUseTime(now);
+
 		return ReplyDomain.SUCCESS;
 	}
 
 	public void addBuff(Role role, int buffId) {
-		BuffDomain  buffDomain = getBuffDomain(buffId);
-		
+		BuffDomain buffDomain = getBuffDomain(buffId);
+
 		RoleBuff buff = dealBuffAttribute(buffDomain);
 		role.addBuff(buff);
 	}
-	
+
 	private RoleBuff dealBuffAttribute(BuffDomain buffDomain) {
 		Map<Integer, Integer> map = buffDomain.getAttributeEffect();
 		long now = System.currentTimeMillis();

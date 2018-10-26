@@ -18,6 +18,7 @@ public class ReplyDomain {
 	public static final ReplyDomain HAS_DEAD = new ReplyDomain(ResultCode.HAS_DEAD);
 	public static final ReplyDomain MP_NOT_ENOUGH = new ReplyDomain(ResultCode.MP_NOT_ENOUGH);
 	public static final ReplyDomain BONS_NOT_EXIT = new ReplyDomain(ResultCode.BONS_NOT_EXIT);
+	public static final ReplyDomain CAN_NOT_BATTLE = new ReplyDomain(ResultCode.CAN_NOT_BATTLE);
 
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

@@ -52,6 +52,17 @@ public class SceneExtension {
 		replyDomain.setStringDomain("cmd", ATTACK_MONSTER);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
+	
+	@CmdService(cmd = ATTACK_ROLE)
+	public void attackRole(User user, CMDdomain cmdDomain) {
+		int skillId = cmdDomain.getIntParam("ski");
+		int otherUserId = cmdDomain.getIntParam("uid");
+		
+		ReplyDomain replyDomain = service.attackOtherRole(user, skillId, otherUserId);
+
+		replyDomain.setStringDomain("cmd", ATTACK_ROLE);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
 
 	@CmdService(cmd = GET_ROLE_KILL_MONSTER_BONUS_INFO)
 	public void getRoleKillMonsterBonusInfo(User user, CMDdomain cmdDomain) {
