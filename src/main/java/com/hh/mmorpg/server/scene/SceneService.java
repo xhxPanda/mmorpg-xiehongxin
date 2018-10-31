@@ -1,17 +1,21 @@
 package com.hh.mmorpg.server.scene;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.Monster;
 import com.hh.mmorpg.domain.MonsterBeKillBonus;
+import com.hh.mmorpg.domain.MonsterDomain;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.Scene;
+import com.hh.mmorpg.domain.SceneDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
@@ -32,20 +36,34 @@ public class SceneService {
 
 	public static final SceneService INSTANCE = new SceneService();
 
+	private Map<Integer, SceneDomain> sceneDomainMap;
+	private Map<Integer, MonsterDomain> monsterDomainmap;
+
 	private Map<Integer, Scene> sceneMap;
 	private ConcurrentHashMap<Integer, Integer> sceneUserMap;
 
-	// 错误码
-	private static final int CAN_NOT_ENTER = 4;
+	private AtomicInteger copyIncrease;
 
 	private SceneService() {
 		sceneUserMap = new ConcurrentHashMap<Integer, Integer>();
-		sceneMap = SenceXMLResolution.INSTANCE.resolution();
+		sceneDomainMap = SenceXMLResolution.INSTANCE.resolution();
+
+		monsterDomainmap = SenceXMLResolution.INSTANCE.resolutionMonster();
+		this.copyIncrease = new AtomicInteger(0);
+
+		// 生成固定的场景
+		sceneMap = new HashMap<>();
+		for (SceneDomain domain : sceneDomainMap.values()) {
+			if (!domain.isCopy()) {
+				int id = copyIncrease.incrementAndGet();
+				sceneMap.put(id, new Scene(domain, id));
+			}
+		}
 
 		EventHandlerManager.INSATNCE.register(this);
 	}
 
-	public ReplyDomain userJoinScene(User user, int sceneId) {
+	public ReplyDomain userJoinScene(User user, int sceneTypeId) {
 		int userId = user.getUserId();
 
 		SceneUserCache sceneUserCache = null;
@@ -53,12 +71,12 @@ public class SceneService {
 		Integer oldSceneId = sceneUserMap.get(userId);
 
 		if (oldSceneId != null) {
-			if (oldSceneId == sceneId) {
+			if (oldSceneId == sceneTypeId) {
 				return ReplyDomain.SUCCESS;
 			}
 			Scene scene = sceneMap.get(oldSceneId);
-			if (!scene.isCanEnter(sceneId)) {
-				return new ReplyDomain(CAN_NOT_ENTER);
+			if (!scene.isCanEnter(sceneTypeId)) {
+				return new ReplyDomain(ResultCode.CAN_NOT_ENTER);
 			}
 			sceneUserCache = scene.userLeaveScene(user);
 		} else {
@@ -68,13 +86,28 @@ public class SceneService {
 		}
 
 		// 进入新场景
-		Scene newScene = sceneMap.get(sceneId);
+		int sceneId = sceneTypeId;
+		Scene newScene = sceneMap.get(sceneTypeId);
+
+		// 判断是否进入副本地图,如果是进入副本地图就要新建一个场景对象放在缓存中
+		if (newScene == null) {
+			SceneDomain sceneDomain = sceneDomainMap.get(sceneTypeId);
+			if (sceneDomain != null) {
+				sceneId = copyIncrease.incrementAndGet();
+				Scene scene = new Scene(sceneDomain, sceneId);
+
+				sceneMap.put(sceneId, scene);
+			}
+		}
 
 		if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
 			sceneUserMap.put(userId, sceneId);
 		}
 
-		return ReplyDomain.SUCCESS;
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		replyDomain.setIntDomain("sid", sceneId);
+
+		return replyDomain;
 	}
 
 	public ReplyDomain getSeceneUser(User user) {
@@ -133,10 +166,10 @@ public class SceneService {
 		}
 
 		ReplyDomain replyDomain = SkillService.INSTANCE.dealSkillEffect(roleSkill, role, monster, now);
-		if(!replyDomain.isSuccess()) {
+		if (!replyDomain.isSuccess()) {
 			return ReplyDomain.FAILE;
 		}
-		
+
 		ReplyDomain notifyReplyDomain = new ReplyDomain();
 		notifyReplyDomain.setStringDomain("m", monster.toString());
 		notifyReplyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BE_ATTACK);
@@ -173,7 +206,7 @@ public class SceneService {
 		}
 		long now = System.currentTimeMillis();
 		ReplyDomain replyDomain = SkillService.INSTANCE.dealSkillEffect(roleSkill, role, otherRole, now);
-		if(!replyDomain.isSuccess()) {
+		if (!replyDomain.isSuccess()) {
 			return ReplyDomain.FAILE;
 		}
 		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
@@ -231,6 +264,27 @@ public class SceneService {
 			return ReplyDomain.FAILE;
 		}
 
+		return ReplyDomain.SUCCESS;
+	}
+
+	public ReplyDomain putMonsterIntoScene(int userId, int MonsterId) {
+
+		Integer sceneId = sceneUserMap.get(userId);
+		if (sceneId == null) {
+			return ReplyDomain.FAILE;
+		}
+
+		Scene scene = sceneMap.get(sceneId);
+		if (scene == null) {
+			return ReplyDomain.FAILE;
+		}
+
+		MonsterDomain monsterDomain = monsterDomainmap.get(MonsterId);
+
+		int uniqueId = IncrementManager.INSTANCE.increase("monster");
+		Monster monster = new Monster(uniqueId, scene.getId(), monsterDomain);
+
+		scene.putMonster(monster);
 		return ReplyDomain.SUCCESS;
 	}
 

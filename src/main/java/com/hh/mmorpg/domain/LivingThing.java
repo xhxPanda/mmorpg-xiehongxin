@@ -144,7 +144,9 @@ public abstract class LivingThing {
 	}
 
 	public void resurrection() {
-		attributeMap.get(4);
+		Attribute attribute = attributeMap.get(3);
+		
+		attribute.changeValue(attribute.getMax());
 	}
 
 	public void resoreAttribute(int key, int value, boolean isBuff) {

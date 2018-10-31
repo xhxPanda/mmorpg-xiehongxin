@@ -2,9 +2,10 @@ package com.hh.mmorpg.server.masterial.handler;
 
 import com.hh.mmorpg.domain.Material;
 import com.hh.mmorpg.domain.Role;
+import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.result.ReplyDomain;
 
-public abstract class AbstractMaterialHandler {
+public abstract class AbstractMaterialHandler<T extends Material> {
 
 	public abstract ReplyDomain gainMaterial(Role role, String[] material);
 
@@ -13,7 +14,7 @@ public abstract class AbstractMaterialHandler {
 	public ReplyDomain checkDecMaterial(Role role, String[] materialStr) {
 		int id = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
-		
+
 		if (!role.isContainMaterial(id)) {
 			return ReplyDomain.NOT_ENOUGH;
 		}
@@ -23,5 +24,7 @@ public abstract class AbstractMaterialHandler {
 		}
 		return ReplyDomain.SUCCESS;
 	}
+
+	public abstract void persistence(T material);
 
 }

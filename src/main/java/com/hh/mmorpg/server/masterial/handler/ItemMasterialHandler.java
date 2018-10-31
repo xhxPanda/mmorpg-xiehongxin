@@ -9,7 +9,7 @@ import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.ItemXmlResolutionManager;
 
-public class ItemMasterialHandler extends AbstractMaterialHandler {
+public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 
 	private Map<Integer, ItemDomain> itemDomainMap;
 
@@ -52,7 +52,13 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 		MaterialDao.INSTANCE.updateRoleItem(material);
 		role.decMaterial(id, needNum);
 
-		return null;
+		return ReplyDomain.SUCCESS;
+	}
+
+	@Override
+	public void persistence(UserItem material) {
+		// TODO Auto-generated method stub
+		MaterialDao.INSTANCE.updateRoleItem(material);
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.hh.mmorpg.domain;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.hh.mmorpg.event.EventDealData;
@@ -17,12 +16,14 @@ public class Monster extends LivingThing {
 
 	private Map<String, Integer> killFallItemMap;
 
-	public Monster(int id, int uniqueId, String name, int freshTime, int sceneId) {
-		super(id, uniqueId);
-		this.name = name;
-		this.freshTime = freshTime;
+	public Monster(int uniqueId, int sceneId, MonsterDomain domain) {
+		super(domain.getId(), uniqueId);
+		this.name = domain.getName();
+		this.freshTime = domain.getFreshTime();
 		this.sceneId = sceneId;
-		this.killFallItemMap = new HashMap<>();
+		this.killFallItemMap = domain.getKillFallItemMap();
+		setAttributeMap(domain.getAttributeMap());
+		setSkillMap(domain.getRoleSkillMap());
 	}
 
 	public int getFreshTime() {
@@ -53,6 +54,10 @@ public class Monster extends LivingThing {
 
 		MonsterDeadData data = new MonsterDeadData(getId(), attackRoleId, getSceneId());
 		EventHandlerManager.INSATNCE.methodInvoke(EventType.MONSTER_DEAD, new EventDealData<MonsterDeadData>(data));
+	}
+
+	public void setSceneId(int sceneId) {
+		this.sceneId = sceneId;
 	}
 
 	public int getSceneId() {

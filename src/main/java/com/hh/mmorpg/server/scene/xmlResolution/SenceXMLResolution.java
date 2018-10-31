@@ -10,18 +10,17 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.hh.mmorpg.Increment.IncrementManager;
-import com.hh.mmorpg.domain.Attribute;
 import com.hh.mmorpg.domain.Monster;
+import com.hh.mmorpg.domain.MonsterDomain;
 import com.hh.mmorpg.domain.NpcRole;
-import com.hh.mmorpg.domain.RoleSkill;
-import com.hh.mmorpg.domain.Scene;
+import com.hh.mmorpg.domain.SceneDomain;
 
 public class SenceXMLResolution {
 
 	public static final SenceXMLResolution INSTANCE = new SenceXMLResolution();
 
 	@SuppressWarnings("unchecked")
-	public Map<Integer, Scene> resolution() {
+	public Map<Integer, SceneDomain> resolution() {
 		Document document = null;
 		SAXReader saxReader = new SAXReader();
 		try {
@@ -32,7 +31,7 @@ public class SenceXMLResolution {
 			e.printStackTrace();
 		}
 
-		Map<Integer, Scene> map = new HashMap<>();
+		Map<Integer, SceneDomain> map = new HashMap<>();
 
 		Element rootElm = document.getRootElement();
 		List<Element> sences = rootElm.elements("scene");
@@ -40,9 +39,10 @@ public class SenceXMLResolution {
 			String name = element.attributeValue("name");
 			int id = Integer.parseInt(element.attributeValue("id"));
 			String neighborScenes = element.attributeValue("neighborScenes");
-			boolean isCanBattle = Boolean.parseBoolean(element.attributeValue("isCanBattle"));
-			
-			Scene scene = new Scene(id, name, neighborScenes, isCanBattle);
+			boolean canBattle = Boolean.parseBoolean(element.attributeValue("isCanBattle"));
+			boolean canCopy = Boolean.parseBoolean(element.attributeValue("canCopy"));
+
+			SceneDomain scene = new SceneDomain(id, name, neighborScenes, canBattle, canCopy);
 			map.put(scene.getId(), scene);
 
 			// 生成npc
@@ -58,55 +58,64 @@ public class SenceXMLResolution {
 			}
 
 			// 生成怪物
-			Map<Integer, Monster> monsterMap = new HashMap<>();
-			Element monsterEle = element.element("monsters");
-			List<Element> monsters = monsterEle.elements("monster");
-			for (Element monsterchlEle : monsters) {
-				String monsterName = monsterchlEle.attributeValue("name");
-				int monsterId = Integer.parseInt(monsterchlEle.attributeValue("id"));
-				int freshTime = Integer.parseInt(monsterchlEle.attributeValue("freshTime"));
-				int count = Integer.parseInt(monsterchlEle.attributeValue("count"));
-				String attributeStr = monsterchlEle.attributeValue("attribute");
-				String skillsStr = monsterchlEle.attributeValue("skills");
+			Map<Integer, MonsterDomain> monsterDomainMap = resolutionMonster();
+			Map<Integer, Map<Integer, Monster>> monsterSetMap = new HashMap<>();
 
-				for (int i = 0; i < count; i++) {
+			Element monstersEle = element.element("monsters");
+			String monsterStr[] = monstersEle.attributeValue("monster").split("$");
+
+			for (String monsterTeam : monsterStr) {
+				int teamId = 0;
+				String monsterIds[] = monsterTeam.split(",");
+
+				Map<Integer, Monster> monsterMap = new HashMap<>();
+				for (String monsterId : monsterIds) {
+					MonsterDomain monsterDomain = monsterDomainMap.get(Integer.parseInt(monsterId));
+
 					int uniqueId = IncrementManager.INSTANCE.increase("monster");
-					Monster monster = new Monster(monsterId, uniqueId, monsterName, freshTime, id);
-
-					Map<Integer, Attribute> attributeMap = new HashMap<>();
-					for (String strList : attributeStr.split(",")) {
-						String str[] = strList.split(":");
-						Attribute attribute = new Attribute(Integer.parseInt(str[0]), Integer.parseInt(str[2]), str[1]);
-						attributeMap.put(attribute.getId(), attribute);
-					}
-
-					Map<Integer, RoleSkill> roleSkillMap = new HashMap<>();
-					for (String strList : skillsStr.split(",")) {
-						int skillId = Integer.parseInt(strList);
-						roleSkillMap.put(skillId, new RoleSkill(skillId));
-					}
-					monster.setAttributeMap(attributeMap);
-					monster.setSkillMap(roleSkillMap);
+					Monster monster = new Monster(uniqueId, id, monsterDomain);
 					monsterMap.put(monster.getUniqueId(), monster);
-
-					// 解析掉落物品的概率
-					Map<String, Integer> killFallItemMap = new HashMap<>();
-					Element killAndFallEle = element.element("killAndFall");
-
-					String fallStr = killAndFallEle.attributeValue("killAndFall");
-					String fallStrList[] = fallStr.split(",");
-
-					for (String s : fallStrList) {
-						String item = s.split("$")[0];
-						int possibility = Integer.parseInt(s.split("$")[1]);
-						killFallItemMap.put(item, possibility);
-					}
-					monster.setKillFallItemMap(killFallItemMap);
 				}
+				monsterSetMap.put(teamId, monsterMap);
+				teamId++;
 			}
-			scene.setMonsterMap(monsterMap);
+			
+			scene.setMonsterSetMap(monsterSetMap);
 			scene.setNpcRoleMap(npcMap);
 		}
+
+		return map;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<Integer, MonsterDomain> resolutionMonster() {
+		Document document = null;
+		SAXReader saxReader = new SAXReader();
+		try {
+			document = saxReader.read("..\\mmorpg\\docs\\xml\\monster.xml");
+
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Map<Integer, MonsterDomain> map = new HashMap<>();
+		Element rootElm = document.getRootElement();
+		List<Element> monsterEle = rootElm.elements("monster");
+
+		for (Element element : monsterEle) {
+			String name = element.attributeValue("name");
+			int id = Integer.parseInt(element.attributeValue("id"));
+			int freshTime = Integer.parseInt(element.attributeValue("freshTime"));
+			String attributeStr = element.attributeValue("attribute");
+			String skillsStr = element.attributeValue("skills");
+			String killFallItemStr = element.attributeValue("fallPossibility");
+			MonsterDomain monsterDomain = new MonsterDomain(id, name, freshTime, attributeStr, killFallItemStr,
+					skillsStr);
+
+			map.put(id, monsterDomain);
+		}
+
 		return map;
 	}
 

@@ -1,50 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenes>
-	<scene id="1" name="遗忘之地" neighborScenes="2,3" isCanBattle = "true">
+	<scene id="1" name="遗忘之地" neighborScenes="2,3" isCanBattle="false"
+		isCopy="false">
 		<npcs>
 			<npc id="1" name="古尔丹"></npc>
 			<npc id="2" name="血煞女王"></npc>
 		</npcs>
-		<monsters>
-			<monster id="1" name="遗忘者的士兵" count="7" freshTime="20"
-				attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1">
-				<killAndFall fallPossibility="2:1:1$30,2:2:1$70"></killAndFall>
-			</monster>
-			<monster id="2" name="遗忘者的将军" count="7" freshTime="20"
-				attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1"></monster>
-			<killAndFall fallPossibility="2:1:1$30,2:2:1$70"></killAndFall>
-		</monsters>
+		<monsters monster="4,3" />
 	</scene>
-	<scene id="2" name="龙穴" neighborScenes="1" isCanBattle = "false">
+	<scene id="2" name="龙穴" neighborScenes="1" isCanBattle="true"
+		isCopy="false">
 		<npcs>
 			<npc id="3" name="约翰"></npc>
 			<npc id="4" name="老将军"></npc>
 		</npcs>
-		<monsters>
-			<monster id="3" name="火龙" count="7" freshTime="20"
-				attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1">
-				<killAndFall fallPossibility="2:1:1$30,2:2:1$70"></killAndFall>
-			</monster>
-			<monster id="4" name="冰龙" count="7" freshTime="20"
-				attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1">
-				<killAndFall fallPossibility="2:1:1$30,2:2:1$70"></killAndFall>
-			</monster>
-		</monsters>
+		<monsters monster="4:10$3:7" />
 	</scene>
-	<scene id="2" name="峡谷" neighborScenes="1" isCanBattle = "false">
+	<scene id="2" name="峡谷" neighborScenes="1" isCanBattle="false"
+		isCopy="true">
 		<npcs>
 			<npc id="5" name="峡谷帝君"></npc>
 			<npc id="6" name="帝君部下"></npc>
 		</npcs>
-		<monsters>
-			<monster id="5" name=" 峡谷亡灵 " count="7" freshTime="20"
-				attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1">
-				<killAndFall fallPossibility="2:1:1$30,2:2:1$70"></killAndFall>
-			</monster>
-			<monster id="6" name="峡谷战士" count="7" freshTime="20"
-				attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1">
-				<killAndFall fallPossibility="2:1:1$30,2:2:1$70"></killAndFall>
-			</monster>
-		</monsters>
+		<monsters monster="5,6" />
 	</scene>
 </scenes>

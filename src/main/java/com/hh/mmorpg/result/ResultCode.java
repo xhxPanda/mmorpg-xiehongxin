@@ -12,5 +12,7 @@ public class ResultCode {
 	public static final int MP_NOT_ENOUGH = -7;
 	public static final int BONS_NOT_EXIT = -8;
 	public static final int CAN_NOT_BATTLE = -9;
+	public static final int COPY_NUM_TOO_MUCH = -10;
+	public static final int CAN_NOT_ENTER = -11;
 
 }

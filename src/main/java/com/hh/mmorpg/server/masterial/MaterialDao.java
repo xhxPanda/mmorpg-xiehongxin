@@ -1,5 +1,8 @@
 package com.hh.mmorpg.server.masterial;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.domain.UserTreasure;
@@ -14,6 +17,37 @@ public class MaterialDao {
 	private static final String UPDATE_EQUIMENT = "INSERT INTO roleequiment0 (roleId, equimentId, name, gainTime, effectAttribute, maxDurability, durability) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	private static final String DELETE_EQUIMENT = "DELETE FROM roleequiment0 WHERE roleId = ? AND equimentId = ?";
+
+	private static final String SELECT_ROLE_CLOTHES = "SELECT * FROM roleclothes0 WHERE roleId = ?";
+
+	private static final String SELECT_ROLE_ITEM = "SELECT * FROM roleItem0 WHERE roleId = ?";
+
+	@SuppressWarnings("unchecked")
+	public List<UserItem> getAllItem(int roleId) {
+		List<UserItem> list = null;
+		try {
+			list = (List<UserItem>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_ITEM,
+					new Object[] { roleId }, UserItem.BUILDER);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<UserEquipment> getAllUserClothes(int roleId) {
+		List<UserEquipment> list = null;
+		try {
+			list = (List<UserEquipment>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_CLOTHES,
+					new Object[] { roleId }, UserEquipment.BUILDER);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return list;
+	}
 
 	public int updateRoleTreasure(UserTreasure treasure) {
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_TREASURE, new Object[] { treasure.getRoleId(),

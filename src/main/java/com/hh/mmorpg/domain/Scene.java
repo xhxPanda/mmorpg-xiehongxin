@@ -9,41 +9,60 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.scene.SceneUserCache;
 import com.hh.mmorpg.service.user.UserService;
 
+/**
+ * 
+ * @author xhx 场景实体
+ * 
+ */
 public class Scene {
 
 	private int id;
 	private String name;
 	private List<Integer> neighborSceneIds;
 	private boolean isCanBattle;
+	private boolean isCopy;
+	private long buildTime; // 生成场景的时间
+	private Map<Integer, Map<Integer, Monster>> monsterSetMap;// monster初始配置的怪物生成序列
 
-	private Map<Integer, Map<Integer, MonsterBeKillBonus>> monsterBeKillBonusmap;
+	private Map<Integer, Map<Integer, MonsterBeKillBonus>> monsterBeKillBonusmap; // 每个角色的掉落的monster道具，3秒后会被清空
 
-	private static ConcurrentHashMap<Integer, SceneUserCache> userMap = new ConcurrentHashMap<>();
-
-	private Map<Integer, NpcRole> npcRoleMap;
+	private ConcurrentHashMap<Integer, SceneUserCache> userMap = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<Integer, Monster> monsterMap;
+	private Map<Integer, NpcRole> npcRoleMap;
 
 	private ScheduledExecutorService executorService;
 
-	public Scene(int id, String name, String neighborScenestrs, boolean isCanBattle) {
-		this.id = id;
-		this.name = name;
-		this.isCanBattle = isCanBattle;
-		this.neighborSceneIds = new ArrayList<Integer>();
+	private AtomicInteger monsterRound;
 
-		String[] strs = neighborScenestrs.split(",");
-		for (String s : strs) {
-			neighborSceneIds.add(Integer.parseInt(s));
-		}
+	public Scene(SceneDomain domain, int id) {
+		this.id = id;
+		this.name = domain.getName();
+		this.isCanBattle = domain.isCanBattle();
+		this.neighborSceneIds = domain.getNeighborSceneIds();
+		this.isCopy = domain.isCopy();
+		this.monsterSetMap = domain.getMonsterSetMap();
+
+		this.buildTime = System.currentTimeMillis();
+
+		// 当前怪物的轮数
+		this.monsterRound = new AtomicInteger(0);
+
+		// 生成第一批怪物
 		this.monsterMap = new ConcurrentHashMap<>();
+		this.monsterMap.putAll(monsterSetMap.get(monsterRound.get()));
+
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		this.monsterBeKillBonusmap = new HashMap<>();
+
+		this.monsterMap = new ConcurrentHashMap<>();
+
 		start();
 	}
 
@@ -98,16 +117,8 @@ public class Scene {
 		return npcRoleMap;
 	}
 
-	public ConcurrentHashMap<Integer, Monster> getMonsterMap() {
-		return monsterMap;
-	}
-
 	public void setNpcRoleMap(Map<Integer, NpcRole> npcRoleMap) {
 		this.npcRoleMap = npcRoleMap;
-	}
-
-	public void setMonsterMap(Map<Integer, Monster> monsterMap) {
-		this.monsterMap.putAll(monsterMap);
 	}
 
 	public int getId() {
@@ -116,6 +127,14 @@ public class Scene {
 
 	public String getName() {
 		return name;
+	}
+
+	public boolean isCopy() {
+		return isCopy;
+	}
+
+	public long getBuildTime() {
+		return buildTime;
 	}
 
 	public List<Integer> getNeighborSceneIds() {
@@ -133,6 +152,10 @@ public class Scene {
 	public boolean isCanBattle() {
 		return isCanBattle;
 	}
+	
+	public void putMonster(Monster monster) {
+		monsterMap.put(monster.getUniqueId(), monster);
+	}
 
 	public void addRoleKillMonsterBonus(int roleId, MonsterBeKillBonus beKillBonus) {
 		monsterBeKillBonusmap.get(roleId).put(beKillBonus.getId(), beKillBonus);
@@ -141,9 +164,13 @@ public class Scene {
 	public MonsterBeKillBonus getRoleKillMonsterBonus(int roleId, int bonusId) {
 		return monsterBeKillBonusmap.get(roleId).get(bonusId);
 	}
-	
+
 	public List<MonsterBeKillBonus> getRoleKillMonsterBonusInfo(int roleId) {
 		return new ArrayList<MonsterBeKillBonus>(monsterBeKillBonusmap.get(roleId).values());
+	}
+
+	public ConcurrentHashMap<Integer, Monster> getMonsterMap() {
+		return monsterMap;
 	}
 
 	public void start() {
@@ -153,37 +180,82 @@ public class Scene {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				for (Monster monster : monsterMap.values()) {
-					if (monster.isDead()) {
-						long now = System.currentTimeMillis();
-						if (now - monster.getBeKilledTime() < monster.getFreshTime()) {
-							continue;
-						} else {
-
-						}
-					} else {
-						monster.takeEffect();
-					}
-
-				}
-
-				for (SceneUserCache cache : userMap.values()) {
-					cache.getRole().takeEffect();
-
-					// 加红蓝
-					cache.getRole().effectAttribute(3, 2);
-					cache.getRole().effectAttribute(4, 2);
-
-					ReplyDomain domain = new ReplyDomain();
-					domain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_ATTRIBUATE_CHANGE);
-					notifyAllUser(domain);
-
-				}
+				sceneHeartBeat();
 			}
 		}, 0, 1, TimeUnit.SECONDS);
 	}
 
+	public void sceneHeartBeat() {
+		// 怪物场景心跳判断怪物是否需要复活,或者需要受到buff的影响
+		for (Monster monster : monsterMap.values()) {
+			if (monster.isDead()) {
+				long now = System.currentTimeMillis();
+				if (monster.getFreshTime() == -1 || (now - monster.getBeKilledTime() < monster.getFreshTime())) {
+					continue;
+				} else {
+					monster.resurrection();
+				}
+			} else {
+				monster.takeEffect();
+			}
+		}
+		
+		// 副本刷新怪物
+		if (isAllDead()) {
+			if (isCopy) {
+				reflashMonster();
+			}
+		}
+
+		for (SceneUserCache cache : userMap.values()) {
+			cache.getRole().takeEffect();
+
+			// 加红蓝
+			cache.getRole().effectAttribute(3, 2);
+			cache.getRole().effectAttribute(4, 2);
+
+			ReplyDomain domain = new ReplyDomain();
+			domain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_ATTRIBUATE_CHANGE);
+			notifyAllUser(domain);
+		}
+	}
+
+	public boolean isAllDead() {
+		for (SceneUserCache cache : userMap.values()) {
+			if (!cache.getRole().isDead()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isAllMonsterDead() {
+		for (Monster monster : monsterMap.values()) {
+			if (!monster.isDead()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean reflashMonster() {
+		if (isAllMonsterDead()) {
+			int monsterRoundId = monsterRound.get();
+			for (Monster monster : monsterSetMap.get(monsterRoundId).values()) {
+				monsterMap.remove(monster.getUniqueId());
+			}
+			int roundId = monsterRound.incrementAndGet();
+			if (monsterSetMap.size() <= roundId) {
+				return false;
+			}
+			monsterMap.putAll(monsterSetMap.get(roundId));
+		}
+		return true;
+	}
+
 	public void shutdown() {
+		monsterMap.clear();
+		userMap.clear();
 		executorService.shutdown();
 	}
 

@@ -24,6 +24,7 @@ public class SceneExtension {
 	public static final String NOTIFT_USER_ATTRIBUATE_CHANGE = "2_102";
 	public static final String NOTIFY_MONSTER_BE_ATTACK = "2_103";
 	public static final String NOTIFY_ROLE_MONSTER_BONUS_FALL = "2_104";
+	public static final String NOTIFY_MONSTER_RESURRECTION = "2_105";
 
 	@CmdService(cmd = JOIN_SCENE)
 	public void joinScene(User user, CMDdomain cmdDomain) {

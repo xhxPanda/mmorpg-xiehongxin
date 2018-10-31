@@ -24,8 +24,7 @@ import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
-import com.hh.mmorpg.server.clothes.RoleClothesDao;
-import com.hh.mmorpg.server.item.RoleItemDao;
+import com.hh.mmorpg.server.masterial.MaterialDao;
 
 public class RoleService {
 
@@ -129,8 +128,8 @@ public class RoleService {
 		role.setAttributeMap(roleDomain.getAttributeMap());
 		role.setSkillMap(roleDomain.getRoleSkillMap());
 
-		List<UserEquipment> userClothesList = RoleClothesDao.INSTANCE.getAllUserClothes(roleId);
-		List<UserItem> userItemList = RoleItemDao.INSTANCE.getAllItem(roleId);
+		List<UserEquipment> userClothesList = MaterialDao.INSTANCE.getAllUserClothes(roleId);
+		List<UserItem> userItemList = MaterialDao.INSTANCE.getAllItem(roleId);
 
 		for (UserEquipment userClothes : userClothesList) {
 			if (userClothes.isInUsed()) {

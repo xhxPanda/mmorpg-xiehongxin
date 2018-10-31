@@ -9,7 +9,7 @@ import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.ClothesXmlResolutionManager;
 
-public class EquipmentMaterialHandle extends AbstractMaterialHandler {
+public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipment> {
 
 	private Map<Integer, ClothesDomain> clothesDomainMap;
 
@@ -34,7 +34,6 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 
 		role.addMaterial(userEquipment);
 
-		MaterialDao.INSTANCE.updateRoleEquiment(userEquipment);
 		return ReplyDomain.SUCCESS;
 	}
 
@@ -44,8 +43,13 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 
 		int id = Integer.parseInt(materialStr[1]);
 		role.decMaterial(id, 1);
-		MaterialDao.INSTANCE.deleteRoleEquiment(role.getId(), id);
 		return ReplyDomain.SUCCESS;
+	}
+
+	@Override
+	public void persistence(UserEquipment material) {
+		// TODO Auto-generated method stub
+		MaterialDao.INSTANCE.updateRoleEquiment(material);
 	}
 
 }

@@ -28,6 +28,10 @@ public class Attribute {
 		return name;
 	}
 
+	public int getMax() {
+		return max;
+	}
+
 	public int changeValue(int decValue) {
 		int newValue = value.addAndGet(decValue);
 		if (newValue <= 0) {
@@ -40,5 +44,4 @@ public class Attribute {
 
 		return value.get();
 	}
-
 }

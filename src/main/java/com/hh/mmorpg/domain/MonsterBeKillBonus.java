@@ -2,7 +2,7 @@ package com.hh.mmorpg.domain;
 
 /**
  * 
- * @author xhx 怪物死亡后的掉落实体
+ * @author xhx 怪物死亡后的掉落物品实体
  *
  */
 
