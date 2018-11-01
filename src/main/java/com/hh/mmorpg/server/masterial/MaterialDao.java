@@ -19,9 +19,23 @@ public class MaterialDao {
 	private static final String DELETE_EQUIMENT = "DELETE FROM roleequiment0 WHERE roleId = ? AND equimentId = ?";
 
 	private static final String SELECT_ROLE_CLOTHES = "SELECT * FROM roleEquiment0 WHERE roleId = ?";
-
 	private static final String SELECT_ROLE_ITEM = "SELECT * FROM roleItem0 WHERE roleId = ?";
+	private static final String SELECT_ROLE_TREASURE = "SELECT * FROM roletreasure0 WHERE roleId = ?";
 
+
+	@SuppressWarnings("unchecked")
+	public List<UserTreasure> getAllTreasure(int roleId) {
+		List<UserTreasure> list = null;
+		try {
+			list = (List<UserTreasure>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_TREASURE,
+					new Object[] { roleId }, UserTreasure.BUILDER);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<UserItem> getAllItem(int roleId) {
 		List<UserItem> list = null;

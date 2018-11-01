@@ -13,8 +13,7 @@ import com.hh.mmorpg.server.scene.SceneService;
 
 /**
  * 
- * @author xhx
-  *  用户角色
+ * @author xhx 用户角色
  *
  */
 
@@ -25,8 +24,8 @@ public class Role extends LivingThing {
 	private String name;
 	private int roleId;
 
-	private Map<Integer, Material> materialMap;
-	
+	private Map<Integer, Map<Integer, Material>> materialMap;
+
 	// 装备栏
 	private Map<Integer, UserEquipment> equipmentMap;
 
@@ -86,20 +85,22 @@ public class Role extends LivingThing {
 	}
 
 	public void addMaterial(Material material) {
-		if (materialMap.get(material.getId()) == null) {
-			materialMap.put(material.getId(), material);
+		Map<Integer, Material> materials = materialMap.get(material.getType());
+		if (materials == null) {
+			materials = new HashMap<>();
+			materialMap.put(material.getType(), materials);
+			
+		} 
+		Material m = materials.get(material.getId());
+		if(m != null) {
+			materials.get(material.getId()).changeQuantity(material.getQuantity());
 		} else {
-			materialMap.get(material.getId()).changeQuantity(material.getQuantity());
+			materials.put(material.getId(), material);
 		}
 	}
 
-	public Material findMaterial(int materialId) {
-		// TODO Auto-generated method stub
-		return materialMap.get(materialId);
-	}
-
-	public boolean isContainMaterial(int materialId) {
-		return materialMap.containsKey(materialId);
+	public boolean isContainMaterial(int materialType, int materialId) {
+		return materialMap.get(materialType).containsKey(materialId);
 	}
 
 	public void setEquipment(UserEquipment clothes) {
@@ -112,7 +113,7 @@ public class Role extends LivingThing {
 				effectAttribute(entry.getKey(), -entry.getValue());
 			}
 			userClothes.setInUsed(false);
-			materialMap.put(userClothes.getId(), userClothes);
+			materialMap.get(MaterialType.EQUIPMENT_TYPE_ID).put(userClothes.getId(), userClothes);
 		}
 
 		// 装备服装
@@ -136,8 +137,8 @@ public class Role extends LivingThing {
 		this.equipmentMap = equipmentMap;
 	}
 
-	public void decMaterial(int id, int quantity) {
-		Material material = materialMap.get(id);
+	public void decMaterial(int materialType, int id, int quantity) {
+		Material material = materialMap.get(materialType).get(id);
 		if (material.getQuantity() == 1) {
 			materialMap.remove(id);
 		} else {
@@ -145,8 +146,8 @@ public class Role extends LivingThing {
 		}
 	}
 
-	public Material getMaterial(int materialId) {
-		return materialMap.get(materialId);
+	public Material getMaterial(int materialType, int materialId) {
+		return materialMap.get(materialType).get(materialId);
 	}
 
 	@Override

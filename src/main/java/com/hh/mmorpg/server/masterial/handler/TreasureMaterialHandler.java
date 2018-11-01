@@ -1,5 +1,6 @@
 package com.hh.mmorpg.server.masterial.handler;
 
+import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.domain.UserTreasureType;
@@ -15,9 +16,9 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler<UserTreasur
 		int num = Integer.parseInt(materialStr[2]);
 		UserTreasureType userTreasureType = UserTreasureType.getUserTreasureType(materialId);
 		UserTreasure material = new UserTreasure(role.getId(), userTreasureType.getName(), materialId, num);
-		
+
 		role.addMaterial(material);
-		
+
 		return ReplyDomain.SUCCESS;
 	}
 
@@ -27,16 +28,16 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler<UserTreasur
 		int materialId = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
 
-		if (!role.isContainMaterial(materialId)) {
+		if (!role.isContainMaterial(Integer.parseInt(materialStr[0]), materialId)) {
 			return ReplyDomain.FAILE;
 		}
 
-		UserTreasure material = (UserTreasure) role.findMaterial(materialId);
+		UserTreasure material = (UserTreasure) role.getMaterial(MaterialType.TREASURE_TYPE_ID, materialId);
 
 		if (material == null || needNum > material.getQuantity()) {
 			return ReplyDomain.NOT_ENOUGH;
 		}
-		role.decMaterial(materialId, needNum);
+		role.decMaterial(MaterialType.TREASURE_TYPE_ID, materialId, needNum);
 
 		return ReplyDomain.SUCCESS;
 	}

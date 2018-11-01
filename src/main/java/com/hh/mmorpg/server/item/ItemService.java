@@ -2,6 +2,7 @@ package com.hh.mmorpg.server.item;
 
 import java.util.Map.Entry;
 
+import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserItem;
@@ -21,8 +22,9 @@ public class ItemService {
 		int userId = user.getUserId();
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
-		UserItem userItem = (UserItem) role.getMaterial(Integer.parseInt(itemStr.substring(0, 1)));
-		if(userItem.isPartCD()) {
+		UserItem userItem = (UserItem) role.getMaterial(MaterialType.ITEM_TYPE_ID,
+				Integer.parseInt(itemStr.substring(0, 1)));
+		if (userItem.isPartCD()) {
 			return ReplyDomain.FAILE;
 		}
 

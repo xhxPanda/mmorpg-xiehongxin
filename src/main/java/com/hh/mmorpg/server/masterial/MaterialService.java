@@ -69,7 +69,7 @@ public class MaterialService {
 			}
 
 			replyDomain = handlerMap.get(type).gainMaterial(role, materialList);
-			if (replyDomain.isSuccess()) {
+			if (!replyDomain.isSuccess()) {
 				replyDomain.setStringDomain("worngMaterial", s);
 				return replyDomain;
 			}

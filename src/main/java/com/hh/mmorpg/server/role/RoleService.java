@@ -16,6 +16,7 @@ import com.hh.mmorpg.domain.RoleDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserItem;
+import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
@@ -67,7 +68,7 @@ public class RoleService {
 		int userId = user.getUserId();
 		Role oldRole = userRoleMap.get(userId);
 
-		// 使用了相同的角色，没什么变化
+		// 使用了相同的角色
 		if (oldRole != null && oldRole.getId() == roleId) {
 			return ReplyDomain.SUCCESS;
 		}
@@ -130,6 +131,7 @@ public class RoleService {
 
 		List<UserEquipment> userClothesList = MaterialDao.INSTANCE.getAllUserClothes(roleId);
 		List<UserItem> userItemList = MaterialDao.INSTANCE.getAllItem(roleId);
+		List<UserTreasure> userTreasureList = MaterialDao.INSTANCE.getAllTreasure(roleId);
 
 		for (UserEquipment userClothes : userClothesList) {
 			if (userClothes.isInUsed()) {
@@ -141,6 +143,10 @@ public class RoleService {
 
 		for (UserItem userItem : userItemList) {
 			role.addMaterial(userItem);
+		}
+		
+		for(UserTreasure userTreasure : userTreasureList) {
+			role.addMaterial(userTreasure);
 		}
 	}
 

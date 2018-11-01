@@ -3,6 +3,7 @@ package com.hh.mmorpg.server.masterial.handler;
 import java.util.Map;
 
 import com.hh.mmorpg.domain.ItemDomain;
+import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -40,17 +41,17 @@ public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 		int id = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
 
-		if (!role.isContainMaterial(id)) {
+		if (!role.isContainMaterial(Integer.parseInt(materialStr[0]), id)) {
 			return ReplyDomain.FAILE;
 		}
 
-		UserItem material = (UserItem) role.findMaterial(id);
+		UserItem material = (UserItem) role.getMaterial(MaterialType.ITEM_TYPE_ID, id);
 
 		if (material == null || needNum > material.getQuantity()) {
 			return ReplyDomain.NOT_ENOUGH;
 		}
 //		MaterialDao.INSTANCE.updateRoleItem(material);
-		role.decMaterial(id, needNum);
+		role.decMaterial(Integer.parseInt(materialStr[0]), id, needNum);
 
 		return ReplyDomain.SUCCESS;
 	}

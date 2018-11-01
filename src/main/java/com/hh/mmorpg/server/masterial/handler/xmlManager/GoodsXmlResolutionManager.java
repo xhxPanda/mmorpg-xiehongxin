@@ -29,7 +29,7 @@ public class GoodsXmlResolutionManager {
 
 		Map<Integer, Goods> map = new HashMap<>();
 		Element rootElm = document.getRootElement();
-		List<Element> goodsEles = rootElm.elements("item");
+		List<Element> goodsEles = rootElm.elements("goods");
 		for (Element element : goodsEles) {
 			int id = Integer.parseInt(element.attributeValue("id"));
 			String name = element.attributeValue("name");
@@ -40,5 +40,9 @@ public class GoodsXmlResolutionManager {
 			map.put(goodsDomain.getId(), goodsDomain);
 		}
 		return map;
+	}
+	
+	public static final void main(String args[]) {
+		GoodsXmlResolutionManager.INSTANCE.resolution();
 	}
 }

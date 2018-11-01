@@ -1,7 +1,8 @@
 package com.hh.mmorpg.domain;
 
 public enum UserTreasureType {
-	GOLD_COIN(1, "金币"), YUAN_BAO(2, "元宝");
+	GOLD_COIN(1, "金币"), 
+	YUAN_BAO(2, "元宝");
 
 	private int id;
 	private String name;

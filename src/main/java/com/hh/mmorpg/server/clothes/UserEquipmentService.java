@@ -1,5 +1,6 @@
 package com.hh.mmorpg.server.clothes;
 
+import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
@@ -15,7 +16,7 @@ public class UserEquipmentService {
 		
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 		
-		UserEquipment equipment = (UserEquipment) role.findMaterial(clothesId);
+		UserEquipment equipment = (UserEquipment) role.getMaterial(MaterialType.EQUIPMENT_TYPE_ID, clothesId);
 		if(equipment == null) {
 			return ReplyDomain.FAILE;
 		}

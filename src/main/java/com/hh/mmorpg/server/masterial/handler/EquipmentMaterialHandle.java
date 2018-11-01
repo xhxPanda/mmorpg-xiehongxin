@@ -23,7 +23,7 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipme
 
 		int id = Integer.parseInt(materialStr[1]);
 
-		if (role.isContainMaterial(id)) {
+		if (role.isContainMaterial(Integer.parseInt(materialStr[0]), id)) {
 			return ReplyDomain.REPEAT_CLOTHES;
 		}
 		EquimentDomain clothesDomain = equimentDomainMap.get(id);
@@ -42,7 +42,7 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipme
 		// TODO Auto-generated method stub
 
 		int id = Integer.parseInt(materialStr[1]);
-		role.decMaterial(id, 1);
+		role.decMaterial(Integer.parseInt(materialStr[0]), id, 1);
 		return ReplyDomain.SUCCESS;
 	}
 
