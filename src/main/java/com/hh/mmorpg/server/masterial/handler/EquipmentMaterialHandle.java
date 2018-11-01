@@ -2,19 +2,19 @@ package com.hh.mmorpg.server.masterial.handler;
 
 import java.util.Map;
 
-import com.hh.mmorpg.domain.ClothesDomain;
+import com.hh.mmorpg.domain.EquimentDomain;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.masterial.MaterialDao;
-import com.hh.mmorpg.server.masterial.handler.xmlManager.ClothesXmlResolutionManager;
+import com.hh.mmorpg.server.masterial.handler.xmlManager.EquimentXmlResolutionManager;
 
 public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipment> {
 
-	private Map<Integer, ClothesDomain> clothesDomainMap;
+	private Map<Integer, EquimentDomain> equimentDomainMap;
 
 	public EquipmentMaterialHandle() {
-		clothesDomainMap = ClothesXmlResolutionManager.INSTANCE.resolution();
+		equimentDomainMap = EquimentXmlResolutionManager.INSTANCE.resolution();
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipme
 		if (role.isContainMaterial(id)) {
 			return ReplyDomain.REPEAT_CLOTHES;
 		}
-		ClothesDomain clothesDomain = clothesDomainMap.get(id);
+		EquimentDomain clothesDomain = equimentDomainMap.get(id);
 
 		UserEquipment userEquipment = new UserEquipment(role.getId(), clothesDomain.getName(), id,
 				clothesDomain.getMaxDurability(), clothesDomain.getMaxDurability(), clothesDomain.getAttributes(),

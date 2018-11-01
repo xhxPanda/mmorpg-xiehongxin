@@ -24,13 +24,13 @@ public abstract class LivingThing {
 		this.skillMap = new HashMap<>();
 		this.attributeMap = new HashMap<>();
 		this.buffsMap = new ConcurrentHashMap<>();
-		this.buffsMap = new ConcurrentHashMap<>();
 		this.status = true;
 		this.beKilledTime = 0;
 	}
 
 	public void addBuff(RoleBuff buff) {
 		buffsMap.put(buff.getBuffId(), buff);
+		afterBuffAdd(buff);
 	}
 
 	public Attribute getAttribute(int id) {
@@ -134,10 +134,16 @@ public abstract class LivingThing {
 
 	public int effectAttribute(int key, int value) {
 		Attribute attribute = attributeMap.get(key);
-
+		
+		int oldValue = attribute.getValue();
+		
 		int newValue = attribute.changeValue(value);
 		if (isDead()) {
 			afterDead();
+		}
+		
+		if(oldValue != newValue) {
+			
 		}
 
 		return newValue;
@@ -155,5 +161,9 @@ public abstract class LivingThing {
 	}
 
 	public abstract void afterDead();
+	
+	public abstract void notifyAttributeChange(Attribute attribute);
+	
+	public abstract void afterBuffAdd(RoleBuff roleBuff);
 	
 }

@@ -1,5 +1,7 @@
 package com.hh.mmorpg.domain;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +20,13 @@ public class SceneDomain {
 	public SceneDomain(int id, String name, String neighborScenestrs, boolean canBattle, boolean copy) {
 		this.id = id;
 		this.name = name;
+		this.neighborSceneIds = new ArrayList<Integer>();
 		String[] strs = neighborScenestrs.split(",");
 		for (String s : strs) {
 			neighborSceneIds.add(Integer.parseInt(s));
 		}
+		
+		this.npcRoleMap = new HashMap<>();
 		this.canBattle = canBattle;
 		this.copy = copy;
 	}

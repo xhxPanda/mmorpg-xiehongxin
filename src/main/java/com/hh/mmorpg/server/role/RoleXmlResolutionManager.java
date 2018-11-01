@@ -41,5 +41,9 @@ public class RoleXmlResolutionManager {
 
 		return map;
 	}
+	
+//	public static final void main(String args[]) {
+//		RoleXmlResolutionManager.INSTANCE.resolution();
+//	}
 
 }

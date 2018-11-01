@@ -34,8 +34,8 @@ public class MonsterDomain {
 		this.killFallItemMap = new HashMap<>();
 		String fallStrList[] = killFallItemStr.split(",");
 		for (String s : fallStrList) {
-			String item = s.split("$")[0];
-			int possibility = Integer.parseInt(s.split("$")[1]);
+			String item = s.split("\\$")[0];
+			int possibility = Integer.parseInt(s.split("\\$")[1]);
 			this.killFallItemMap.put(item, possibility);
 		}
 

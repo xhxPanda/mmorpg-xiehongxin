@@ -1,6 +1,6 @@
 package com.hh.mmorpg.domain;
 
-public class ClothesDomain {
+public class EquimentDomain {
 
 	private int id;
 	private int clothesType;
@@ -8,7 +8,7 @@ public class ClothesDomain {
 	private String name;
 	private int maxDurability;
 
-	public ClothesDomain(int id, int clothesType, String attributes, String name, int maxDurability) {
+	public EquimentDomain(int id, int clothesType, String attributes, String name, int maxDurability) {
 		this.id = id;
 		this.clothesType = clothesType;
 		this.attributes = attributes;

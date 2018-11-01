@@ -9,14 +9,14 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.hh.mmorpg.domain.ClothesDomain;
+import com.hh.mmorpg.domain.EquimentDomain;
 
-public class ClothesXmlResolutionManager {
+public class EquimentXmlResolutionManager {
 
-	public static final ClothesXmlResolutionManager INSTANCE = new ClothesXmlResolutionManager();
+	public static final EquimentXmlResolutionManager INSTANCE = new EquimentXmlResolutionManager();
 
 	@SuppressWarnings("unchecked")
-	public Map<Integer, ClothesDomain> resolution() {
+	public Map<Integer, EquimentDomain> resolution() {
 		Document document = null;
 		SAXReader saxReader = new SAXReader();
 		try {
@@ -26,7 +26,7 @@ public class ClothesXmlResolutionManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Map<Integer, ClothesDomain> map = new HashMap<>();
+		Map<Integer, EquimentDomain> map = new HashMap<>();
 		Element rootElm = document.getRootElement();
 		List<Element> equipments = rootElm.elements("equipment");
 		for (Element element : equipments) {
@@ -37,11 +37,15 @@ public class ClothesXmlResolutionManager {
 
 			String attribute = element.attributeValue("attribute");
 
-			ClothesDomain clothesDomain = new ClothesDomain(id, clothesType, attribute, name, maxDurability);
+			EquimentDomain clothesDomain = new EquimentDomain(id, clothesType, attribute, name, maxDurability);
 			map.put(id, clothesDomain);
 		}
 
 		return map;
 	}
+	
+//	public static final void main(String args[]) {
+//		EquimentXmlResolutionManager.INSTANCE.resolution();
+//	}
 
 }

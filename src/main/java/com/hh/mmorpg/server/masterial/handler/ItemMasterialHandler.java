@@ -25,7 +25,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 		int needNum = Integer.parseInt(materialStr[2]);
 
 		ItemDomain itemDomain = itemDomainMap.get(id);
-		UserItem userItem = new UserItem(role.getId(), itemDomain.getName(), id, needNum, 0, System.currentTimeMillis(),
+		UserItem userItem = new UserItem(role.getId(), itemDomain.getName(), id, needNum, System.currentTimeMillis(), 0,
 				itemDomain.getEffectAttribuate(), itemDomain.getBuffs(), itemDomain.getCd());
 		role.addMaterial(userItem);
 
@@ -49,7 +49,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 		if (material == null || needNum > material.getQuantity()) {
 			return ReplyDomain.NOT_ENOUGH;
 		}
-		MaterialDao.INSTANCE.updateRoleItem(material);
+//		MaterialDao.INSTANCE.updateRoleItem(material);
 		role.decMaterial(id, needNum);
 
 		return ReplyDomain.SUCCESS;

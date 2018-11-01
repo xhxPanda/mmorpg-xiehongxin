@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import com.hh.mmorpg.jdbc.ResultBuilder;
+import com.hh.mmorpg.result.ReplyDomain;
+import com.hh.mmorpg.result.ResultCode;
+import com.hh.mmorpg.server.scene.SceneExtension;
+import com.hh.mmorpg.server.scene.SceneService;
 
 /**
  * 
@@ -143,6 +147,29 @@ public class Role extends LivingThing {
 
 	public Material getMaterial(int materialId) {
 		return materialMap.get(materialId);
+	}
+
+	@Override
+	public void notifyAttributeChange(Attribute attribute) {
+		// TODO Auto-generated method stub
+		Scene scene = SceneService.INSTANCE.getUserScene(userId);
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_ATTRIBUATE_CHANGE);
+		replyDomain.setIntDomain("attrubuteType", attribute.getId());
+		replyDomain.setIntDomain("value", attribute.getValue());
+		replyDomain.setIntDomain("roleId", id);
+		scene.notifyAllUser(replyDomain);
+	}
+
+	@Override
+	public void afterBuffAdd(RoleBuff roleBuff) {
+		// TODO Auto-generated method stub
+		Scene scene = SceneService.INSTANCE.getUserScene(userId);
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_BUFF_ADD);
+		replyDomain.setIntDomain("buffId", roleBuff.getBuffId());
+		replyDomain.setIntDomain("roleId", id);
+		scene.notifyAllUser(replyDomain);
 	}
 
 }

@@ -20,7 +20,7 @@ public class IncrementDao {
 	@SuppressWarnings("unchecked")
 	public List<IncrementDomain> getAllIncrementDomain() {
 		try {
-			return (List<IncrementDomain>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(GET_INCREMENT_DOMAIN,
+			return (List<IncrementDomain>) JDBCManager.INSTANCE.getConn("work").excuteObjectList(GET_INCREMENT_DOMAIN,
 					new Object[] {}, IncrementDomain.BUILDER);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

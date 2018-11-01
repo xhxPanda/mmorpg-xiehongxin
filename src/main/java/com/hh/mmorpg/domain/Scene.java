@@ -60,9 +60,7 @@ public class Scene {
 
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		this.monsterBeKillBonusmap = new HashMap<>();
-
-		this.monsterMap = new ConcurrentHashMap<>();
-
+		this.npcRoleMap = domain.getNpcRoleMap();
 		start();
 	}
 
@@ -152,13 +150,19 @@ public class Scene {
 	public boolean isCanBattle() {
 		return isCanBattle;
 	}
-	
+
 	public void putMonster(Monster monster) {
 		monsterMap.put(monster.getUniqueId(), monster);
 	}
 
 	public void addRoleKillMonsterBonus(int roleId, MonsterBeKillBonus beKillBonus) {
-		monsterBeKillBonusmap.get(roleId).put(beKillBonus.getId(), beKillBonus);
+
+		Map<Integer, MonsterBeKillBonus> killBonusMap = monsterBeKillBonusmap.get(roleId);
+		if (killBonusMap == null) {
+			killBonusMap = new HashMap<>();
+			monsterBeKillBonusmap.put(roleId, killBonusMap);
+		}
+		killBonusMap.put(beKillBonus.getId(), beKillBonus);
 	}
 
 	public MonsterBeKillBonus getRoleKillMonsterBonus(int roleId, int bonusId) {
@@ -199,7 +203,7 @@ public class Scene {
 				monster.takeEffect();
 			}
 		}
-		
+
 		// 副本刷新怪物
 		if (isAllDead()) {
 			if (isCopy) {
@@ -214,9 +218,6 @@ public class Scene {
 			cache.getRole().effectAttribute(3, 2);
 			cache.getRole().effectAttribute(4, 2);
 
-			ReplyDomain domain = new ReplyDomain();
-			domain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_ATTRIBUATE_CHANGE);
-			notifyAllUser(domain);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package com.hh.mmorpg.server.scene.xmlResolution;
+package com.hh.mmorpg.server.scene;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +35,19 @@ public class SenceXMLResolution {
 
 		Element rootElm = document.getRootElement();
 		List<Element> sences = rootElm.elements("scene");
+		
+
+		// 生成怪物
+		Map<Integer, MonsterDomain> monsterDomainMap = resolutionMonster();
+		
 		for (Element element : sences) {
 			String name = element.attributeValue("name");
+
 			int id = Integer.parseInt(element.attributeValue("id"));
-			String neighborScenes = element.attributeValue("neighborScenes");
+			String neighborScenes = (element.attributeValue("neighborScenes") == null
+					|| element.attributeValue("neighborScenes").isEmpty()) ? ""
+							: element.attributeValue("neighborScenes");
+
 			boolean canBattle = Boolean.parseBoolean(element.attributeValue("isCanBattle"));
 			boolean canCopy = Boolean.parseBoolean(element.attributeValue("canCopy"));
 
@@ -57,29 +66,35 @@ public class SenceXMLResolution {
 				npcMap.put(npcRole.getId(), npcRole);
 			}
 
-			// 生成怪物
-			Map<Integer, MonsterDomain> monsterDomainMap = resolutionMonster();
 			Map<Integer, Map<Integer, Monster>> monsterSetMap = new HashMap<>();
 
 			Element monstersEle = element.element("monsters");
-			String monsterStr[] = monstersEle.attributeValue("monster").split("$");
-
+			String monsterStr[] = monstersEle.attributeValue("monster").split("\\$");
+			
+			int teamId = 0;
 			for (String monsterTeam : monsterStr) {
-				int teamId = 0;
+				
 				String monsterIds[] = monsterTeam.split(",");
 
 				Map<Integer, Monster> monsterMap = new HashMap<>();
-				for (String monsterId : monsterIds) {
-					MonsterDomain monsterDomain = monsterDomainMap.get(Integer.parseInt(monsterId));
+				for (String monsterSet : monsterIds) {
+					String[] monsterNum = monsterSet.split(":");
+					int monsterId = Integer.parseInt(monsterNum[0]);
+					int num = Integer.parseInt(monsterNum[1]);
 
-					int uniqueId = IncrementManager.INSTANCE.increase("monster");
-					Monster monster = new Monster(uniqueId, id, monsterDomain);
-					monsterMap.put(monster.getUniqueId(), monster);
+					for (int i = 0; i < num; i++) {
+						MonsterDomain monsterDomain = monsterDomainMap.get(monsterId);
+
+						int uniqueId = IncrementManager.INSTANCE.increase("monster");
+						Monster monster = new Monster(uniqueId, id, monsterDomain);
+						monsterMap.put(monster.getUniqueId(), monster);
+					}
+
 				}
 				monsterSetMap.put(teamId, monsterMap);
 				teamId++;
 			}
-			
+
 			scene.setMonsterSetMap(monsterSetMap);
 			scene.setNpcRoleMap(npcMap);
 		}
@@ -119,4 +134,7 @@ public class SenceXMLResolution {
 		return map;
 	}
 
+	public static final void main(String args[]) {
+		SenceXMLResolution.INSTANCE.resolution();
+	}
 }

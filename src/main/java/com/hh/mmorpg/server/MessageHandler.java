@@ -37,7 +37,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<TextWebSocketFra
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		System.out.println("异常发生");
-		System.out.println(cause.getMessage());
+		System.out.println(cause.getCause().getMessage());
 	}
 
 }

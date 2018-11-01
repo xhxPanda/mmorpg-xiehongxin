@@ -104,7 +104,7 @@ public class UserItem extends Material {
 			String name = result.getString("name");
 			int quantity = result.getInt("quantity");
 			long gainTime = result.getLong("gainTime");
-			long lastUserdTime = result.getLong("lastUserdTime");
+			long lastUserdTime = result.getLong("lastUsedTime");
 			long cd = result.getLong("cd");
 			String effects = result.getString("effectAttribute");
 			String buffs = result.getString("buffs");

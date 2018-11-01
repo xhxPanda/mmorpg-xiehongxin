@@ -28,7 +28,6 @@ import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.role.RoleService;
-import com.hh.mmorpg.server.scene.xmlResolution.SenceXMLResolution;
 import com.hh.mmorpg.server.skill.SkillService;
 import com.hh.mmorpg.service.user.UserService;
 
@@ -331,17 +330,21 @@ public class SceneService {
 
 		Monster monster = scene.getMonster(monsterDeadData.getMonsterId());
 		String bonus = monsterDeadBonus(monster.getKillFallItemMap());
+		
+		if(!bonus.isEmpty()) {
 
-		int id = IncrementManager.INSTANCE.increase("monsterBeKillBonus");
-		MonsterBeKillBonus monsterBeKillBonus = new MonsterBeKillBonus(id, monsterDeadData.getKillRoleId(),
-				monsterDeadData.getMonsterId(), System.currentTimeMillis(), bonus);
-		scene.addRoleKillMonsterBonus(monsterDeadData.getKillRoleId(), monsterBeKillBonus);
+			int id = IncrementManager.INSTANCE.increase("monsterBeKillBonus");
+			MonsterBeKillBonus monsterBeKillBonus = new MonsterBeKillBonus(id, monsterDeadData.getKillRoleId(),
+					monsterDeadData.getMonsterId(), System.currentTimeMillis(), bonus);
+			scene.addRoleKillMonsterBonus(monsterDeadData.getKillRoleId(), monsterBeKillBonus);
 
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
-		replyDomain.setStringDomain("bonus", monsterBeKillBonus.toString());
-		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_ROLE_MONSTER_BONUS_FALL);
-		// 通知前端奖励加入场景
-		scene.notifyAllUser(replyDomain);
+			ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+			replyDomain.setStringDomain("bonus", monsterBeKillBonus.toString());
+			replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_ROLE_MONSTER_BONUS_FALL);
+			// 通知前端奖励加入场景
+			scene.notifyAllUser(replyDomain);
+		}
+
 	}
 
 	private String monsterDeadBonus(Map<String, Integer> killFallItemMap) {

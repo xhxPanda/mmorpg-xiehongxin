@@ -18,7 +18,7 @@ public class MaterialDao {
 
 	private static final String DELETE_EQUIMENT = "DELETE FROM roleequiment0 WHERE roleId = ? AND equimentId = ?";
 
-	private static final String SELECT_ROLE_CLOTHES = "SELECT * FROM roleclothes0 WHERE roleId = ?";
+	private static final String SELECT_ROLE_CLOTHES = "SELECT * FROM roleEquiment0 WHERE roleId = ?";
 
 	private static final String SELECT_ROLE_ITEM = "SELECT * FROM roleItem0 WHERE roleId = ?";
 

@@ -42,5 +42,9 @@ public class ItemXmlResolutionManager {
 		}
 		return map;
 	}
+	
+	public static final void main(String args[]) {
+		ItemXmlResolutionManager.INSTANCE.resolution();
+	}
 
 }

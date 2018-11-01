@@ -12,6 +12,7 @@ import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.handler.AbstractMaterialHandler;
 import com.hh.mmorpg.server.masterial.handler.EquipmentMaterialHandle;
 import com.hh.mmorpg.server.masterial.handler.ItemMasterialHandler;
+import com.hh.mmorpg.server.masterial.handler.TreasureMaterialHandler;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.GoodsXmlResolutionManager;
 import com.hh.mmorpg.server.role.RoleService;
 
@@ -24,6 +25,7 @@ public class MaterialService {
 
 	public static final MaterialService INSTANCE = new MaterialService();
 
+	@SuppressWarnings("rawtypes")
 	private Map<Integer, AbstractMaterialHandler> handlerMap;
 	private Map<Integer, Goods> goodsMap;
 
@@ -32,6 +34,7 @@ public class MaterialService {
 		this.handlerMap = new HashMap<>();
 		handlerMap.put(MaterialType.EQUIPMENT_TYPE_ID, new EquipmentMaterialHandle());
 		handlerMap.put(MaterialType.ITEM_TYPE_ID, new ItemMasterialHandler());
+		handlerMap.put(MaterialType.TREASURE_TYPE_ID, new TreasureMaterialHandler());
 
 		goodsMap = GoodsXmlResolutionManager.INSTANCE.resolution();
 	}
@@ -55,19 +58,25 @@ public class MaterialService {
 	}
 
 	public ReplyDomain gainMasteral(User user, Role role, String material) {
-		String strs[] = material.split(":");
+		
+		String strs[] = material.split("#");
+		ReplyDomain replyDomain = null;
+		for(String s : strs) {
+			String materialList[] = s.split(":");
+			int type = Integer.parseInt(materialList[0]);
+			if (handlerMap.get(type) == null) {
+				return ReplyDomain.FAILE;
+			}
 
-		int type = Integer.parseInt(strs[0]);
-		if (handlerMap.get(type) == null) {
-			return ReplyDomain.FAILE;
+			replyDomain = handlerMap.get(type).gainMaterial(role, materialList);
+			if (replyDomain.isSuccess()) {
+				replyDomain.setStringDomain("worngMaterial", s);
+				return replyDomain;
+			}
+			
 		}
-
-		ReplyDomain replyDomain = handlerMap.get(type).gainMaterial(role, strs);
-		if (replyDomain.isSuccess()) {
-
-		}
-
-		ReplyDomain notify = replyDomain;
+		
+		ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
 		notify.setStringDomain("m", material);
 		MaterialExtension.notifyMaterialGain(user, notify);
 		return replyDomain;
