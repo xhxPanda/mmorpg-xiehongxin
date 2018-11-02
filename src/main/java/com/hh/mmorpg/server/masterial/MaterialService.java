@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.hh.mmorpg.domain.Goods;
+import com.hh.mmorpg.domain.Material;
 import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
@@ -121,5 +122,10 @@ public class MaterialService {
 
 		return ReplyDomain.SUCCESS;
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	public void persistenceMatetrial(Material material) {
+		int type = material.getType();
+		handlerMap.get(type).persistence(material);
+	}
 }

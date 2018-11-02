@@ -142,8 +142,12 @@ public class Role extends LivingThing {
 		if (material.getQuantity() == 1) {
 			materialMap.remove(id);
 		} else {
-			material.changeQuantity(quantity);
+			material.changeQuantity(-quantity);
 		}
+	}
+
+	public Map<Integer, Map<Integer, Material>> getMaterialMap() {
+		return materialMap;
 	}
 
 	public Material getMaterial(int materialType, int materialId) {

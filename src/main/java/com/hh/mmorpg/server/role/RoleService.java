@@ -11,8 +11,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.hh.mmorpg.Increment.IncrementManager;
+import com.hh.mmorpg.domain.Material;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleDomain;
+import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserItem;
@@ -26,6 +28,8 @@ import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.MaterialDao;
+import com.hh.mmorpg.server.masterial.MaterialService;
+import com.hh.mmorpg.service.user.UserService;
 
 public class RoleService {
 
@@ -178,8 +182,29 @@ public class RoleService {
 		UserLostData userLostData = data.getData();
 
 		int userId = userLostData.getUser().getUserId();
-		userRoleMap.remove(userId);
+		Role role = userRoleMap.remove(userId);
+		persistenceRoleMatetrial(role);
 		System.out.println("删除用户缓存使用角色");
+	}
+	
+
+	// 用户切换角色后将角色物品持久化
+	@Event(eventType = EventType.ROLE_CHANGE)
+	public void handleRoleChange(EventDealData<RoleChangeData> data) {
+		int userId = data.getData().getUserId();
+		
+		int oldRoleId = data.getData().getOldRoleId();
+				
+		Role role = RoleService.INSTANCE.getUserRole(userId, oldRoleId);
+		persistenceRoleMatetrial(role);
+	} 
+	
+	private void persistenceRoleMatetrial(Role role) {
+		for(Map<Integer, Material> materialMap : role.getMaterialMap().values()) {
+			for(Material material : materialMap.values()) {
+				MaterialService.INSTANCE.persistenceMatetrial(material);
+			}
+		}
 	}
 
 }

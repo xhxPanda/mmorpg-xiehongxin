@@ -14,7 +14,7 @@ public class MaterialDao {
 
 	private static final String UPDATE_TREASURE = "INSERT INTO roleTreasure0 (roleId, treasureId, name, quantity) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity = ?";
 	private static final String UPDATE_ITEM = "INSERT INTO roleitem0 (roleId, itemId, name, quantity, gainTime, lastUsedTime, cd, effectAttribute, buffs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity = ?";
-	private static final String UPDATE_EQUIMENT = "INSERT INTO roleequiment0 (roleId, equimentId, name, gainTime, effectAttribute, maxDurability, durability) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private static final String UPDATE_EQUIMENT = "REPLACE INTO roleequiment0 (roleId, equimentId, name, gainTime, effectAttribute, maxDurability, durability) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	private static final String DELETE_EQUIMENT = "DELETE FROM roleequiment0 WHERE roleId = ? AND equimentId = ?";
 
