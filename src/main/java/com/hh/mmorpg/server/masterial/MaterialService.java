@@ -2,6 +2,7 @@ package com.hh.mmorpg.server.masterial;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.hh.mmorpg.domain.Goods;
 import com.hh.mmorpg.domain.Material;
@@ -38,6 +39,17 @@ public class MaterialService {
 		handlerMap.put(MaterialType.TREASURE_TYPE_ID, new TreasureMaterialHandler());
 
 		goodsMap = GoodsXmlResolutionManager.INSTANCE.resolution();
+	}
+
+	public ReplyDomain showAllMaterial(User user) {
+		// TODO Auto-generated method stub
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		for (Entry<Integer, Map<Integer, Material>> materialEntry : role.getMaterialMap().entrySet()) {
+			replyDomain.setListDomain("物品类型是" + materialEntry.getKey(), materialEntry.getValue().values());
+		}
+		return replyDomain;
 	}
 
 	public ReplyDomain buyGoods(User user, int goodsId, int num) {
@@ -147,4 +159,5 @@ public class MaterialService {
 		gainMasteral(user, role, material.getSellPrice());
 		return ReplyDomain.SUCCESS;
 	}
+
 }
