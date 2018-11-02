@@ -9,6 +9,7 @@ public class Material {
 	private int id;
 	private int type;
 	private AtomicInteger quantity;
+	private String sellPrice;
 
 	public Material(int roleId, String name, int id, int type, int quantity) {
 		this.name = name;
@@ -41,6 +42,14 @@ public class Material {
 
 	public int changeQuantity(int num) {
 		return quantity.addAndGet(num);
+	}
+
+	public String getSellPrice() {
+		return sellPrice;
+	}
+
+	public void setSellPrice(String sellPrice) {
+		this.sellPrice = sellPrice;
 	}
 
 }

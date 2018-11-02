@@ -36,8 +36,9 @@ public class EquimentXmlResolutionManager {
 			int maxDurability = Integer.parseInt(element.attributeValue("maxDurability"));
 
 			String attribute = element.attributeValue("attribute");
-
-			EquimentDomain clothesDomain = new EquimentDomain(id, clothesType, attribute, name, maxDurability);
+			String sellPrice = element.attributeValue("sellPrice");
+			
+			EquimentDomain clothesDomain = new EquimentDomain(id, clothesType, attribute, name, maxDurability, sellPrice);
 			map.put(id, clothesDomain);
 		}
 

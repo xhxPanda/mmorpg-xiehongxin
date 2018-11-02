@@ -26,11 +26,11 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipme
 		if (role.isContainMaterial(Integer.parseInt(materialStr[0]), id)) {
 			return ReplyDomain.REPEAT_CLOTHES;
 		}
-		EquimentDomain clothesDomain = equimentDomainMap.get(id);
+		EquimentDomain equimentDomain = equimentDomainMap.get(id);
 
-		UserEquipment userEquipment = new UserEquipment(role.getId(), clothesDomain.getName(), id,
-				clothesDomain.getMaxDurability(), clothesDomain.getMaxDurability(), clothesDomain.getAttributes(),
-				System.currentTimeMillis());
+		UserEquipment userEquipment = new UserEquipment(role.getId(), equimentDomain.getName(), id,
+				equimentDomain.getMaxDurability(), equimentDomain.getMaxDurability(), equimentDomain.getAttributes(),
+				System.currentTimeMillis(), equimentDomain.getSellPrice());
 
 		role.addMaterial(userEquipment);
 

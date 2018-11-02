@@ -37,8 +37,8 @@ public class ItemXmlResolutionManager {
 			long cd = Long.parseLong(element.attributeValue("cd"));
 			String effect = element.attributeValue("effect");
 			String buffs = element.attributeValue("buffs");
-
-			map.put(id, new ItemDomain(id, name, effect, buffs, cd));
+			String sellPrice = element.attributeValue("sellPrice");
+			map.put(id, new ItemDomain(id, name, effect, buffs, cd, sellPrice));
 		}
 		return map;
 	}

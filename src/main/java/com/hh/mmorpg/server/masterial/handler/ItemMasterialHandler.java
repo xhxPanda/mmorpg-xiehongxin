@@ -27,7 +27,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 
 		ItemDomain itemDomain = itemDomainMap.get(id);
 		UserItem userItem = new UserItem(role.getId(), itemDomain.getName(), id, needNum, System.currentTimeMillis(), 0,
-				itemDomain.getEffectAttribuate(), itemDomain.getBuffs(), itemDomain.getCd());
+				itemDomain.getEffectAttribuate(), itemDomain.getBuffs(), itemDomain.getCd(), itemDomain.getSellPrice());
 		role.addMaterial(userItem);
 
 		MaterialDao.INSTANCE.updateRoleItem(userItem);

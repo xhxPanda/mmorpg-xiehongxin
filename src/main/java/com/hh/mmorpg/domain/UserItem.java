@@ -17,9 +17,10 @@ public class UserItem extends Material {
 	private List<Integer> buffList;
 	private long cd;
 	private long gainTime;
+	private String sellPrice;
 
 	public UserItem(int roleId, String name, int id, int quantity, long gainTime, long lastUsedTime, String effect,
-			String buffs, long cd) {
+			String buffs, long cd, String sellPrice) {
 		// TODO Auto-generated constructor stub
 		super(roleId, name, id, MaterialType.ITEM_TYPE_ID, quantity);
 		this.lastUsedTime = lastUsedTime;
@@ -40,6 +41,7 @@ public class UserItem extends Material {
 
 		this.cd = cd;
 		this.gainTime = gainTime;
+		this.setSellPrice(sellPrice);
 	}
 
 	public Map<Integer, Integer> getEffectAttributeMap() {
@@ -60,6 +62,10 @@ public class UserItem extends Material {
 
 	public long getCd() {
 		return cd;
+	}
+
+	public String getSellPrice() {
+		return sellPrice;
 	}
 
 	public boolean isPartCD() {
@@ -108,7 +114,8 @@ public class UserItem extends Material {
 			long cd = result.getLong("cd");
 			String effects = result.getString("effectAttribute");
 			String buffs = result.getString("buffs");
-			return new UserItem(roleId, name, id, quantity, gainTime, lastUserdTime, effects, buffs, cd);
+			String sellPrice = result.getString("sellPrice");
+			return new UserItem(roleId, name, id, quantity, gainTime, lastUserdTime, effects, buffs, cd, sellPrice);
 		}
 	};
 

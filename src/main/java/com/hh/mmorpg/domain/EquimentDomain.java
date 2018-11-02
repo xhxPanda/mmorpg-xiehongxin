@@ -7,13 +7,15 @@ public class EquimentDomain {
 	private String attributes;
 	private String name;
 	private int maxDurability;
+	private String sellPrice;
 
-	public EquimentDomain(int id, int clothesType, String attributes, String name, int maxDurability) {
+	public EquimentDomain(int id, int clothesType, String attributes, String name, int maxDurability, String sellPrice) {
 		this.id = id;
 		this.clothesType = clothesType;
 		this.attributes = attributes;
 		this.name = name;
 		this.maxDurability = maxDurability;
+		this.sellPrice = sellPrice;
 	}
 
 	public int getId() {
@@ -34,6 +36,10 @@ public class EquimentDomain {
 
 	public int getMaxDurability() {
 		return maxDurability;
+	}
+
+	public String getSellPrice() {
+		return sellPrice;
 	}
 
 }

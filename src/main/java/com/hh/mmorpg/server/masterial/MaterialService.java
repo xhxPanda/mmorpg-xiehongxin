@@ -59,10 +59,10 @@ public class MaterialService {
 	}
 
 	public ReplyDomain gainMasteral(User user, Role role, String material) {
-		
+
 		String strs[] = material.split("#");
 		ReplyDomain replyDomain = null;
-		for(String s : strs) {
+		for (String s : strs) {
 			String materialList[] = s.split(":");
 			int type = Integer.parseInt(materialList[0]);
 			if (handlerMap.get(type) == null) {
@@ -74,9 +74,9 @@ public class MaterialService {
 				replyDomain.setStringDomain("worngMaterial", s);
 				return replyDomain;
 			}
-			
+
 		}
-		
+
 		ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
 		notify.setStringDomain("m", material);
 		MaterialExtension.notifyMaterialGain(user, notify);
@@ -122,10 +122,29 @@ public class MaterialService {
 
 		return ReplyDomain.SUCCESS;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void persistenceMatetrial(Material material) {
 		int type = material.getType();
 		handlerMap.get(type).persistence(material);
+	}
+
+	public ReplyDomain sellGoods(User user, String materialStr) {
+		// TODO Auto-generated method stub
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		String strs[] = materialStr.split(":");
+		int type = Integer.parseInt(strs[0]);
+		int materialId = Integer.parseInt(strs[1]);
+
+		if (type == MaterialType.TREASURE_TYPE_ID) {
+			return ReplyDomain.FAILE;
+		}
+
+		Material material = role.getMaterial(type, materialId);
+		decMasterial(user, role, materialStr);
+
+		gainMasteral(user, role, material.getSellPrice());
+		return ReplyDomain.SUCCESS;
 	}
 }

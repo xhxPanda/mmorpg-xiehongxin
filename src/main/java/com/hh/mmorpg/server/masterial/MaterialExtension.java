@@ -24,7 +24,15 @@ public class MaterialExtension {
 		ReplyDomain replyDomain = MaterialService.INSTANCE.buyGoods(user, goodsId, num);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-
+	
+	@CmdService(cmd = SELL_GOODS)
+	public void sellGoods(User user, CMDdomain cmDdomain) {
+		String materialStr = cmDdomain.getStringParam("ms");
+		
+		ReplyDomain replyDomain = MaterialService.INSTANCE.sellGoods(user, materialStr);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
 	public static void notifyMaterialGain(User user, ReplyDomain replyDomain) {
 		replyDomain.setStringDomain("cmd", NOTIFY_USER_GAIN_MATERIAL);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

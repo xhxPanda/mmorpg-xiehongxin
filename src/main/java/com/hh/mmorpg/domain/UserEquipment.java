@@ -19,7 +19,7 @@ public class UserEquipment extends Material {
 	private long gainTime;
 
 	public UserEquipment(int roleId, String name, int clothesId, int maxDurability, int durability, String attributes,
-			long gainTime) {
+			long gainTime, String sellPrice) {
 		super(roleId, name, clothesId, MaterialType.EQUIPMENT_TYPE_ID, 1);
 		this.inUsed = false;
 		this.maxDurability = maxDurability;
@@ -31,6 +31,7 @@ public class UserEquipment extends Material {
 		}
 
 		this.gainTime = gainTime;
+		this.setSellPrice(sellPrice);
 	}
 
 	public int getClothesId() {
@@ -100,7 +101,8 @@ public class UserEquipment extends Material {
 			String attributeStr = result.getString(5);
 			int maxDurability = result.getInt(6);
 			int durability = result.getInt(7);
-			return new UserEquipment(roleId, name, id, maxDurability, durability, attributeStr, gainTime);
+			String sellPrice = result.getString("sellPrice");
+			return new UserEquipment(roleId, name, id, maxDurability, durability, attributeStr, gainTime, sellPrice);
 		}
 	};
 }
