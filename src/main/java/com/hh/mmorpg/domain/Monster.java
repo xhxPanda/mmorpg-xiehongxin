@@ -17,7 +17,7 @@ public class Monster extends LivingThing {
 	private int freshTime;
 	private int sceneId;
 	private int attackRoleId;
-
+	
 	private Map<String, Integer> killFallItemMap;
 
 	public Monster(int uniqueId, int sceneId, MonsterDomain domain) {

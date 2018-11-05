@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hh.mmorpg.Increment.IncrementManager;
@@ -26,6 +29,7 @@ import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
+import com.hh.mmorpg.server.equiment.EquimentType;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.server.skill.SkillService;
@@ -43,6 +47,8 @@ public class SceneService {
 
 	private AtomicInteger copyIncrease;
 
+	private ScheduledExecutorService executorService;
+
 	private SceneService() {
 		sceneUserMap = new ConcurrentHashMap<Integer, Integer>();
 		sceneDomainMap = SenceXMLResolution.INSTANCE.resolution();
@@ -59,48 +65,44 @@ public class SceneService {
 			}
 		}
 
+		executorService = Executors.newScheduledThreadPool(10);
+
 		EventHandlerManager.INSATNCE.register(this);
 	}
 
-	public ReplyDomain userJoinScene(User user, int sceneTypeId) {
+	public ReplyDomain userJoinScene(User user, int sceneTypeId, int sceneId) {
 		int userId = user.getUserId();
 
 		SceneUserCache sceneUserCache = null;
 
+		// 生成用户场景缓存
 		Integer oldSceneId = sceneUserMap.get(userId);
-
 		if (oldSceneId != null) {
 			if (oldSceneId == sceneTypeId) {
 				return ReplyDomain.SUCCESS;
 			}
 			Scene scene = sceneMap.get(oldSceneId);
-			if (!scene.isCanEnter(sceneTypeId)) {
+			
+			if (scene != null && !scene.isCopy() && !scene.isCanEnter(sceneTypeId)) {
 				return new ReplyDomain(ResultCode.CAN_NOT_ENTER);
 			}
 			sceneUserCache = scene.userLeaveScene(user);
+			sceneUserCache.setLastSceneId(oldSceneId);
 		} else {
 			// 初始进入场景
 			Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 			sceneUserCache = new SceneUserCache(userId, role);
 		}
 
-		// 进入新场景
-		int sceneId = sceneTypeId;
-		Scene newScene = sceneMap.get(sceneTypeId);
-
-		// 判断是否进入副本地图,如果是进入副本地图就要新建一个场景对象放在缓存中
-		if (newScene == null) {
-			SceneDomain sceneDomain = sceneDomainMap.get(sceneTypeId);
-			if (sceneDomain != null) {
-				sceneId = copyIncrease.incrementAndGet();
-				Scene scene = new Scene(sceneDomain, sceneId);
-
-				sceneMap.put(sceneId, scene);
+		SceneDomain scenedomain = sceneDomainMap.get(sceneTypeId);
+		if (scenedomain.isCopy()) {
+			entreCopy(sceneUserCache, sceneTypeId);
+		} else {
+			// 进入新场景
+			Scene newScene = sceneMap.get(sceneId);
+			if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
+				sceneUserMap.put(userId, sceneId);
 			}
-		}
-
-		if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
-			sceneUserMap.put(userId, sceneId);
 		}
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
@@ -108,6 +110,40 @@ public class SceneService {
 
 		return replyDomain;
 	}
+
+	private void entreCopy(SceneUserCache sceneUserCache, int sceneTypeId) {
+		SceneDomain sceneDomain = sceneDomainMap.get(sceneTypeId);
+
+		Scene scene = null;
+
+		int sceneId = 0;
+		if (sceneDomain != null) {
+			sceneId = copyIncrease.incrementAndGet();
+			scene = new Scene(sceneDomain, sceneId);
+		}
+
+		if (scene.userEnterScene(sceneUserCache).isSuccess()) {
+			sceneMap.put(sceneId, scene);
+			sceneUserMap.put(sceneUserCache.getUserId(), sceneId);
+		}
+		
+		finishScene(sceneId);
+
+	}
+	
+
+	public void finishScene(int sceneId) {
+		// 生成副本后，60分钟就把人踢出来（不管有无完成）
+		executorService.schedule(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				removeScene(sceneId);
+			}
+		}, 60, TimeUnit.MINUTES);
+	}
+	
 
 	public ReplyDomain getSeceneUser(User user) {
 		// TODO Auto-generated method stub
@@ -158,6 +194,11 @@ public class SceneService {
 		if (roleSkill == null) {
 			return ReplyDomain.FAILE;
 		}
+
+		if (!role.getEquipmentMap().get(EquimentType.ARMS).dropDurability().isSuccess()) {
+			return ReplyDomain.EQUIMENT_DURABILITY_HARM;
+		}
+
 		long now = System.currentTimeMillis();
 
 		if (monster.getAttackRoleId() == 0) {
@@ -330,8 +371,8 @@ public class SceneService {
 
 		Monster monster = scene.getMonster(monsterDeadData.getMonsterId());
 		String bonus = monsterDeadBonus(monster.getKillFallItemMap());
-		
-		if(!bonus.isEmpty()) {
+
+		if (!bonus.isEmpty()) {
 
 			int id = IncrementManager.INSTANCE.increase("monsterBeKillBonus");
 			MonsterBeKillBonus monsterBeKillBonus = new MonsterBeKillBonus(id, monsterDeadData.getKillRoleId(),
@@ -345,6 +386,22 @@ public class SceneService {
 			scene.notifyAllUser(replyDomain);
 		}
 
+	}
+
+	private void removeScene(int sceneId) {
+		Scene scene = sceneMap.remove(sceneId);
+		scene.shutdown();
+
+		// 提醒用户该副本超出了时间限制
+		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_BEYOND_TIME);
+		scene.notifyAllUser(replyDomain);
+
+		// 执行移除操作，用户回到上一次所在的地图
+		for (SceneUserCache sceneUserCache : scene.getUserMap().values()) {
+			User user = UserService.INSTANCE.getUser(sceneUserCache.getUserId());
+			userJoinScene(user, scene.getSceneTypeId(), sceneUserCache.getLastSceneId());
+		}
 	}
 
 	private String monsterDeadBonus(Map<String, Integer> killFallItemMap) {

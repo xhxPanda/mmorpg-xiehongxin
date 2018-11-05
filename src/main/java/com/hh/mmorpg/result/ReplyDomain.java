@@ -20,6 +20,7 @@ public class ReplyDomain {
 	public static final ReplyDomain BONS_NOT_EXIT = new ReplyDomain(ResultCode.BONS_NOT_EXIT);
 	public static final ReplyDomain CAN_NOT_BATTLE = new ReplyDomain(ResultCode.CAN_NOT_BATTLE);
 	public static final ReplyDomain COPY_NUM_TOO_MUCH = new ReplyDomain(ResultCode.COPY_NUM_TOO_MUCH);
+	public static final ReplyDomain EQUIMENT_DURABILITY_HARM = new ReplyDomain(ResultCode.EQUIMENT_DURABILITY_HARM);
 
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

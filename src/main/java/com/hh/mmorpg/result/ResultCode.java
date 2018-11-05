@@ -14,5 +14,6 @@ public class ResultCode {
 	public static final int CAN_NOT_BATTLE = -9;
 	public static final int COPY_NUM_TOO_MUCH = -10;
 	public static final int CAN_NOT_ENTER = -11;
+	public static final int EQUIMENT_DURABILITY_HARM = -12;
 
 }

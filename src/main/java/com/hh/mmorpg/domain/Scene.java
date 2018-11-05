@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.scene.SceneUserCache;
+import com.hh.mmorpg.server.skill.SkillService;
 import com.hh.mmorpg.service.user.UserService;
 
 /**
@@ -24,6 +26,7 @@ import com.hh.mmorpg.service.user.UserService;
 public class Scene {
 
 	private int id;
+	private int sceneTypeId;
 	private String name;
 	private List<Integer> neighborSceneIds;
 	private boolean isCanBattle;
@@ -48,6 +51,7 @@ public class Scene {
 		this.neighborSceneIds = domain.getNeighborSceneIds();
 		this.isCopy = domain.isCopy();
 		this.monsterSetMap = domain.getMonsterSetMap();
+		this.sceneTypeId = domain.getId();
 
 		this.buildTime = System.currentTimeMillis();
 
@@ -143,6 +147,10 @@ public class Scene {
 		return userMap;
 	}
 
+	public int getSceneTypeId() {
+		return sceneTypeId;
+	}
+
 	public SceneUserCache getSceneUserCache(int userId) {
 		return userMap.get(userId);
 	}
@@ -201,13 +209,23 @@ public class Scene {
 				}
 			} else {
 				monster.takeEffect();
+
+				// 如果是副本，怪物有自己的技能ai
+				if (isCopy) {
+					monsterAIAttack(monster);
+				}
 			}
 		}
 
 		// 副本刷新怪物
 		if (isAllDead()) {
 			if (isCopy) {
-				reflashMonster();
+				if (!reflashMonster()) {
+					// 完成所有轮数的怪物，副本结束
+					ReplyDomain replyDomain = new ReplyDomain();
+					replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
+					notifyAllUser(replyDomain);
+				}
 			}
 		}
 
@@ -237,6 +255,18 @@ public class Scene {
 			}
 		}
 		return true;
+	}
+
+	private void monsterAIAttack(Monster monster) {
+		List<RoleSkill> monsterSkillList = (List<RoleSkill>) monster.getSkillMap().values();
+
+		Random random = new Random();
+		int randomSkillIndex = random.nextInt(monsterSkillList.size());
+
+		List<SceneUserCache> caches = (List<SceneUserCache>) userMap.values();
+
+		SkillService.INSTANCE.dealSkillEffect(monsterSkillList.get(randomSkillIndex), monster, caches.get(0).getRole(),
+				System.currentTimeMillis());
 	}
 
 	private boolean reflashMonster() {

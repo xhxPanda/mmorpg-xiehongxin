@@ -28,12 +28,15 @@ public class SceneExtension {
 	public static final String NOTIFY_MONSTER_ATTRIBUATE_CHANGE = "2_106";
 	public static final String NOTIFY_USER_BUFF_ADD = "2_107";
 	public static final String NOTIFY_MONSTER_BUFF_ADD = "2_108";
+	public static final String NOTIFY_USER_COPY_BEYOND_TIME = "2_109";
+	public static final String NOTIFY_USER_COPY_FINISH = "2_110";
 
 	@CmdService(cmd = JOIN_SCENE)
 	public void joinScene(User user, CMDdomain cmdDomain) {
+		int sceneTypeId = cmdDomain.getIntParam("sti");
 		int sceneId = cmdDomain.getIntParam("si");
 
-		ReplyDomain replyDomain = service.userJoinScene(user, sceneId);
+		ReplyDomain replyDomain = service.userJoinScene(user, sceneTypeId, sceneId);
 		replyDomain.setStringDomain("cmd", JOIN_SCENE);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

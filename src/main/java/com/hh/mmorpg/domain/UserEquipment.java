@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
+import com.hh.mmorpg.result.ReplyDomain;
 
 public class UserEquipment extends Material {
 
@@ -62,14 +63,20 @@ public class UserEquipment extends Material {
 		return attributeMap;
 	}
 
-	public void dropDurability() {
-		this.durability -= 1;
+	public ReplyDomain dropDurability() {
+		if(this.durability - 1 > 0) {
+			return ReplyDomain.SUCCESS;
+		} else {
+			this.durability = 0;
+			return ReplyDomain.FAILE;
+		}
+		
 	}
 
 	public long getGainTime() {
 		return gainTime;
 	}
-
+	
 	public String getAttributeStr() {
 		StringBuilder builder = new StringBuilder();
 

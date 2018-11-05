@@ -23,7 +23,8 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipme
 
 		int id = Integer.parseInt(materialStr[1]);
 
-		if (role.isContainMaterial(Integer.parseInt(materialStr[0]), id)) {
+		// 检查用户背包中和装备栏上是否存在该装备（以后看看这个问题要怎样解决）
+		if (role.isContainMaterial(Integer.parseInt(materialStr[0]), id) || role.getEquipmentMap().containsKey(id)) {
 			return ReplyDomain.REPEAT_CLOTHES;
 		}
 		EquimentDomain equimentDomain = equimentDomainMap.get(id);

@@ -6,6 +6,7 @@ public class SceneUserCache {
 
 	private int userId;
 	private Role role;
+	private int lastSceneId;
 
 	public SceneUserCache(int userId, Role role) {
 		this.userId = userId;
@@ -18,6 +19,14 @@ public class SceneUserCache {
 
 	public Role getRole() {
 		return role;
+	}
+
+	public int getLastSceneId() {
+		return lastSceneId;
+	}
+
+	public void setLastSceneId(int lastSceneId) {
+		this.lastSceneId = lastSceneId;
 	}
 
 	@Override
