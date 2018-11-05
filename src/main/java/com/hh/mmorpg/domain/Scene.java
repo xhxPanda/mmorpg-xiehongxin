@@ -12,6 +12,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.hh.mmorpg.event.Event;
+import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.scene.SceneUserCache;
@@ -60,7 +64,10 @@ public class Scene {
 
 		// 生成第一批怪物
 		this.monsterMap = new ConcurrentHashMap<>();
-		this.monsterMap.putAll(monsterSetMap.get(monsterRound.get()));
+		for (Monster monster : monsterSetMap.get(monsterRound.get()).values()) {
+			monster.setSceneId(id);
+			this.monsterMap.put(monster.getUniqueId(), monster);
+		}
 
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		this.monsterBeKillBonusmap = new HashMap<>();
@@ -216,25 +223,15 @@ public class Scene {
 				}
 			}
 		}
-
-		// 副本刷新怪物
-		if (isAllDead()) {
-			if (isCopy) {
-				if (!reflashMonster()) {
-					// 完成所有轮数的怪物，副本结束
-					ReplyDomain replyDomain = new ReplyDomain();
-					replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
-					notifyAllUser(replyDomain);
-				}
-			}
-		}
-
+		
 		for (SceneUserCache cache : userMap.values()) {
 			cache.getRole().takeEffect();
 
-			// 加红蓝
-			cache.getRole().effectAttribute(3, 2);
-			cache.getRole().effectAttribute(4, 2);
+			if (!cache.getRole().isDead()) {
+				// 加红蓝
+				cache.getRole().effectAttribute(3, 2);
+				cache.getRole().effectAttribute(4, 2);
+			}
 
 		}
 	}
@@ -269,17 +266,21 @@ public class Scene {
 				System.currentTimeMillis());
 	}
 
-	private boolean reflashMonster() {
+	private boolean refreshMonster() {
 		if (isAllMonsterDead()) {
-			int monsterRoundId = monsterRound.get();
-			for (Monster monster : monsterSetMap.get(monsterRoundId).values()) {
-				monsterMap.remove(monster.getUniqueId());
-			}
+//			int monsterRoundId = monsterRound.get()
+//			for (Monster monster : monsterSetMap.get(monsterRoundId).values()) {
+//				monsterMap.remove(monster.getUniqueId());
+//			}
 			int roundId = monsterRound.incrementAndGet();
 			if (monsterSetMap.size() <= roundId) {
 				return false;
 			}
-			monsterMap.putAll(monsterSetMap.get(roundId));
+			for(Monster monster : monsterSetMap.get(roundId).values()) {
+				monster.setSceneId(id);
+				putMonster(monster);
+			}
+			
 		}
 		return true;
 	}
@@ -290,4 +291,19 @@ public class Scene {
 		executorService.shutdown();
 	}
 
+	// 副本刷新怪物
+	@Event(eventType = EventType.MONSTER_DEAD)
+	public void handleMonsterDead(EventDealData<MonsterDeadData> data) {
+		if (isCopy) {
+			if (isAllMonsterDead()) {
+
+				if (!refreshMonster()) {
+					// 完成所有轮数的怪物，副本结束
+					ReplyDomain replyDomain = new ReplyDomain();
+					replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
+					notifyAllUser(replyDomain);
+				}
+			}
+		}
+	}
 }

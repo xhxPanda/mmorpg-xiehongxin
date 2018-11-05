@@ -135,11 +135,11 @@ public class RoleService {
 		List<UserItem> userItemList = MaterialDao.INSTANCE.getAllItem(roleId);
 		List<UserTreasure> userTreasureList = MaterialDao.INSTANCE.getAllTreasure(roleId);
 
-		for (UserEquipment userClothes : userEquipmentList) {
-			if (userClothes.isInUsed()) {
-				role.setEquipment(userClothes);
+		for (UserEquipment userEquipment : userEquipmentList) {
+			if (userEquipment.isInUsed()) {
+				role.setEquipment(userEquipment);
 			} else {
-				role.addMaterial(userClothes);
+				role.addMaterial(userEquipment);
 			}
 		}
 

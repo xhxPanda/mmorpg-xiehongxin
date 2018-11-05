@@ -11,7 +11,6 @@ import com.hh.mmorpg.result.ReplyDomain;
 
 public class UserEquipment extends Material {
 
-	private String name;
 	private int clothesId;
 	private boolean inUsed;
 	private int maxDurability;
@@ -34,6 +33,26 @@ public class UserEquipment extends Material {
 		this.gainTime = gainTime;
 		this.setSellPrice(sellPrice);
 	}
+	
+	
+
+	public UserEquipment(int roleId, String name, int id, int clothesId,
+			boolean inUsed, int maxDurability, int durability, String attributes, long gainTime, String sellPrice) {
+		super(roleId, name, id, MaterialType.EQUIPMENT_TYPE_ID, 1);
+		this.inUsed = inUsed;
+		this.maxDurability = maxDurability;
+		this.durability = durability;
+		this.attributeMap = new HashMap<>();
+		for (String str : attributes.split(",")) {
+			String s[] = str.split(":");
+			attributeMap.put(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
+		}
+
+		this.gainTime = gainTime;
+		this.setSellPrice(sellPrice);
+	}
+
+
 
 	public int getClothesId() {
 		return clothesId;
@@ -45,10 +64,6 @@ public class UserEquipment extends Material {
 
 	public void setInUsed(boolean inUsed) {
 		this.inUsed = inUsed;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public int getMaxDurability() {
@@ -92,7 +107,7 @@ public class UserEquipment extends Material {
 
 	@Override
 	public String toString() {
-		return "UserClothes [name=" + name + ", clothesId=" + clothesId + ", maxDurability=" + maxDurability
+		return "UserClothes [name=" + getName() + ", clothesId=" + clothesId + ", maxDurability=" + maxDurability
 				+ ", durability=" + durability + "]";
 	}
 
@@ -109,7 +124,8 @@ public class UserEquipment extends Material {
 			int maxDurability = result.getInt(6);
 			int durability = result.getInt(7);
 			String sellPrice = result.getString("sellPrice");
-			return new UserEquipment(roleId, name, id, maxDurability, durability, attributeStr, gainTime, sellPrice);
+			boolean inUsed = result.getBoolean("inUsed");
+			return new UserEquipment(roleId, name, id, id, inUsed, maxDurability, durability, attributeStr, gainTime, sellPrice);
 		}
 	};
 }

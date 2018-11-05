@@ -15,9 +15,9 @@ import com.hh.mmorpg.domain.MonsterDomain;
 import com.hh.mmorpg.domain.NpcRole;
 import com.hh.mmorpg.domain.SceneDomain;
 
-public class SenceXMLResolution {
+public class SceneXMLResolution {
 
-	public static final SenceXMLResolution INSTANCE = new SenceXMLResolution();
+	public static final SceneXMLResolution INSTANCE = new SceneXMLResolution();
 
 	@SuppressWarnings("unchecked")
 	public Map<Integer, SceneDomain> resolution() {
@@ -132,9 +132,5 @@ public class SenceXMLResolution {
 		}
 
 		return map;
-	}
-
-	public static final void main(String args[]) {
-		SenceXMLResolution.INSTANCE.resolution();
 	}
 }

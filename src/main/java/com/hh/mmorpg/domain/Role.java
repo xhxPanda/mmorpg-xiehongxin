@@ -36,11 +36,7 @@ public class Role extends LivingThing {
 		this.name = name;
 		this.roleId = roleId;
 		this.materialMap = new HashMap<>();
-
 		this.equipmentMap = new HashMap<>();
-		for (int i = 1; i <= 7; i++) {
-			equipmentMap.put(i, null);
-		}
 	}
 
 	public int getUserId() {
@@ -105,6 +101,10 @@ public class Role extends LivingThing {
 
 	public void setEquipment(UserEquipment clothes) {
 		int clothesType = clothes.getType();
+		if(equipmentMap.get(clothesType) != null && equipmentMap.get(clothesType).getId() == clothes.getClothesId()) {
+			return;
+		}
+		
 		if (equipmentMap.containsKey(clothesType)) {
 			UserEquipment userClothes = equipmentMap.remove(clothesType);
 
@@ -158,6 +158,9 @@ public class Role extends LivingThing {
 	public void notifyAttributeChange(Attribute attribute) {
 		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getUserScene(userId);
+		if(scene == null) {
+			return;
+		}
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_ATTRIBUATE_CHANGE);
 		replyDomain.setIntDomain("attrubuteType", attribute.getId());

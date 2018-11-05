@@ -20,6 +20,7 @@ import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.SceneDomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
@@ -51,9 +52,9 @@ public class SceneService {
 
 	private SceneService() {
 		sceneUserMap = new ConcurrentHashMap<Integer, Integer>();
-		sceneDomainMap = SenceXMLResolution.INSTANCE.resolution();
+		sceneDomainMap = SceneXMLResolution.INSTANCE.resolution();
 
-		monsterDomainmap = SenceXMLResolution.INSTANCE.resolutionMonster();
+		monsterDomainmap = SceneXMLResolution.INSTANCE.resolutionMonster();
 		this.copyIncrease = new AtomicInteger(0);
 
 		// 生成固定的场景
@@ -82,7 +83,7 @@ public class SceneService {
 				return ReplyDomain.SUCCESS;
 			}
 			Scene scene = sceneMap.get(oldSceneId);
-			
+
 			if (!scene.isCanEnter(sceneTypeId)) {
 				return new ReplyDomain(ResultCode.CAN_NOT_ENTER);
 			}
@@ -96,10 +97,10 @@ public class SceneService {
 
 		SceneDomain scenedomain = sceneDomainMap.get(sceneTypeId);
 		if (scenedomain.isCopy()) {
-			if(oldSceneId == null) {
+			if (oldSceneId == null) {
 				return ReplyDomain.FAILE;
 			}
- 			entreCopy(sceneUserCache, sceneTypeId);
+			entreCopy(sceneUserCache, sceneTypeId);
 		} else {
 			// 进入新场景
 			Scene newScene = sceneMap.get(sceneId);
@@ -129,11 +130,10 @@ public class SceneService {
 			sceneMap.put(sceneId, scene);
 			sceneUserMap.put(sceneUserCache.getUserId(), sceneId);
 		}
-		
+
 		finishScene(sceneId);
 
 	}
-	
 
 	public void finishScene(int sceneId) {
 		// 生成副本后，60分钟就把人踢出来（不管有无完成）
@@ -146,7 +146,6 @@ public class SceneService {
 			}
 		}, 60, TimeUnit.MINUTES);
 	}
-	
 
 	public ReplyDomain getSeceneUser(User user) {
 		// TODO Auto-generated method stub
@@ -198,7 +197,8 @@ public class SceneService {
 			return ReplyDomain.FAILE;
 		}
 
-		if (!role.getEquipmentMap().get(EquimentType.ARMS).dropDurability().isSuccess()) {
+		UserEquipment userEquipment = role.getEquipmentMap().get(EquimentType.ARMS);
+		if (!userEquipment.dropDurability().isSuccess()) {
 			return ReplyDomain.EQUIMENT_DURABILITY_HARM;
 		}
 
@@ -258,7 +258,10 @@ public class SceneService {
 
 	// 获取用户所在的场景
 	public Scene getUserScene(int userId) {
-		int sceneId = sceneUserMap.get(userId);
+		Integer sceneId = sceneUserMap.get(userId);
+		if(sceneId == null) {
+			return null;
+		}
 		return sceneMap.get(sceneId);
 	}
 
@@ -395,7 +398,7 @@ public class SceneService {
 	private void removeScene(int sceneId) {
 		Scene scene = sceneMap.remove(sceneId);
 		scene.shutdown();
-		
+
 		// 提醒用户该副本超出了时间限制
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_BEYOND_TIME);
@@ -415,10 +418,11 @@ public class SceneService {
 
 		StringBuilder builder = new StringBuilder();
 		for (Entry<String, Integer> entry : killFallItemMap.entrySet()) {
-			if (builder.length() > 0) {
-				builder.append("#");
-			}
+
 			if (randomNum <= entry.getValue()) {
+				if (builder.length() > 0) {
+					builder.append("#");
+				}
 				builder.append(entry.getKey());
 			}
 		}
