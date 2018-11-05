@@ -83,7 +83,7 @@ public class SceneService {
 			}
 			Scene scene = sceneMap.get(oldSceneId);
 			
-			if (scene != null && !scene.isCopy() && !scene.isCanEnter(sceneTypeId)) {
+			if (!scene.isCanEnter(sceneTypeId)) {
 				return new ReplyDomain(ResultCode.CAN_NOT_ENTER);
 			}
 			sceneUserCache = scene.userLeaveScene(user);
@@ -96,7 +96,10 @@ public class SceneService {
 
 		SceneDomain scenedomain = sceneDomainMap.get(sceneTypeId);
 		if (scenedomain.isCopy()) {
-			entreCopy(sceneUserCache, sceneTypeId);
+			if(oldSceneId == null) {
+				return ReplyDomain.FAILE;
+			}
+ 			entreCopy(sceneUserCache, sceneTypeId);
 		} else {
 			// 进入新场景
 			Scene newScene = sceneMap.get(sceneId);
@@ -255,7 +258,8 @@ public class SceneService {
 
 	// 获取用户所在的场景
 	public Scene getUserScene(int userId) {
-		return sceneMap.get(userId);
+		int sceneId = sceneUserMap.get(userId);
+		return sceneMap.get(sceneId);
 	}
 
 	public Map<Integer, Scene> getSceneMap() {
@@ -391,7 +395,7 @@ public class SceneService {
 	private void removeScene(int sceneId) {
 		Scene scene = sceneMap.remove(sceneId);
 		scene.shutdown();
-
+		
 		// 提醒用户该副本超出了时间限制
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_BEYOND_TIME);
@@ -399,6 +403,7 @@ public class SceneService {
 
 		// 执行移除操作，用户回到上一次所在的地图
 		for (SceneUserCache sceneUserCache : scene.getUserMap().values()) {
+			sceneUserMap.remove(sceneUserCache.getUserId());
 			User user = UserService.INSTANCE.getUser(sceneUserCache.getUserId());
 			userJoinScene(user, scene.getSceneTypeId(), sceneUserCache.getLastSceneId());
 		}

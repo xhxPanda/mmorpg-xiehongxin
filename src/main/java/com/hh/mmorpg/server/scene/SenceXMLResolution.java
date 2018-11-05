@@ -49,9 +49,9 @@ public class SenceXMLResolution {
 							: element.attributeValue("neighborScenes");
 
 			boolean canBattle = Boolean.parseBoolean(element.attributeValue("isCanBattle"));
-			boolean canCopy = Boolean.parseBoolean(element.attributeValue("canCopy"));
+			boolean copy = Boolean.parseBoolean(element.attributeValue("isCopy"));
 
-			SceneDomain scene = new SceneDomain(id, name, neighborScenes, canBattle, canCopy);
+			SceneDomain scene = new SceneDomain(id, name, neighborScenes, canBattle, copy);
 			map.put(scene.getId(), scene);
 
 			// 生成npc

@@ -143,7 +143,7 @@ public abstract class LivingThing {
 		}
 		
 		if(oldValue != newValue) {
-			
+			notifyAttributeChange(attribute);
 		}
 
 		return newValue;

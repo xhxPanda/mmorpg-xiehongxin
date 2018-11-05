@@ -131,11 +131,11 @@ public class RoleService {
 		role.setAttributeMap(roleDomain.getAttributeMap());
 		role.setSkillMap(roleDomain.getRoleSkillMap());
 
-		List<UserEquipment> userClothesList = MaterialDao.INSTANCE.getAllUserClothes(roleId);
+		List<UserEquipment> userEquipmentList = MaterialDao.INSTANCE.getAllUserClothes(roleId);
 		List<UserItem> userItemList = MaterialDao.INSTANCE.getAllItem(roleId);
 		List<UserTreasure> userTreasureList = MaterialDao.INSTANCE.getAllTreasure(roleId);
 
-		for (UserEquipment userClothes : userClothesList) {
+		for (UserEquipment userClothes : userEquipmentList) {
 			if (userClothes.isInUsed()) {
 				role.setEquipment(userClothes);
 			} else {

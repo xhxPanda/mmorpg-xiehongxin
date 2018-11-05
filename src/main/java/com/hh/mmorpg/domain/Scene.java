@@ -258,12 +258,12 @@ public class Scene {
 	}
 
 	private void monsterAIAttack(Monster monster) {
-		List<RoleSkill> monsterSkillList = (List<RoleSkill>) monster.getSkillMap().values();
+		List<RoleSkill> monsterSkillList = new ArrayList<>(monster.getSkillMap().values());
 
 		Random random = new Random();
 		int randomSkillIndex = random.nextInt(monsterSkillList.size());
 
-		List<SceneUserCache> caches = (List<SceneUserCache>) userMap.values();
+		List<SceneUserCache> caches = new ArrayList<>(userMap.values());
 
 		SkillService.INSTANCE.dealSkillEffect(monsterSkillList.get(randomSkillIndex), monster, caches.get(0).getRole(),
 				System.currentTimeMillis());
