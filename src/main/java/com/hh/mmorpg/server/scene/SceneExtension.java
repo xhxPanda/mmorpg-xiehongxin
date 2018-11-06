@@ -85,6 +85,7 @@ public class SceneExtension {
 		int bonusId = cmdDomain.getIntParam("bid");
 
 		ReplyDomain replyDomain = service.getRoleKillMonsterBonus(user, bonusId);
+		
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
