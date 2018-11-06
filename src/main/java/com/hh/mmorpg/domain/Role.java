@@ -101,19 +101,19 @@ public class Role extends LivingThing {
 
 	public void setEquipment(UserEquipment clothes) {
 		int clothesType = clothes.getType();
-		if(equipmentMap.get(clothesType) != null && equipmentMap.get(clothesType).getId() == clothes.getClothesId()) {
+		if(equipmentMap.size() != 0 && equipmentMap.get(clothesType).getId() == clothes.getClothesId()) {
 			return;
 		}
 		
 		if (equipmentMap.containsKey(clothesType)) {
-			UserEquipment userClothes = equipmentMap.remove(clothesType);
+			UserEquipment userEquipment = equipmentMap.remove(clothesType);
 
 			// 卸下服装
-			for (Entry<Integer, Integer> entry : userClothes.getAttributeMap().entrySet()) {
+			for (Entry<Integer, Integer> entry : userEquipment.getAttributeMap().entrySet()) {
 				effectAttribute(entry.getKey(), -entry.getValue());
 			}
-			userClothes.setInUsed(false);
-			materialMap.get(MaterialType.EQUIPMENT_TYPE_ID).put(userClothes.getId(), userClothes);
+			userEquipment.setInUsed(false);
+			addMaterial(userEquipment);
 		}
 
 		// 装备服装
@@ -164,6 +164,7 @@ public class Role extends LivingThing {
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_ATTRIBUATE_CHANGE);
 		replyDomain.setIntDomain("attrubuteType", attribute.getId());
+		replyDomain.setStringDomain("属性名称", attribute.getName());
 		replyDomain.setIntDomain("value", attribute.getValue());
 		replyDomain.setIntDomain("roleId", id);
 		scene.notifyAllUser(replyDomain);

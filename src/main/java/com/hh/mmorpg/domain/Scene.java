@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -73,6 +74,9 @@ public class Scene {
 		this.monsterBeKillBonusmap = new HashMap<>();
 		this.npcRoleMap = domain.getNpcRoleMap();
 		start();
+		
+		// 监听怪物死亡事件
+		EventHandlerManager.INSATNCE.register(this);
 	}
 
 	public boolean isCanEnter(int id) {
@@ -168,6 +172,10 @@ public class Scene {
 
 	public void putMonster(Monster monster) {
 		monsterMap.put(monster.getUniqueId(), monster);
+		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_ENTRE);
+		replyDomain.setStringDomain("cmdDir", "新的怪物进入");
+		notifyAllUser(replyDomain);
 	}
 
 	public void addRoleKillMonsterBonus(int roleId, MonsterBeKillBonus beKillBonus) {
@@ -253,6 +261,10 @@ public class Scene {
 		}
 		return true;
 	}
+	
+	public boolean isEmpty() {
+		return userMap.size() == 0;
+	}
 
 	private void monsterAIAttack(Monster monster) {
 		List<RoleSkill> monsterSkillList = new ArrayList<>(monster.getSkillMap().values());
@@ -301,6 +313,7 @@ public class Scene {
 					// 完成所有轮数的怪物，副本结束
 					ReplyDomain replyDomain = new ReplyDomain();
 					replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
+					replyDomain.setStringDomain("cmdDir", "副本完成");
 					notifyAllUser(replyDomain);
 				}
 			}

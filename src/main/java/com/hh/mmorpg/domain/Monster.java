@@ -86,6 +86,7 @@ public class Monster extends LivingThing {
 		Scene scene = SceneService.INSTANCE.getSceneMap().get(sceneId);
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_ATTRIBUATE_CHANGE);
+		replyDomain.setStringDomain("cmdDir", "唤醒角色的属性变化");
 		replyDomain.setIntDomain("attrubuteType", attribute.getId());
 		replyDomain.setIntDomain("value", attribute.getValue());
 		replyDomain.setIntDomain("monsterId", getUniqueId());
@@ -98,6 +99,7 @@ public class Monster extends LivingThing {
 		Scene scene = SceneService.INSTANCE.getSceneMap().get(sceneId);
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BUFF_ADD);
+		replyDomain.setStringDomain("cmdDir", "唤醒角色buff增加");
 		replyDomain.setIntDomain("buffId", roleBuff.getBuffId());
 		replyDomain.setIntDomain("monsterId", getUniqueId());
 		scene.notifyAllUser(replyDomain);

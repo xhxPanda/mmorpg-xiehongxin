@@ -37,13 +37,13 @@ public class MessageService {
 			return ReplyDomain.FAILE;
 		}
 
-		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
 		ReplyDomain message = new ReplyDomain();
 		message.setIntDomain("rid", role.getRoleId());
 		message.setStringDomain("name", role.getName());
 		message.setStringDomain("content", content);
-
+		MessageExtension.notifyUserMessage(recipentUser, message);
 		return ReplyDomain.SUCCESS;
 	}
 

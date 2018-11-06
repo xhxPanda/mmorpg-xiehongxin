@@ -41,6 +41,7 @@ public class RoleExtension {
 		ReplyDomain reply = service.userUseRole(user, roleId);
 
 		reply.setStringDomain("cmd", USER_ROLE);
+		reply.setStringDomain("cmddir", "使用角色");
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
 

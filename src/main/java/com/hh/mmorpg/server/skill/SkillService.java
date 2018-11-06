@@ -31,7 +31,7 @@ public class SkillService {
 			long now) {
 		SkillDomain domain = getSkillDomain(roleSkill.getSkillId());
 
-		if (now - roleSkill.getLastUseTime() < domain.getCd()) {
+		if (now - roleSkill.getLastUseTime() <= domain.getCd()) {
 			return ReplyDomain.IN_CD;
 		}
 

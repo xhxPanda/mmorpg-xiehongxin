@@ -100,7 +100,7 @@ public class SceneService {
 			if (oldSceneId == null) {
 				return ReplyDomain.FAILE;
 			}
-			entreCopy(sceneUserCache, sceneTypeId);
+			sceneId = entreCopy(sceneUserCache, sceneTypeId);
 		} else {
 			// 进入新场景
 			Scene newScene = sceneMap.get(sceneId);
@@ -115,7 +115,7 @@ public class SceneService {
 		return replyDomain;
 	}
 
-	private void entreCopy(SceneUserCache sceneUserCache, int sceneTypeId) {
+	private int entreCopy(SceneUserCache sceneUserCache, int sceneTypeId) {
 		SceneDomain sceneDomain = sceneDomainMap.get(sceneTypeId);
 
 		Scene scene = null;
@@ -132,7 +132,7 @@ public class SceneService {
 		}
 
 		finishScene(sceneId);
-
+		return sceneId;
 	}
 
 	public void finishScene(int sceneId) {
@@ -142,7 +142,7 @@ public class SceneService {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				removeScene(sceneId);
+				userForceLeaveCopy(sceneId);
 			}
 		}, 60, TimeUnit.MINUTES);
 	}
@@ -210,12 +210,13 @@ public class SceneService {
 
 		ReplyDomain replyDomain = SkillService.INSTANCE.dealSkillEffect(roleSkill, role, monster, now);
 		if (!replyDomain.isSuccess()) {
-			return ReplyDomain.FAILE;
+			return replyDomain;
 		}
 
 		ReplyDomain notifyReplyDomain = new ReplyDomain();
 		notifyReplyDomain.setStringDomain("m", monster.toString());
 		notifyReplyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BE_ATTACK);
+		notifyReplyDomain.setStringDomain("cmdDir", "唤醒客户端被攻击了");
 		scene.notifyAllUser(notifyReplyDomain);
 		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
 		return domain;
@@ -259,7 +260,7 @@ public class SceneService {
 	// 获取用户所在的场景
 	public Scene getUserScene(int userId) {
 		Integer sceneId = sceneUserMap.get(userId);
-		if(sceneId == null) {
+		if (sceneId == null) {
 			return null;
 		}
 		return sceneMap.get(sceneId);
@@ -346,7 +347,7 @@ public class SceneService {
 		Scene scene = sceneMap.get(sceneId);
 
 		scene.userLeaveScene(userLostData.getUser());
-
+		judgeScene(scene);
 		System.out.println("用户下线了");
 	}
 
@@ -367,6 +368,7 @@ public class SceneService {
 		}
 
 		scene.userLeaveScene(user);
+		judgeScene(scene);
 	}
 
 	// 监听怪兽死亡的事件，掉落物品
@@ -389,21 +391,33 @@ public class SceneService {
 			ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 			replyDomain.setStringDomain("bonus", monsterBeKillBonus.toString());
 			replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_ROLE_MONSTER_BONUS_FALL);
+			replyDomain.setStringDomain("cmddir", "怪物死亡掉落物品");
 			// 通知前端奖励加入场景
 			scene.notifyAllUser(replyDomain);
 		}
 
 	}
 
-	private void removeScene(int sceneId) {
-		Scene scene = sceneMap.remove(sceneId);
+	// 判断该场景是否副本，是的话判断是否已经没人了，没人的话就移除
+	private void judgeScene(Scene scene) {
+		if (scene.isCopy() && scene.isEmpty()) {
+			removeScene(scene);
+		}
+	}
+
+	private void removeScene(Scene scene) {
+		sceneMap.remove(scene.getId());
 		scene.shutdown();
+	}
+
+	private void userForceLeaveCopy(int sceneId) {
+		Scene scene = sceneMap.get(sceneId);
 
 		// 提醒用户该副本超出了时间限制
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_BEYOND_TIME);
 		scene.notifyAllUser(replyDomain);
-
+		removeScene(scene);
 		// 执行移除操作，用户回到上一次所在的地图
 		for (SceneUserCache sceneUserCache : scene.getUserMap().values()) {
 			sceneUserMap.remove(sceneUserCache.getUserId());

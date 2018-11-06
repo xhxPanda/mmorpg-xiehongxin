@@ -11,15 +11,15 @@ import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 8)
+@Extension(id = 4)
 public class EmailExtension {
 
 	private EmailService service = EmailService.INSTANCE;
 
-	private static final String GET_EMAIL_INFO = "8_1";
-	private static final String SEND_EMAIL = "8_2";
-	private static final String READ_EMAIL = "8_3";
-	private static final String GET_EMAIL_BONUS = "8_4";
+	private static final String GET_EMAIL_INFO = "4_1";
+	private static final String SEND_EMAIL = "4_2";
+	private static final String READ_EMAIL = "4_3";
+	private static final String GET_EMAIL_BONUS = "4_4";
 
 	private static final String NOTIFY_RECIPIENT_EMAIL = "8_100";
 

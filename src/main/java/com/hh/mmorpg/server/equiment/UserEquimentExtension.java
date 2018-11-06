@@ -7,13 +7,13 @@ import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 9)
+@Extension(id = 7)
 public class UserEquimentExtension {
 	
 	private UserEquimentService service = UserEquimentService.INSTANCE;
 	
-	private static final String SHOW_EQUIMENT = "9_1";
-	private static final String WEAR_EQUIMENT = "9_2";
+	private static final String SHOW_EQUIMENT = "7_1";
+	private static final String WEAR_EQUIMENT = "7_2";
 	
 	@CmdService(cmd = SHOW_EQUIMENT)
 	public void showEquiment(User user, CMDdomain cmDdomain) {

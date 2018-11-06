@@ -13,15 +13,15 @@ import com.hh.mmorpg.server.ExtensionSender;
   *  消息处理
  */
 
-@Extension(id = 9)
+@Extension(id = 6)
 public class MessageExtension {
 	private MessageService service = MessageService.INSTANCE;
 
-	private static final String SEND_WORLD_MESSAGE = "9_1";
-	private static final String SEND_TO_USER = "9_2";
+	private static final String SEND_WORLD_MESSAGE = "6_1";
+	private static final String SEND_TO_USER = "6_2";
 
-	public static final String NOTIFY_USER_WORLD_MESSAGE = "9_100";
-	private static final String NOTIFY_USER_MESSAGE = "9_101";
+	public static final String NOTIFY_USER_WORLD_MESSAGE = "6_100";
+	private static final String NOTIFY_USER_MESSAGE = "6_101";
 
 	@CmdService(cmd = SEND_WORLD_MESSAGE)
 	public void sendWorldMessage(User user, CMDdomain cmDdomain) {
@@ -35,7 +35,7 @@ public class MessageExtension {
 	@CmdService(cmd = SEND_TO_USER)
 	public void sendToUser(User user, CMDdomain cmDdomain) {
 		String content = cmDdomain.getStringParam("c");
-		int userId = cmDdomain.getIntParam("uid");
+		int userId = cmDdomain.getIntParam("ruid");
 		
 		ReplyDomain replyDomain = service.sendMessageToUser(user, userId, content);
 		replyDomain.setStringDomain("cmd", SEND_TO_USER);

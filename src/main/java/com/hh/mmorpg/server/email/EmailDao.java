@@ -10,9 +10,9 @@ import com.hh.mmorpg.jdbc.JDBCManager;
 public class EmailDao {
 	public static final EmailDao INSTANCE = new EmailDao();
 
-	private static final String SEND_EMAIL = "REPLACE INTO `useremali0` (`roleId`, `emailId`, `content`, `bonus`, `read`, `senderId`, `senderName`) VALUES (?, ?, ?, ?, ?, ?, ?)";
-	private static final String GET_ROLE_EMAIL = "SELET * FROM `useremali0` WHERE `roleId` = ?";
-	private static final String UPDATE_EMAIL_STATUS = "UPDATE `useremali0` set `read` = ?  WHERE  `roleId`=? AND `emailId`=?;";
+	private static final String SEND_EMAIL = "REPLACE INTO `useremail0` (`roleId`, `emailId`, `content`, `bonus`, `read`, `senderId`, `senderName`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private static final String GET_ROLE_EMAIL = "SELECT * FROM `useremail0` WHERE `roleId` = ?";
+	private static final String UPDATE_EMAIL_STATUS = "UPDATE `useremail0` set `read` = ?  WHERE  `roleId`=? AND `emailId`=?;";
 
 	public int sendEmail(Email email) {
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(SEND_EMAIL,

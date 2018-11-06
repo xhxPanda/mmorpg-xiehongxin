@@ -30,6 +30,7 @@ public class SceneExtension {
 	public static final String NOTIFY_MONSTER_BUFF_ADD = "2_108";
 	public static final String NOTIFY_USER_COPY_BEYOND_TIME = "2_109";
 	public static final String NOTIFY_USER_COPY_FINISH = "2_110";
+	public static final String NOTIFY_MONSTER_ENTRE = "2_111";
 
 	@CmdService(cmd = JOIN_SCENE)
 	public void joinScene(User user, CMDdomain cmdDomain) {
@@ -38,6 +39,7 @@ public class SceneExtension {
 
 		ReplyDomain replyDomain = service.userJoinScene(user, sceneTypeId, sceneId);
 		replyDomain.setStringDomain("cmd", JOIN_SCENE);
+		replyDomain.setStringDomain("cmdDir", "进入场景");
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
@@ -57,6 +59,7 @@ public class SceneExtension {
 		ReplyDomain replyDomain = service.attackMonster(user, skillId, monsterId);
 
 		replyDomain.setStringDomain("cmd", ATTACK_MONSTER);
+		replyDomain.setStringDomain("cmdDir", "攻击怪物");
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	

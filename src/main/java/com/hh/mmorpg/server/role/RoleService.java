@@ -88,8 +88,9 @@ public class RoleService {
 			RoleChangeData data = new RoleChangeData(userId, oldRole.getId(), roleId);
 			EventHandlerManager.INSATNCE.methodInvoke(EventType.ROLE_CHANGE, new EventDealData<RoleChangeData>(data));
 		}
-
-		return ReplyDomain.SUCCESS;
+		
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		return replyDomain;
 	}
 
 	public ReplyDomain getUserUsingRole(User user) {
