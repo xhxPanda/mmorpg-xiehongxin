@@ -10,18 +10,18 @@ import com.hh.mmorpg.server.ExtensionSender;
 @Extension(id = 5)
 public class MaterialExtension {
 
-	private static final String BUY_GOODS = "5_1";
-	private static final String SELL_GOODS = "5_2";
+	private static final String BUY_GOODS = "buyGoods";
+	private static final String SELL_GOODS = "sellGoods";
 
-	private static final String SHOW_ALL_MATERIAL = "5_3";
+	private static final String SHOW_ALL_MATERIAL = "showAllMaterial";
 
-	private static final String NOTIFY_USER_GAIN_MATERIAL = "5_100";
-	private static final String NOTIFY_USER_DEC_MATERIAL = "5_101";
+	private static final String NOTIFY_USER_GAIN_MATERIAL = "notifyUserGainMaterial";
+	private static final String NOTIFY_USER_DEC_MATERIAL = "notifyUserDecMaterial";
 
 	@CmdService(cmd = BUY_GOODS)
 	public void buyGoods(User user, CMDdomain cmDdomain) {
-		int goodsId = cmDdomain.getIntParam("gi");
-		int num = cmDdomain.getIntParam("n");
+		int goodsId = cmDdomain.getIntParam(2);
+		int num = cmDdomain.getIntParam(3);
 
 		ReplyDomain replyDomain = MaterialService.INSTANCE.buyGoods(user, goodsId, num);
 		replyDomain.setStringDomain("cmd", BUY_GOODS);
@@ -31,7 +31,7 @@ public class MaterialExtension {
 
 	@CmdService(cmd = SELL_GOODS)
 	public void sellGoods(User user, CMDdomain cmDdomain) {
-		String materialStr = cmDdomain.getStringParam("ms");
+		String materialStr = cmDdomain.getStringParam(2);
 
 		ReplyDomain replyDomain = MaterialService.INSTANCE.sellGoods(user, materialStr);
 		replyDomain.setStringDomain("cmd", SELL_GOODS);

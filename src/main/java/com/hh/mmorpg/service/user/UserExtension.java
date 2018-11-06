@@ -8,8 +8,8 @@ import io.netty.channel.Channel;
 
 public class UserExtension extends ExtensionSupport {
 
-	public static final String LOGIN = "1_1";
-	public static final String REGISTER = "1_2";
+	public static final String LOGIN = "doLogin";
+	public static final String REGISTER = "doRegister";
 
 	private static final String NOTIFY_LOGIN = "1_100";
 

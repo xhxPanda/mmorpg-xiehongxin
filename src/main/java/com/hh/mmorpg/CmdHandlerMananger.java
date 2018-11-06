@@ -1,6 +1,7 @@
 package com.hh.mmorpg;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -18,22 +19,33 @@ public class CmdHandlerMananger {
 
 	public static final CmdHandlerMananger INSATANCE = new CmdHandlerMananger();
 
-	private Map<Integer, ServiceHandler> methodMap;
+	private Map<String, ServiceHandler> methodMap;
 
 	private CmdHandlerMananger() {
-		methodMap = new HashMap<Integer, ServiceHandler>();
+		methodMap = new HashMap<String, ServiceHandler>();
 
 		init();
 
 	}
 
-	public void invokeHandler(String cmd, User user, CMDdomain cmdDomain) {
-		int serviceId = getServiceId(cmd);
-		ServiceHandler handler = methodMap.get(serviceId);
+	public void invokeHandler(User user, CMDdomain cmdDomain) {
+
+		ServiceHandler handler = methodMap.get(cmdDomain.getStringParam(0));
 		if (handler == null) {
 			return;
 		}
-		handler.invodeMethod(cmd, user, cmdDomain);
+		try {
+			handler.getMethod().invoke(handler.getClassInstance(), user, cmdDomain);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void init() {
@@ -56,9 +68,15 @@ public class CmdHandlerMananger {
 			}
 
 			ServiceHandler handler = null;
-			if (methodMap.get(extension.id()) == null) {
+
+			for (Method method : c.getMethods()) {
+				CmdService annotation = method.getAnnotation(CmdService.class);
+				if (annotation == null) {
+					continue;
+				}
+
 				try {
-					handler = new ServiceHandler(extension.id(), c.newInstance());
+					handler = new ServiceHandler(extension.id(), c.newInstance(), method);
 				} catch (InstantiationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -66,18 +84,8 @@ public class CmdHandlerMananger {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				methodMap.put(extension.id(), handler);
-				for (Method method : c.getMethods()) {
-					CmdService annotation = method.getAnnotation(CmdService.class);
-					if (annotation == null) {
-						continue;
-					}
-
-					String cmdKey = annotation.cmd();
-					handler.addMethod(cmdKey, method);
-				}
+				methodMap.put(annotation.cmd(), handler);
 			}
-
 		}
 	}
 
@@ -117,7 +125,4 @@ public class CmdHandlerMananger {
 		return myClassName;
 	}
 
-	private int getServiceId(String cmd) {
-		return Integer.parseInt(cmd.split("_")[0]);
-	}
 }

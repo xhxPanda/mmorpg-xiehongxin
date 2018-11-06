@@ -1,6 +1,5 @@
 package com.hh.mmorpg.server;
 
-import com.alibaba.fastjson.JSONObject;
 import com.hh.mmorpg.domain.CMDdomain;
 import com.hh.mmorpg.manager.CMDmanager;
 import com.hh.mmorpg.service.user.UserService;
@@ -18,9 +17,8 @@ public class MessageHandler extends SimpleChannelInboundHandler<TextWebSocketFra
 
 		Channel channel = ctx.channel();
 		String cmdData = msg.text();
-		JSONObject jsonObject = JSONObject.parseObject(cmdData);
 
-		CMDmanager.INSTANCE.dealCMD(new CMDdomain(channel, jsonObject));
+		CMDmanager.INSTANCE.dealCMD(new CMDdomain(channel, cmdData));
 	}
 
 	@Override

@@ -16,16 +16,16 @@ public class EmailExtension {
 
 	private EmailService service = EmailService.INSTANCE;
 
-	private static final String GET_EMAIL_INFO = "4_1";
-	private static final String SEND_EMAIL = "4_2";
-	private static final String READ_EMAIL = "4_3";
-	private static final String GET_EMAIL_BONUS = "4_4";
+	private static final String GET_EMAIL_INFO = "getEmailInfo";
+	private static final String SEND_EMAIL = "sendEmail";
+	private static final String READ_EMAIL = "readEmail";
+	private static final String GET_EMAIL_BONUS = "getEmailBonus";
 
-	private static final String NOTIFY_RECIPIENT_EMAIL = "8_100";
+	private static final String NOTIFY_RECIPIENT_EMAIL = "notifyReipientEmail";
 
 	@CmdService(cmd = GET_EMAIL_INFO)
 	public void getEmailInfo(User user, CMDdomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam("ri");
+		int roleId = cmdDomain.getIntParam(2);
 		Map<Integer, Email> emailMap = service.getRoleEmail(roleId);
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setListDomain("email", emailMap.values());
@@ -35,10 +35,10 @@ public class EmailExtension {
 
 	@CmdService(cmd = SEND_EMAIL)
 	public void sendEmail(User user, CMDdomain cmdDomain) {
-		int recipientRoleId = cmdDomain.getIntParam("rri");
-		String bonusStr = cmdDomain.getStringParam("b");
-		String content = cmdDomain.getStringParam("c");
-		int recipientId = cmdDomain.getIntParam("rui");
+		int recipientRoleId = cmdDomain.getIntParam(2);
+		String bonusStr = cmdDomain.getStringParam(3);
+		String content = cmdDomain.getStringParam(4);
+		int recipientId = cmdDomain.getIntParam(5);
 
 		ReplyDomain replyDomain = service.sendEmail(user, recipientRoleId, recipientId, bonusStr, content);
 		replyDomain.setStringDomain("cmd", SEND_EMAIL);
@@ -48,7 +48,7 @@ public class EmailExtension {
 
 	@CmdService(cmd = READ_EMAIL)
 	public void readEmail(User user, CMDdomain cmdDomain) {
-		int emailId = cmdDomain.getIntParam("eid");
+		int emailId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.readEmail(user, emailId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -56,7 +56,7 @@ public class EmailExtension {
 
 	@CmdService(cmd = GET_EMAIL_BONUS)
 	public void getEmailBonus(User user, CMDdomain cmdDomain) {
-		int emailId = cmdDomain.getIntParam("eid");
+		int emailId = cmdDomain.getIntParam(2);
 		ReplyDomain replyDomain = service.getEmailBonus(user, emailId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

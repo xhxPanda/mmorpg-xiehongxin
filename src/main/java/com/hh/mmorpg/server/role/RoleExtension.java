@@ -12,10 +12,10 @@ public class RoleExtension {
 
 	private RoleService service = RoleService.INSTANCE;
 
-	private static final String GET_ALL_ROLE = "3_1";
-	private static final String CREATE_ROLE = "3_2";
-	private static final String USER_ROLE = "3_3";
-	private static final String GET_USER_NOW_ROLE = "3_4";
+	private static final String GET_ALL_ROLE = "getAllRole";
+	private static final String CREATE_ROLE = "createRole";
+	private static final String USE_ROLE = "useRole";
+	private static final String GET_USER_NOW_ROLE = "getUserNowRole";
 
 	@CmdService(cmd = GET_ALL_ROLE)
 	public void getAllRole(User user, CMDdomain cmdDomain) {
@@ -28,19 +28,19 @@ public class RoleExtension {
 
 	@CmdService(cmd = CREATE_ROLE)
 	public void creatRole(User user, CMDdomain cmdDomain) {
-		int roleDomainId = cmdDomain.getIntParam("rdi");
-		String name = cmdDomain.getStringParam("n");
+		int roleDomainId = cmdDomain.getIntParam(2);
+		String name = cmdDomain.getStringParam(3);
 
 		ReplyDomain replyDomain = service.creatRole(user, roleDomainId, name);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
-	@CmdService(cmd = USER_ROLE)
+	@CmdService(cmd = USE_ROLE)
 	public void useRole(User user, CMDdomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam("ri");
+		int roleId = cmdDomain.getIntParam(2);
 		ReplyDomain reply = service.userUseRole(user, roleId);
 
-		reply.setStringDomain("cmd", USER_ROLE);
+		reply.setStringDomain("cmd", USE_ROLE);
 		reply.setStringDomain("cmddir", "使用角色");
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}

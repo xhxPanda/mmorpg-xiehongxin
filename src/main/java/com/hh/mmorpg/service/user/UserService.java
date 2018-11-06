@@ -28,7 +28,7 @@ public class UserService {
 	}
 
 	public void doLoginOrRegister(CMDdomain cmddomain) {
-		if (cmddomain.getStringParam("cmd").equals(UserExtension.LOGIN)) {
+		if (cmddomain.getStringParam(0).equals(UserExtension.LOGIN)) {
 			doLogin(cmddomain);
 		} else {
 			doRegister(cmddomain);
@@ -36,8 +36,8 @@ public class UserService {
 	}
 
 	private void doRegister(CMDdomain cmddomain) {
-		int userId = cmddomain.getIntParam("uid");
-		String password = cmddomain.getStringParam("p");
+		int userId = cmddomain.getIntParam(1);
+		String password = cmddomain.getStringParam(2);
 		User user = new User(userId, password);
 
 		int result = UserDao.INSTANCE.insertUser(user);
@@ -48,8 +48,8 @@ public class UserService {
 
 	private void doLogin(CMDdomain cmddomain) {
 
-		int userId = cmddomain.getIntParam("uid");
-		String password = cmddomain.getStringParam("p");
+		int userId = cmddomain.getIntParam(1);
+		String password = cmddomain.getStringParam(2);
 
 		User user = UserDao.INSTANCE.selectUser(userId, password);
 		if (user == null) {

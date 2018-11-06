@@ -38,4 +38,13 @@ public class UserEquimentService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	public ReplyDomain takeOffEquiment(User user, int equimentType) {
+		// TODO Auto-generated method stub
+		int userId = user.getUserId();
+
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+		role.takeOffEquiment(equimentType);
+		return ReplyDomain.SUCCESS;
+	}
+
 }

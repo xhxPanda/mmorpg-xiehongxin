@@ -8,35 +8,39 @@ public class ServiceHandler {
 
 	private int key;
 	private Object classInstance;
-	private HashMap<String, Method> methodMap;
+	private Method method;
 
-	public ServiceHandler(int key, Object classInstance) {
+	public ServiceHandler(int key, Object classInstance, Method method) {
 		this.key = key;
 		this.classInstance = classInstance;
-		this.methodMap = new HashMap<String, Method>();
+		this.method = method;
 	}
 
-	public void addMethod(String key, Method method) {
-		methodMap.put(key, method);
-	}
-
-	public void invodeMethod(String key, Object... args) {
-		try {
-			methodMap.get(key).invoke(classInstance, args);
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void invodeMethod(String key, Object... args) {
+//		try {
+//			methodMap.get(key).invoke(classInstance, args);
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalArgumentException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvocationTargetException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	public int getKey() {
 		return key;
+	}
+
+	public Object getClassInstance() {
+		return classInstance;
+	}
+
+	public Method getMethod() {
+		return method;
 	}
 
 }

@@ -12,17 +12,18 @@ public class CMDmanager {
 	public static final CMDmanager INSTANCE = new CMDmanager();
 
 	public void dealCMD(CMDdomain cmddomain) {
-		String cmd = cmddomain.getStringParam("cmd");
-		if (cmd.equals("1_1") || cmd.equals("1_2")) {
+		// 获取模块
+		String cmd = cmddomain.getStringParam(0);
+		if (cmd.equals("doLogin") || cmd.equals("doRegister")) {
 			UserService.INSTANCE.doLoginOrRegister(cmddomain);
 		} else {
-			Integer userId = cmddomain.getIntParam("uid");
+			Integer userId = cmddomain.getIntParam(1);
 			if (userId != null) {
 				User user = UserService.INSTANCE.getUser(userId);
 				if (user == null) {
 					ExtensionSender.INSTANCE.sendReply(cmddomain.getChannel(), ReplyDomain.FAILE);
 				}
-				CmdHandlerMananger.INSATANCE.invokeHandler(cmd, user, cmddomain);
+				CmdHandlerMananger.INSATANCE.invokeHandler(user, cmddomain);
 			}
 		}
 	}

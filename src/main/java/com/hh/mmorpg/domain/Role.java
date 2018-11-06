@@ -101,21 +101,12 @@ public class Role extends LivingThing {
 	}
 
 	public void setEquipment(UserEquipment equipment) {
-		int equipmentType = equipment.getType();
+    		int equipmentType = equipment.getType();
 		if(equipmentMap.size() != 0 && equipmentMap.get(equipmentType).getId() == equipment.getId()) {
 			return;
 		}
 		
-		if (equipmentMap.containsKey(equipmentType)) {
-			UserEquipment userEquipment = equipmentMap.remove(equipmentType);
-
-			// 卸下服装
-			for (Entry<Integer, Integer> entry : userEquipment.getAttributeMap().entrySet()) {
-				effectAttribute(entry.getKey(), -entry.getValue());
-			}
-			userEquipment.setInUsed(false);
-			addMaterial(userEquipment);
-		}
+		takeOffEquiment(equipmentType);
 
 		// 装备服装
 		equipmentMap.put(equipment.getType(), equipment);
@@ -126,6 +117,19 @@ public class Role extends LivingThing {
 		MaterialDao.INSTANCE.updateRoleEquiment(equipment);
 		if(materialMap.get(equipmentType) != null)
 			materialMap.get(equipmentType).remove(equipment.getId());
+	}
+	
+	public void takeOffEquiment(int equipmentType) {
+		if (equipmentMap.containsKey(equipmentType)) {
+			UserEquipment userEquipment = equipmentMap.remove(equipmentType);
+
+			// 卸下服装
+			for (Entry<Integer, Integer> entry : userEquipment.getAttributeMap().entrySet()) {
+				effectAttribute(entry.getKey(), -entry.getValue());
+			}
+			userEquipment.setInUsed(false);
+			addMaterial(userEquipment);
+		}
 	}
 
 	public void addMaterial(Map<Integer, Material> materialMap) {
