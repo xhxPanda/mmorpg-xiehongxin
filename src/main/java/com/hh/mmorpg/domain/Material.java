@@ -52,4 +52,10 @@ public class Material {
 		this.sellPrice = sellPrice;
 	}
 
+	@Override
+	public String toString() {
+		return "Material [roleId=" + roleId + ", name=" + name + ", id=" + id + ", type=" + type + ", quantity="
+				+ quantity + "]";
+	}
+
 }

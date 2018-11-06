@@ -23,11 +23,11 @@ public class UserEquimentExtension {
 	}
 	
 	@CmdService(cmd = WEAR_EQUIMENT)
-	public void wearEquient(User user, CMDdomain cmDdomain) {
+	public void wearEquiment(User user, CMDdomain cmDdomain) {
 		
 		int equientId = cmDdomain.getIntParam("ei");
 		
-		ReplyDomain replyDomain = service.setUserEquiment(user, equientId);
+		ReplyDomain replyDomain = service.wearEquiment(user, equientId);
 		replyDomain.setStringDomain("cmd", WEAR_EQUIMENT);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

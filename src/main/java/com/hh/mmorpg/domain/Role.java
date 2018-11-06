@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import com.hh.mmorpg.jdbc.ResultBuilder;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
+import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.scene.SceneService;
 
@@ -99,14 +100,14 @@ public class Role extends LivingThing {
 		return materialMap.get(materialType).containsKey(materialId);
 	}
 
-	public void setEquipment(UserEquipment clothes) {
-		int clothesType = clothes.getType();
-		if(equipmentMap.size() != 0 && equipmentMap.get(clothesType).getId() == clothes.getClothesId()) {
+	public void setEquipment(UserEquipment equipment) {
+		int equipmentType = equipment.getType();
+		if(equipmentMap.size() != 0 && equipmentMap.get(equipmentType).getId() == equipment.getId()) {
 			return;
 		}
 		
-		if (equipmentMap.containsKey(clothesType)) {
-			UserEquipment userEquipment = equipmentMap.remove(clothesType);
+		if (equipmentMap.containsKey(equipmentType)) {
+			UserEquipment userEquipment = equipmentMap.remove(equipmentType);
 
 			// 卸下服装
 			for (Entry<Integer, Integer> entry : userEquipment.getAttributeMap().entrySet()) {
@@ -117,12 +118,14 @@ public class Role extends LivingThing {
 		}
 
 		// 装备服装
-		equipmentMap.put(clothes.getType(), clothes);
-		for (Entry<Integer, Integer> entry : clothes.getAttributeMap().entrySet()) {
+		equipmentMap.put(equipment.getType(), equipment);
+		for (Entry<Integer, Integer> entry : equipment.getAttributeMap().entrySet()) {
 			effectAttribute(entry.getKey(), entry.getValue());
 		}
-		clothes.setInUsed(true);
-		materialMap.remove(clothes.getId());
+		equipment.setInUsed(true);
+		MaterialDao.INSTANCE.updateRoleEquiment(equipment);
+		if(materialMap.get(equipmentType) != null)
+			materialMap.get(equipmentType).remove(equipment.getId());
 	}
 
 	public void addMaterial(Map<Integer, Material> materialMap) {

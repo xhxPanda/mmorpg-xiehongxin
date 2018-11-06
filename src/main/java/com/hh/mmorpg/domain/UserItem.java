@@ -41,7 +41,7 @@ public class UserItem extends Material {
 
 		this.cd = cd;
 		this.gainTime = gainTime;
-		this.setSellPrice(sellPrice);
+		this.sellPrice = sellPrice;
 	}
 
 	public Map<Integer, Integer> getEffectAttributeMap() {
@@ -98,6 +98,12 @@ public class UserItem extends Material {
 			builder.append(i);
 		}
 		return builder.toString();
+	}
+
+	@Override
+	public String toString() {
+		return "UserItem [lastUsedTime=" + lastUsedTime + ", effectAttributeMap=" + effectAttributeMap + ", buffList="
+				+ buffList + ", cd=" + cd + ", gainTime=" + gainTime + ", sellPrice=" + getSellPrice() + "]";
 	}
 
 	public static final ResultBuilder<UserItem> BUILDER = new ResultBuilder<UserItem>() {

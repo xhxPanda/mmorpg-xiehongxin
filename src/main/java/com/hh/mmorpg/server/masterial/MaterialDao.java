@@ -14,7 +14,7 @@ public class MaterialDao {
 
 	private static final String UPDATE_TREASURE = "INSERT INTO roleTreasure0 (roleId, treasureId, name, quantity) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity = ?";
 	private static final String UPDATE_ITEM = "INSERT INTO roleitem0 (roleId, itemId, name, quantity, gainTime, lastUsedTime, cd, effectAttribute, buffs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity = ?";
-	private static final String UPDATE_EQUIMENT = "REPLACE INTO roleequiment0 (roleId, equimentId, name, gainTime, effectAttribute, maxDurability, durability) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	private static final String UPDATE_EQUIMENT = "REPLACE INTO roleequiment0 (roleId, equimentId, name, gainTime, effectAttribute, maxDurability, durability, sellPrice, inUsed) VALUES (?, ?, ?, ?, ?, ?, ?,?,?)";
 
 	private static final String DELETE_EQUIMENT = "DELETE FROM roleequiment0 WHERE roleId = ? AND equimentId = ?";
 
@@ -59,7 +59,6 @@ public class MaterialDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return list;
 	}
 
@@ -78,7 +77,7 @@ public class MaterialDao {
 	public int updateRoleEquiment(UserEquipment equipment) {
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_EQUIMENT,
 				new Object[] { equipment.getRoleId(), equipment.getId(), equipment.getName(), equipment.getGainTime(),
-						equipment.getAttributeStr(), equipment.getMaxDurability(), equipment.getDurability() });
+						equipment.getAttributeStr(), equipment.getMaxDurability(), equipment.getDurability(), equipment.getSellPrice(), equipment.isInUsed() });
 	}
 
 	public int deleteRoleEquiment(int roleId, int equipmentId) {

@@ -39,7 +39,7 @@ public class Scene {
 	private long buildTime; // 生成场景的时间
 	private Map<Integer, Map<Integer, Monster>> monsterSetMap;// monster初始配置的怪物生成序列
 
-	private Map<Integer, Map<Integer, MonsterBeKillBonus>> monsterBeKillBonusmap; // 每个角色的掉落的monster道具，3秒后会被清空
+	private Map<Integer, Map<Integer, MonsterBeKillBonus>> monsterBeKillBonusmap; // 每个角色的掉落的monster道具
 
 	private ConcurrentHashMap<Integer, SceneUserCache> userMap = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<Integer, Monster> monsterMap;

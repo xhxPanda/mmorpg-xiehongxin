@@ -92,6 +92,9 @@ public class SceneService {
 		} else {
 			// 初始进入场景
 			Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+			if(role == null) {
+				return ReplyDomain.FAILE;
+			}
 			sceneUserCache = new SceneUserCache(userId, role);
 		}
 
@@ -198,7 +201,7 @@ public class SceneService {
 		}
 
 		UserEquipment userEquipment = role.getEquipmentMap().get(EquimentType.ARMS);
-		if (!userEquipment.dropDurability().isSuccess()) {
+		if (userEquipment == null || !userEquipment.dropDurability().isSuccess()) {
 			return ReplyDomain.EQUIMENT_DURABILITY_HARM;
 		}
 

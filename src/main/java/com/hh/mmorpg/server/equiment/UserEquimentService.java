@@ -23,12 +23,12 @@ public class UserEquimentService {
 		return replyDomain;
 	}
 
-	public ReplyDomain setUserEquiment(User user, int clothesId) {
+	public ReplyDomain wearEquiment(User user, int equimentId) {
 		int userId = user.getUserId();
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
-		UserEquipment equipment = (UserEquipment) role.getMaterial(MaterialType.EQUIPMENT_TYPE_ID, clothesId);
+		UserEquipment equipment = (UserEquipment) role.getMaterial(MaterialType.EQUIPMENT_TYPE_ID, equimentId);
 		if (equipment == null) {
 			return ReplyDomain.FAILE;
 		}
