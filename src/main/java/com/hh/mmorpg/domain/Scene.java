@@ -193,7 +193,12 @@ public class Scene {
 	}
 
 	public List<MonsterBeKillBonus> getRoleKillMonsterBonusInfo(int roleId) {
-		return new ArrayList<MonsterBeKillBonus>(monsterBeKillBonusmap.get(roleId).values());
+		if(monsterBeKillBonusmap.get(roleId) != null) {
+			return new ArrayList<MonsterBeKillBonus>(monsterBeKillBonusmap.get(roleId).values());
+		} else {
+			return null;
+		}
+		
 	}
 
 	public ConcurrentHashMap<Integer, Monster> getMonsterMap() {

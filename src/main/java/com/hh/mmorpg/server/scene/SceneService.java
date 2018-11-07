@@ -289,7 +289,10 @@ public class SceneService {
 
 		List<MonsterBeKillBonus> monsterBeKillBonus = scene.getRoleKillMonsterBonusInfo(role.getId());
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
-		replyDomain.setListDomain("bonusList", monsterBeKillBonus);
+		if(monsterBeKillBonus != null) {
+			replyDomain.setListDomain("bonusList", monsterBeKillBonus);
+		}
+		
 		return replyDomain;
 	}
 
