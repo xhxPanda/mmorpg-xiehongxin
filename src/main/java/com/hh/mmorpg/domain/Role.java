@@ -86,10 +86,10 @@ public class Role extends LivingThing {
 		if (materials == null) {
 			materials = new HashMap<>();
 			materialMap.put(material.getType(), materials);
-			
-		} 
+
+		}
 		Material m = materials.get(material.getId());
-		if(m != null) {
+		if (m != null) {
 			materials.get(material.getId()).changeQuantity(material.getQuantity());
 		} else {
 			materials.put(material.getId(), material);
@@ -97,15 +97,18 @@ public class Role extends LivingThing {
 	}
 
 	public boolean isContainMaterial(int materialType, int materialId) {
+		if (materialMap.get(materialType) == null || materialMap.get(materialType).size() == 0) {
+			return false;
+		}
 		return materialMap.get(materialType).containsKey(materialId);
 	}
 
 	public void setEquipment(UserEquipment equipment) {
-    		int equipmentType = equipment.getType();
-		if(equipmentMap.size() != 0 && equipmentMap.get(equipmentType).getId() == equipment.getId()) {
+		int equipmentType = equipment.getType();
+		if (equipmentMap.size() != 0 && equipmentMap.get(equipmentType).getId() == equipment.getId()) {
 			return;
 		}
-		
+
 		takeOffEquiment(equipmentType);
 
 		// 装备服装
@@ -115,10 +118,10 @@ public class Role extends LivingThing {
 		}
 		equipment.setInUsed(true);
 		MaterialDao.INSTANCE.updateRoleEquiment(equipment);
-		if(materialMap.get(equipmentType) != null)
+		if (materialMap.get(equipmentType) != null)
 			materialMap.get(equipmentType).remove(equipment.getId());
 	}
-	
+
 	public void takeOffEquiment(int equipmentType) {
 		if (equipmentMap.containsKey(equipmentType)) {
 			UserEquipment userEquipment = equipmentMap.remove(equipmentType);
@@ -165,15 +168,14 @@ public class Role extends LivingThing {
 	public void notifyAttributeChange(Attribute attribute) {
 		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getUserScene(userId);
-		if(scene == null) {
+		if (scene == null) {
 			return;
 		}
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_ATTRIBUATE_CHANGE);
-		replyDomain.setIntDomain("attrubuteType", attribute.getId());
 		replyDomain.setStringDomain("属性名称", attribute.getName());
 		replyDomain.setIntDomain("value", attribute.getValue());
-		replyDomain.setIntDomain("roleId", id);
+		replyDomain.setIntDomain("角色id", id);
 		scene.notifyAllUser(replyDomain);
 	}
 
@@ -183,8 +185,8 @@ public class Role extends LivingThing {
 		Scene scene = SceneService.INSTANCE.getUserScene(userId);
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_BUFF_ADD);
-		replyDomain.setIntDomain("buffId", roleBuff.getBuffId());
-		replyDomain.setIntDomain("roleId", id);
+		replyDomain.setStringDomain("buff名称", roleBuff.getName());
+		replyDomain.setIntDomain("角色id", id);
 		scene.notifyAllUser(replyDomain);
 	}
 

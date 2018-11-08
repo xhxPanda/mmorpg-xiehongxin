@@ -22,7 +22,7 @@ public class ItemService {
 		int userId = user.getUserId();
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
-		UserItem userItem = (UserItem) role.getMaterial(MaterialType.ITEM_TYPE_ID,
+		UserItem userItem = (UserItem) role.getMaterial(MaterialType.ITEM_TYPE.getId(),
 				Integer.parseInt(itemStr.substring(0, 1)));
 		if (userItem.isPartCD()) {
 			return ReplyDomain.FAILE;

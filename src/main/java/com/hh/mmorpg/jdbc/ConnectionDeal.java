@@ -91,6 +91,7 @@ public class ConnectionDeal {
 		return object;
 	}
 
+	@SuppressWarnings("unused")
 	private List<Object> getObjectList(ResultSet result, ResultBuilder<?> builder) {
 		List<Object> list = new ArrayList<Object>();
 		try {

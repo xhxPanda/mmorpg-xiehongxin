@@ -31,7 +31,7 @@ public class SceneUserCache {
 
 	@Override
 	public String toString() {
-		return "SceneUserCache [userId=" + userId + ", role=" + role.toString() + "]";
+		return "角色 [userId=" + userId + ", 角色名称=" + role.getName() + ", hp=" + role.getAttribute(3).getValue() + ", mp=" + role.getAttribute(4).getValue() + "]";
 	}
 
 }

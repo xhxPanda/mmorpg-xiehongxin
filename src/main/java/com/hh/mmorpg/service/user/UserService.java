@@ -10,6 +10,7 @@ import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
+import com.hh.mmorpg.result.ResultCode;
 
 import io.netty.channel.Channel;
 
@@ -57,8 +58,7 @@ public class UserService {
 		} else {
 			doLogin(user, cmddomain.getChannel());
 
-			ReplyDomain replyDomain = new ReplyDomain(1);
-			replyDomain.setIntDomain("uid", user.getUserId());
+			ReplyDomain replyDomain = new ReplyDomain("登录" + ResultCode.SUCCESS);
 			UserExtension.notifyLogin(cmddomain.getChannel(), replyDomain);
 		}
 	}

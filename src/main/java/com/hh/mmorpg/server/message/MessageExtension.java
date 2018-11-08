@@ -17,18 +17,17 @@ import com.hh.mmorpg.server.ExtensionSender;
 public class MessageExtension {
 	private MessageService service = MessageService.INSTANCE;
 
-	private static final String SEND_WORLD_MESSAGE = "sendWorldMessage";
-	private static final String SEND_TO_USER = "sendToUser";
+	private static final String SEND_WORLD_MESSAGE = "发送世界信息";
+	private static final String SEND_TO_USER = "发送私聊信息";
 
-	public static final String NOTIFY_USER_WORLD_MESSAGE = "6_100";
-	private static final String NOTIFY_USER_MESSAGE = "6_101";
+	public static final String NOTIFY_USER_WORLD_MESSAGE = "世界信息";
+	private static final String NOTIFY_USER_MESSAGE = "私聊信息";
 
 	@CmdService(cmd = SEND_WORLD_MESSAGE)
 	public void sendWorldMessage(User user, CMDdomain cmDdomain) {
 		String content = cmDdomain.getStringParam(2);
 
 		ReplyDomain replyDomain = service.sendWorldMessage(content);
-		replyDomain.setStringDomain("cmd", SEND_WORLD_MESSAGE);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
@@ -38,7 +37,6 @@ public class MessageExtension {
 		int userId = cmDdomain.getIntParam(3);
 		
 		ReplyDomain replyDomain = service.sendMessageToUser(user, userId, content);
-		replyDomain.setStringDomain("cmd", SEND_TO_USER);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	

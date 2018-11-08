@@ -44,8 +44,8 @@ public class MonsterBeKillBonus {
 
 	@Override
 	public String toString() {
-		return "MonsterBeKillBonus [id=" + id + ", roleId=" + roleId + ", monsterId=" + monsterId + ", effectTime="
-				+ effectTime + ", bonus=" + bonus + "]";
+		return "MonsterBeKillBonus [id=" + id + ", 角色id=" + roleId + ", monsterId=" + monsterId + ", 生成时间=" + effectTime
+				+ ", 奖励=" + bonus + "]";
 	}
 
 }

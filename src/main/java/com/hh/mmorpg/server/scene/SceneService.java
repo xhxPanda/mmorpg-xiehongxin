@@ -87,18 +87,22 @@ public class SceneService {
 			if (!scene.isCanEnter(sceneTypeId)) {
 				return new ReplyDomain(ResultCode.CAN_NOT_ENTER);
 			}
-			sceneUserCache = scene.userLeaveScene(user);
+			sceneUserCache = scene.userLeaveScene(userId);
 			sceneUserCache.setLastSceneId(oldSceneId);
 		} else {
 			// 初始进入场景
 			Role role = RoleService.INSTANCE.getUserUsingRole(userId);
-			if(role == null) {
+			if (role == null) {
 				return ReplyDomain.FAILE;
 			}
 			sceneUserCache = new SceneUserCache(userId, role);
 		}
 
 		SceneDomain scenedomain = sceneDomainMap.get(sceneTypeId);
+		if (scenedomain == null) {
+			return ReplyDomain.FAILE;
+		}
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		if (scenedomain.isCopy()) {
 			if (oldSceneId == null) {
 				return ReplyDomain.FAILE;
@@ -110,10 +114,13 @@ public class SceneService {
 			if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
 				sceneUserMap.put(userId, sceneId);
 			}
-		}
+			replyDomain.setStringDomain("场景名称", newScene.getName());
 
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
-		replyDomain.setIntDomain("sid", sceneId);
+			replyDomain.setStringDomain("场景名称", newScene.getName());
+			replyDomain.setListDomain("u", newScene.getUserMap().values());
+			replyDomain.setListDomain("npc角色列表", newScene.getNpcRoleMap().values());
+			replyDomain.setListDomain("怪物列表", newScene.getMonsterMap().values());
+		}
 
 		return replyDomain;
 	}
@@ -154,7 +161,7 @@ public class SceneService {
 		// TODO Auto-generated method stub
 		int userId = user.getUserId();
 
-		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
+		ReplyDomain domain = new ReplyDomain();
 
 		Integer sceneId = sceneUserMap.get(userId);
 		if (sceneId == null) {
@@ -163,11 +170,10 @@ public class SceneService {
 
 		Scene scene = sceneMap.get(sceneId);
 
-		domain.setIntDomain("id", sceneId);
-		domain.setStringDomain("n", scene.getName());
+		domain.setStringDomain("场景名称", scene.getName());
 		domain.setListDomain("u", scene.getUserMap().values());
-		domain.setListDomain("npc", scene.getNpcRoleMap().values());
-		domain.setListDomain("m", scene.getMonsterMap().values());
+		domain.setListDomain("npc角色列表", scene.getNpcRoleMap().values());
+		domain.setListDomain("怪物列表", scene.getMonsterMap().values());
 
 		return domain;
 	}
@@ -219,7 +225,6 @@ public class SceneService {
 		ReplyDomain notifyReplyDomain = new ReplyDomain();
 		notifyReplyDomain.setStringDomain("m", monster.toString());
 		notifyReplyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BE_ATTACK);
-		notifyReplyDomain.setStringDomain("cmdDir", "唤醒客户端被攻击了");
 		scene.notifyAllUser(notifyReplyDomain);
 		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
 		return domain;
@@ -288,11 +293,12 @@ public class SceneService {
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
 		List<MonsterBeKillBonus> monsterBeKillBonus = scene.getRoleKillMonsterBonusInfo(role.getId());
+		
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
-		if(monsterBeKillBonus != null) {
+		if (monsterBeKillBonus != null) {
 			replyDomain.setListDomain("bonusList", monsterBeKillBonus);
 		}
-		
+
 		return replyDomain;
 	}
 
@@ -352,7 +358,7 @@ public class SceneService {
 		}
 		Scene scene = sceneMap.get(sceneId);
 
-		scene.userLeaveScene(userLostData.getUser());
+		scene.userLeaveScene(userLostData.getUser().getUserId());
 		judgeScene(scene);
 		System.out.println("用户下线了");
 	}
@@ -362,18 +368,19 @@ public class SceneService {
 	public void handleRoleChange(EventDealData<RoleChangeData> data) {
 		int userId = data.getData().getUserId();
 
-		int sceneId = sceneUserMap.remove(userId);
+		Integer sceneId = sceneUserMap.remove(userId);
+		if(sceneId == null) {
+			return;
+		}
 
 		Scene scene = sceneMap.get(sceneId);
 
-		// 判断是否已经替换了该缓存
-		User user = UserService.INSTANCE.getUser(userId);
 		Role sceneRole = scene.getSceneUserCache(userId).getRole();
 		if (sceneRole.getId() != data.getData().getOldRoleId()) {
 			return;
 		}
 
-		scene.userLeaveScene(user);
+		scene.userLeaveScene(userId);
 		judgeScene(scene);
 	}
 
@@ -394,10 +401,10 @@ public class SceneService {
 					monsterDeadData.getMonsterId(), System.currentTimeMillis(), bonus);
 			scene.addRoleKillMonsterBonus(monsterDeadData.getKillRoleId(), monsterBeKillBonus);
 
-			ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+			ReplyDomain replyDomain = new ReplyDomain();
 			replyDomain.setStringDomain("bonus", monsterBeKillBonus.toString());
 			replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_ROLE_MONSTER_BONUS_FALL);
-			replyDomain.setStringDomain("cmddir", "怪物死亡掉落物品");
+
 			// 通知前端奖励加入场景
 			scene.notifyAllUser(replyDomain);
 		}

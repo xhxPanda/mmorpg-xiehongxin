@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <monsters>
-	<monster id="1" name="遗忘者的士兵" freshTime="2000" 
-		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1,3" fallPossibility="2:1:1$30,2:2:1$70">
+	<monster id="1" name="遗忘者的士兵" freshTime="2000"
+		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1,3"
+		fallPossibility="1:100002:1$100,2:2:1$70">
 	</monster>
 	<monster id="2" name="遗忘者的将军" freshTime="2000"
-		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1" fallPossibility="2:1:1$30,2:2:1$70">
+		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1"
+		fallPossibility="2:1:1$30,2:2:1$70">
 	</monster>
 	<monster id="3" name="火龙" freshTime="-1"
-		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="4,3" fallPossibility="2:1:1$100,2:2:1$100">
+		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="4,3"
+		fallPossibility="1:100002:1$100,2:2:1$100">
 	</monster>
 	<monster id="4" name="冰龙" freshTime="-1"
-		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="4,3" fallPossibility="2:1:1$100,2:2:1$100">
+		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="4,3"
+		fallPossibility="2:1:1$100,2:2:1$100">
 	</monster>
 	<monster id="5" name=" 峡谷亡灵 " freshTime="2000"
-		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1" fallPossibility="2:1:1$30,2:2:1$70">
+		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1"
+		fallPossibility="2:1:1$30,2:2:1$70">
 	</monster>
 	<monster id="6" name="峡谷战士" freshTime="2000"
-		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1" fallPossibility="2:1:1$30,2:2:1$70">
+		attribute="1:攻击力:30,2:防御力:30,3:hp:1000,4:mp:1000" skills="1"
+		fallPossibility="2:1:1$30,2:2:1$70">
 	</monster>
 </monsters> 

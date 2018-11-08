@@ -9,11 +9,11 @@ public class Attribute {
 	private String name;
 	private int max;
 
-	public Attribute(int id, int value, String name) {
+	public Attribute(int id, int value, String name, int max) {
 		this.id = id;
 		this.value = new AtomicInteger(value);
 		this.name = name;
-		this.max = value;
+		this.max = max;
 	}
 
 	public int getId() {
@@ -37,7 +37,7 @@ public class Attribute {
 		if (newValue <= 0) {
 			value.set(0);
 			return 0;
-		} else if (value.get() >= max) {
+		} else if (max != -1 && value.get() >= max) {
 			value.set(max);
 			return max;
 		}

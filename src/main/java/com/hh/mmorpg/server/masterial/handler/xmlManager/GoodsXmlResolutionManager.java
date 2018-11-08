@@ -35,8 +35,9 @@ public class GoodsXmlResolutionManager {
 			String name = element.attributeValue("name");
 			String item = element.attributeValue("item");
 			String price = element.attributeValue("price");
+			String priceName = element.attributeValue("priceName");
 
-			Goods goodsDomain = new Goods(id, name, item, price);
+			Goods goodsDomain = new Goods(id, name, item, price, priceName);
 			map.put(goodsDomain.getId(), goodsDomain);
 		}
 		return map;

@@ -20,7 +20,7 @@ public class EquimentXmlResolutionManager {
 		Document document = null;
 		SAXReader saxReader = new SAXReader();
 		try {
-			document = saxReader.read("..\\mmorpg\\docs\\xml\\clothes.xml");
+			document = saxReader.read("..\\mmorpg\\docs\\xml\\equiment.xml");
 
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block

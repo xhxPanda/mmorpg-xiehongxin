@@ -22,7 +22,6 @@ public class RoleExtension {
 
 		ReplyDomain replyDomain = service.getAllRole(user);
 
-		replyDomain.setStringDomain("cmd", GET_ALL_ROLE);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
@@ -39,9 +38,6 @@ public class RoleExtension {
 	public void useRole(User user, CMDdomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 		ReplyDomain reply = service.userUseRole(user, roleId);
-
-		reply.setStringDomain("cmd", USE_ROLE);
-		reply.setStringDomain("cmddir", "使用角色");
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
 
@@ -49,5 +45,5 @@ public class RoleExtension {
 	public void getUserNowRolet(User user, CMDdomain cmdDomain) {
 		service.getUserUsingRole(user);
 	}
-	
+
 }

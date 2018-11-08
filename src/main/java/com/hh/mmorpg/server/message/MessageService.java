@@ -23,7 +23,7 @@ public class MessageService {
 		Map<Integer, Scene> sceneMap = SceneService.INSTANCE.getSceneMap();
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", MessageExtension.NOTIFY_USER_WORLD_MESSAGE);
-		replyDomain.setStringDomain("c", content);
+		replyDomain.setStringDomain("内容", content);
 		for (Scene scene : sceneMap.values()) {
 			scene.notifyAllUser(replyDomain);
 		}
@@ -37,12 +37,12 @@ public class MessageService {
 			return ReplyDomain.FAILE;
 		}
 
-		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		ReplyDomain message = new ReplyDomain();
-		message.setIntDomain("rid", role.getRoleId());
-		message.setStringDomain("name", role.getName());
-		message.setStringDomain("content", content);
+		message.setIntDomain("角色id", role.getRoleId());
+		message.setStringDomain("角色名", role.getName());
+		message.setStringDomain("内容", content);
 		MessageExtension.notifyUserMessage(recipentUser, message);
 		return ReplyDomain.SUCCESS;
 	}

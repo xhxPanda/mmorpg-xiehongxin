@@ -22,7 +22,7 @@ public class UserItem extends Material {
 	public UserItem(int roleId, String name, int id, int quantity, long gainTime, long lastUsedTime, String effect,
 			String buffs, long cd, String sellPrice) {
 		// TODO Auto-generated constructor stub
-		super(roleId, name, id, MaterialType.ITEM_TYPE_ID, quantity);
+		super(roleId, name, id, MaterialType.ITEM_TYPE.getId(), MaterialType.ITEM_TYPE.getName(), quantity);
 		this.lastUsedTime = lastUsedTime;
 
 		this.effectAttributeMap = new HashMap<>();
@@ -102,8 +102,7 @@ public class UserItem extends Material {
 
 	@Override
 	public String toString() {
-		return "UserItem [lastUsedTime=" + lastUsedTime + ", effectAttributeMap=" + effectAttributeMap + ", buffList="
-				+ buffList + ", cd=" + cd + ", gainTime=" + gainTime + ", sellPrice=" + getSellPrice() + "]";
+		return "UserItem [ name=" + getName() + ", 数量=" + getQuantity() + "]";
 	}
 
 	public static final ResultBuilder<UserItem> BUILDER = new ResultBuilder<UserItem>() {

@@ -5,7 +5,6 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.result.ReplyDomain;
-import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.role.RoleService;
 
 public class UserEquimentService {
@@ -17,9 +16,9 @@ public class UserEquimentService {
 		int userId = user.getUserId();
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
-		
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
-		replyDomain.setListDomain("userEquiment", role.getEquipmentMap().values());
+
+		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setListDomain("装备栏", role.getEquipmentMap().values());
 		return replyDomain;
 	}
 
@@ -28,7 +27,7 @@ public class UserEquimentService {
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
-		UserEquipment equipment = (UserEquipment) role.getMaterial(MaterialType.EQUIPMENT_TYPE_ID, equimentId);
+		UserEquipment equipment = (UserEquipment) role.getMaterial(MaterialType.EQUIPMENT_TYPE.getId(), equimentId);
 		if (equipment == null) {
 			return ReplyDomain.FAILE;
 		}

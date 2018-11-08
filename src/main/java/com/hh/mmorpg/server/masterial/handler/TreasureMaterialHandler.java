@@ -32,12 +32,12 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler<UserTreasur
 			return ReplyDomain.FAILE;
 		}
 
-		UserTreasure material = (UserTreasure) role.getMaterial(MaterialType.TREASURE_TYPE_ID, materialId);
+		UserTreasure material = (UserTreasure) role.getMaterial(MaterialType.TREASURE_TYPE.getId(), materialId);
 
 		if (material == null || needNum > material.getQuantity()) {
 			return ReplyDomain.NOT_ENOUGH;
 		}
-		role.decMaterial(MaterialType.TREASURE_TYPE_ID, materialId, needNum);
+		role.decMaterial(MaterialType.TREASURE_TYPE.getId(), materialId, needNum);
 
 		return ReplyDomain.SUCCESS;
 	}

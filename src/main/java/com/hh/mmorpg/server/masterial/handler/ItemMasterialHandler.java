@@ -45,7 +45,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 			return ReplyDomain.FAILE;
 		}
 
-		UserItem material = (UserItem) role.getMaterial(MaterialType.ITEM_TYPE_ID, id);
+		UserItem material = (UserItem) role.getMaterial(MaterialType.ITEM_TYPE.getId(), id);
 
 		if (material == null || needNum > material.getQuantity()) {
 			return ReplyDomain.NOT_ENOUGH;

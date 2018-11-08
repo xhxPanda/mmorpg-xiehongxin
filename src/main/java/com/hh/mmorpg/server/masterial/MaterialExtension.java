@@ -10,21 +10,27 @@ import com.hh.mmorpg.server.ExtensionSender;
 @Extension(id = 5)
 public class MaterialExtension {
 
+	private static final String SHOW_GOODS = "showGoods";
 	private static final String BUY_GOODS = "buyGoods";
 	private static final String SELL_GOODS = "sellGoods";
 
 	private static final String SHOW_ALL_MATERIAL = "showAllMaterial";
 
-	private static final String NOTIFY_USER_GAIN_MATERIAL = "notifyUserGainMaterial";
-	private static final String NOTIFY_USER_DEC_MATERIAL = "notifyUserDecMaterial";
+	private static final String NOTIFY_USER_GAIN_MATERIAL = "物品新增";
+	private static final String NOTIFY_USER_DEC_MATERIAL = "物品减少";
 
+	@CmdService(cmd = SHOW_GOODS)
+	public void showGoods(User user, CMDdomain cmDdomain) {
+		ReplyDomain replyDomain = MaterialService.INSTANCE.showGoods(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
 	@CmdService(cmd = BUY_GOODS)
 	public void buyGoods(User user, CMDdomain cmDdomain) {
 		int goodsId = cmDdomain.getIntParam(2);
 		int num = cmDdomain.getIntParam(3);
 
 		ReplyDomain replyDomain = MaterialService.INSTANCE.buyGoods(user, goodsId, num);
-		replyDomain.setStringDomain("cmd", BUY_GOODS);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
@@ -34,14 +40,12 @@ public class MaterialExtension {
 		String materialStr = cmDdomain.getStringParam(2);
 
 		ReplyDomain replyDomain = MaterialService.INSTANCE.sellGoods(user, materialStr);
-		replyDomain.setStringDomain("cmd", SELL_GOODS);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	
 	@CmdService(cmd = SHOW_ALL_MATERIAL)
 	public void showAllMaterial(User user, CMDdomain cmDdomain) {
 		ReplyDomain replyDomain = MaterialService.INSTANCE.showAllMaterial(user);
-		replyDomain.setStringDomain("cmd", SHOW_ALL_MATERIAL);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 

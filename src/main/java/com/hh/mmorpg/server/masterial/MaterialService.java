@@ -1,6 +1,8 @@
 package com.hh.mmorpg.server.masterial;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -34,26 +36,40 @@ public class MaterialService {
 	private MaterialService() {
 		// 配置material不同的handler
 		this.handlerMap = new HashMap<>();
-		handlerMap.put(MaterialType.EQUIPMENT_TYPE_ID, new EquipmentMaterialHandle());
-		handlerMap.put(MaterialType.ITEM_TYPE_ID, new ItemMasterialHandler());
-		handlerMap.put(MaterialType.TREASURE_TYPE_ID, new TreasureMaterialHandler());
+		handlerMap.put(MaterialType.EQUIPMENT_TYPE.getId(), new EquipmentMaterialHandle());
+		handlerMap.put(MaterialType.ITEM_TYPE.getId(), new ItemMasterialHandler());
+		handlerMap.put(MaterialType.TREASURE_TYPE.getId(), new TreasureMaterialHandler());
 
 		goodsMap = GoodsXmlResolutionManager.INSTANCE.resolution();
+	}
+
+	public ReplyDomain showGoods(User user) {
+		// TODO Auto-generated method stub
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		replyDomain.setListDomain("商品列表", goodsMap.values());
+		return replyDomain;
 	}
 
 	public ReplyDomain showAllMaterial(User user) {
 		// TODO Auto-generated method stub
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		ReplyDomain replyDomain = new ReplyDomain();
+		
+		List<Material> materials = new ArrayList<Material>();
 		for (Entry<Integer, Map<Integer, Material>> materialEntry : role.getMaterialMap().entrySet()) {
-			replyDomain.setListDomain("物品类型是" + materialEntry.getKey(), materialEntry.getValue().values());
+			materials.addAll(materialEntry.getValue().values());
 		}
+		replyDomain.setListDomain("物品列表", materials);
 		return replyDomain;
 	}
 
 	public ReplyDomain buyGoods(User user, int goodsId, int num) {
 		// TODO Auto-generated method stub
+		if (num < 0) {
+			return ReplyDomain.FAILE;
+		}
+
 		Goods goods = goodsMap.get(goodsId);
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
@@ -149,7 +165,7 @@ public class MaterialService {
 		int type = Integer.parseInt(strs[0]);
 		int materialId = Integer.parseInt(strs[1]);
 
-		if (type == MaterialType.TREASURE_TYPE_ID) {
+		if (type == MaterialType.TREASURE_TYPE.getId()) {
 			return ReplyDomain.FAILE;
 		}
 

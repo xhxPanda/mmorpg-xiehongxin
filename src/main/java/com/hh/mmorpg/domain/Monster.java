@@ -17,7 +17,7 @@ public class Monster extends LivingThing {
 	private int freshTime;
 	private int sceneId;
 	private int attackRoleId;
-	
+
 	private Map<String, Integer> killFallItemMap;
 
 	public Monster(int uniqueId, int sceneId, MonsterDomain domain) {
@@ -40,8 +40,8 @@ public class Monster extends LivingThing {
 
 	@Override
 	public String toString() {
-		return "Monster [name=" + name + ", freshTime=" + freshTime + ", id=" + getUniqueId() + ", hp="
-				+ getAttribute(3).getValue() + ", mp=" + getAttribute(4).getValue() + " ]";
+		return "Monster [名称=" + name + ", id=" + getUniqueId() + ", hp=" + getAttribute(3).getValue() + ", mp="
+				+ getAttribute(4).getValue() + " ]";
 	}
 
 	public synchronized void setAttackRole(int roleId) {
@@ -84,12 +84,11 @@ public class Monster extends LivingThing {
 	public void notifyAttributeChange(Attribute attribute) {
 		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getSceneMap().get(sceneId);
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_ATTRIBUATE_CHANGE);
-		replyDomain.setStringDomain("cmdDir", "唤醒角色的属性变化");
-		replyDomain.setIntDomain("attrubuteType", attribute.getId());
-		replyDomain.setIntDomain("value", attribute.getValue());
-		replyDomain.setIntDomain("monsterId", getUniqueId());
+		replyDomain.setIntDomain("变化后的" + attribute.getName(), attribute.getValue());
+		replyDomain.setIntDomain("怪物id", getUniqueId());
+		replyDomain.setStringDomain("怪物名称", getName());
 		scene.notifyAllUser(replyDomain);
 	}
 
@@ -99,9 +98,9 @@ public class Monster extends LivingThing {
 		Scene scene = SceneService.INSTANCE.getSceneMap().get(sceneId);
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BUFF_ADD);
-		replyDomain.setStringDomain("cmdDir", "唤醒角色buff增加");
-		replyDomain.setIntDomain("buffId", roleBuff.getBuffId());
+		replyDomain.setStringDomain("buff名称", roleBuff.getName());
 		replyDomain.setIntDomain("monsterId", getUniqueId());
+		replyDomain.setStringDomain("怪物名称", getName());
 		scene.notifyAllUser(replyDomain);
 	}
 }

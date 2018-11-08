@@ -13,13 +13,12 @@ public class UserEquimentExtension {
 	private UserEquimentService service = UserEquimentService.INSTANCE;
 	
 	private static final String SHOW_EQUIMENT = "showEquiment";
-	private static final String WEAR_EQUIMENT = "wearEquoment";
+	private static final String WEAR_EQUIMENT = "wearEquiment";
 	private static final String TAKE_OFF_EQUIMENT = "takeOffEquiment";
 	
 	@CmdService(cmd = SHOW_EQUIMENT)
 	public void showEquiment(User user, CMDdomain cmDdomain) {
 		ReplyDomain replyDomain = service.showEquiment(user);
-		replyDomain.setStringDomain("cmd", SHOW_EQUIMENT);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	
@@ -29,7 +28,6 @@ public class UserEquimentExtension {
 		int equientId = cmDdomain.getIntParam(2);
 		
 		ReplyDomain replyDomain = service.wearEquiment(user, equientId);
-		replyDomain.setStringDomain("cmd", WEAR_EQUIMENT);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	
@@ -38,7 +36,6 @@ public class UserEquimentExtension {
 		int equimentType = cmDdomain.getIntParam(2);
 		
 		ReplyDomain replyDomain = service.takeOffEquiment(user, equimentType);
-		replyDomain.setStringDomain("cmd", WEAR_EQUIMENT);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	

@@ -60,8 +60,8 @@ public class Email {
 
 	@Override
 	public String toString() {
-		return "Email [roleId=" + roleId + ", id=" + id + ", content=" + content + ", bonus=" + bonus + ", read=" + read
-				+ ", senderRoleId=" + senderRoleId + ", senderRoleName=" + senderRoleName + "]";
+		return "Email [roleId=" + roleId + ", id=" + id + ", content=" + content + ", 附件=" + bonus + ", 是否已读=" + read
+				+ ", 发送人角色id=" + senderRoleId + ", 发送人名字=" + senderRoleName + "]";
 	}
 
 	public static final ResultBuilder<Email> BUILDER = new ResultBuilder<Email>() {

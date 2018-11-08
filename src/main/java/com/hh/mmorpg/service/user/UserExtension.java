@@ -11,11 +11,7 @@ public class UserExtension extends ExtensionSupport {
 	public static final String LOGIN = "doLogin";
 	public static final String REGISTER = "doRegister";
 
-	private static final String NOTIFY_LOGIN = "1_100";
-
 	public static void notifyLogin(Channel channel, ReplyDomain replyDomain) {
-		replyDomain.setStringDomain("cmd", NOTIFY_LOGIN);
-
 		ExtensionSender.INSTANCE.sendReply(channel, replyDomain);
 	}
 

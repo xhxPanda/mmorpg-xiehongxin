@@ -19,14 +19,13 @@ public class ReplyDomain {
 	public static final ReplyDomain MP_NOT_ENOUGH = new ReplyDomain(ResultCode.MP_NOT_ENOUGH);
 	public static final ReplyDomain BONS_NOT_EXIT = new ReplyDomain(ResultCode.BONS_NOT_EXIT);
 	public static final ReplyDomain CAN_NOT_BATTLE = new ReplyDomain(ResultCode.CAN_NOT_BATTLE);
-	public static final ReplyDomain COPY_NUM_TOO_MUCH = new ReplyDomain(ResultCode.COPY_NUM_TOO_MUCH);
 	public static final ReplyDomain EQUIMENT_DURABILITY_HARM = new ReplyDomain(ResultCode.EQUIMENT_DURABILITY_HARM);
 
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();
 	}
 
-	public ReplyDomain(int result) {
+	public ReplyDomain(String result) {
 		domainMap = new HashMap<String, Object>();
 		domainMap.put("r", result);
 	}
@@ -62,6 +61,6 @@ public class ReplyDomain {
 	}
 
 	public boolean isSuccess() {
-		return (Integer) domainMap.get("r") == 1;
+		return domainMap.get("r").equals("成功");
 	}
 }

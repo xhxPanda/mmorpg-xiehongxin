@@ -2,18 +2,17 @@ package com.hh.mmorpg.result;
 
 public class ResultCode {
 
-	public static final int SUCCESS = 1;
-	public static final int FAILE = -1;
-	public static final int ILLEGAL = -2;
-	public static final int IN_CD = -3;
-	public static final int REPEAT_CLOTHES = -4;
-	public static final int NOT_ENOUGH = -5;
-	public static final int HAS_DEAD = -6;
-	public static final int MP_NOT_ENOUGH = -7;
-	public static final int BONS_NOT_EXIT = -8;
-	public static final int CAN_NOT_BATTLE = -9;
-	public static final int COPY_NUM_TOO_MUCH = -10;
-	public static final int CAN_NOT_ENTER = -11;
-	public static final int EQUIMENT_DURABILITY_HARM = -12;
+	public static final String SUCCESS = "成功";
+	public static final String FAILE = "失败";
+	public static final String ILLEGAL = "不合法";
+	public static final String IN_CD = "技能cd还没结束";
+	public static final String REPEAT_CLOTHES = "你已经拥有这个装备了";
+	public static final String NOT_ENOUGH = "需要消耗的物品不足够";
+	public static final String HAS_DEAD = "攻击对象已死亡";
+	public static final String MP_NOT_ENOUGH = "mp不足";
+	public static final String BONS_NOT_EXIT = "奖励不存在";
+	public static final String CAN_NOT_BATTLE = "该场景不能攻击用户";
+	public static final String CAN_NOT_ENTER = "不能进入该场景";
+	public static final String EQUIMENT_DURABILITY_HARM = "装备耐久已无";
 
 }

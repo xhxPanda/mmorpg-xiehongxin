@@ -8,13 +8,15 @@ public class Material {
 	private String name;
 	private int id;
 	private int type;
+	private String typeName;
 	private AtomicInteger quantity;
 	private String sellPrice;
 
-	public Material(int roleId, String name, int id, int type, int quantity) {
+	public Material(int roleId, String name, int id, int type, String typeName, int quantity) {
 		this.name = name;
 		this.id = id;
 		this.type = type;
+		this.typeName = typeName;
 		this.quantity = new AtomicInteger(quantity);
 		this.roleId = roleId;
 	}
@@ -48,13 +50,17 @@ public class Material {
 		return sellPrice;
 	}
 
+	public String getTypeName() {
+		return typeName;
+	}
+
 	public void setSellPrice(String sellPrice) {
 		this.sellPrice = sellPrice;
 	}
 
 	@Override
 	public String toString() {
-		return "Material [roleId=" + roleId + ", name=" + name + ", id=" + id + ", type=" + type + ", quantity="
+		return "Material [ 名称=" + name + ", id=" + id + ", 类型=" + typeName + ", 数量="
 				+ quantity + "]";
 	}
 

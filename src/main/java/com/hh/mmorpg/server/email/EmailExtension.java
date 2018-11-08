@@ -41,7 +41,6 @@ public class EmailExtension {
 		int recipientId = cmdDomain.getIntParam(5);
 
 		ReplyDomain replyDomain = service.sendEmail(user, recipientRoleId, recipientId, bonusStr, content);
-		replyDomain.setStringDomain("cmd", SEND_EMAIL);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
@@ -51,7 +50,6 @@ public class EmailExtension {
 		int emailId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.readEmail(user, emailId);
-		replyDomain.setStringDomain("cmd", GET_EMAIL_BONUS);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 

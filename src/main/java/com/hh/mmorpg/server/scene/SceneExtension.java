@@ -19,27 +19,25 @@ public class SceneExtension {
 	private static final String GET_ROLE_KILL_MONSTER_BONUS_INFO = "getRoleKillMonsterBonusInfo";
 	private static final String GET_ROLE_KILL_MONSTER_BONUS = "getRoleKillMonsterBonus";
 
-	public static final String NOTIFY_USER_ENTER = "notifyUserEntry";
-	public static final String NOTIFY_USER_LEAVE = "notifyUserLeace";
-	public static final String NOTIFT_USER_ATTRIBUATE_CHANGE = "notifyUserAttributeChange";
-	public static final String NOTIFY_MONSTER_BE_ATTACK = "notifyMonsterBeAttack";
-	public static final String NOTIFY_ROLE_MONSTER_BONUS_FALL = "notifyRoleMonsterBonusFall";
-	public static final String NOTIFY_MONSTER_RESURRECTION = "notifyMonsterResurrection";
-	public static final String NOTIFY_MONSTER_ATTRIBUATE_CHANGE = "notifyMonsterAttrubuateChange";
-	public static final String NOTIFY_USER_BUFF_ADD = "notifyUserBuffAdd";
-	public static final String NOTIFY_MONSTER_BUFF_ADD = "notifyMonsterBuffAdd";
-	public static final String NOTIFY_USER_COPY_BEYOND_TIME = "notifyUserCopyBeyondTime";
-	public static final String NOTIFY_USER_COPY_FINISH = "notifyUserCopyFinish";
-	public static final String NOTIFY_MONSTER_ENTRE = "notifyMonsterEntre";
+	public static final String NOTIFY_USER_ENTER = "用户进入场景";
+	public static final String NOTIFY_USER_LEAVE = "用户离开场景";
+	public static final String NOTIFT_USER_ATTRIBUATE_CHANGE = "角色属性变化";
+	public static final String NOTIFY_MONSTER_BE_ATTACK = "场景中怪物被攻击";
+	public static final String NOTIFY_ROLE_MONSTER_BONUS_FALL = "怪物掉落生成";
+	public static final String NOTIFY_MONSTER_RESURRECTION = "怪物复活";
+	public static final String NOTIFY_MONSTER_ATTRIBUATE_CHANGE = "怪物属性变化";
+	public static final String NOTIFY_USER_BUFF_ADD = "角色挂上buff";
+	public static final String NOTIFY_MONSTER_BUFF_ADD = "怪物挂上buff";
+	public static final String NOTIFY_USER_COPY_BEYOND_TIME = "副本超时";
+	public static final String NOTIFY_USER_COPY_FINISH = "完成副本";
+	public static final String NOTIFY_MONSTER_ENTRE = "刷新怪物";
 
 	@CmdService(cmd = JOIN_SCENE)
-	public void joinScene(User user,  CMDdomain cmdDomain) {
+	public void joinScene(User user, CMDdomain cmdDomain) {
 		int sceneTypeId = cmdDomain.getIntParam(2);
 		int sceneId = cmdDomain.getIntParam(3);
 
 		ReplyDomain replyDomain = service.userJoinScene(user, sceneTypeId, sceneId);
-		replyDomain.setStringDomain("cmd", JOIN_SCENE);
-		replyDomain.setStringDomain("cmdDir", "进入场景");
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
@@ -47,7 +45,6 @@ public class SceneExtension {
 	public void getSceneUser(User user, CMDdomain cmdDomain) {
 		ReplyDomain replyDomain = service.getSeceneUser(user);
 
-		replyDomain.setStringDomain("cmd", GET_SCENE_USER);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
@@ -58,16 +55,14 @@ public class SceneExtension {
 
 		ReplyDomain replyDomain = service.attackMonster(user, skillId, monsterId);
 
-		replyDomain.setStringDomain("cmd", ATTACK_MONSTER);
-		replyDomain.setStringDomain("cmdDir", "攻击怪物");
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = ATTACK_ROLE)
 	public void attackRole(User user, CMDdomain cmdDomain) {
 		int skillId = cmdDomain.getIntParam(2);
 		int otherUserId = cmdDomain.getIntParam(3);
-		
+
 		ReplyDomain replyDomain = service.attackOtherRole(user, skillId, otherUserId);
 
 		replyDomain.setStringDomain("cmd", ATTACK_ROLE);
@@ -85,12 +80,11 @@ public class SceneExtension {
 		int bonusId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.getRoleKillMonsterBonus(user, bonusId);
-		
+
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	public static void notifyUser(User user, ReplyDomain replyDomain) {
-		replyDomain.setIntDomain("uid", user.getUserId());
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 }

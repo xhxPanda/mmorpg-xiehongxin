@@ -19,7 +19,7 @@ public class UserEquipment extends Material {
 
 	public UserEquipment(int roleId, String name, int clothesId, int maxDurability, int durability, String attributes,
 			long gainTime, String sellPrice) {
-		super(roleId, name, clothesId, MaterialType.EQUIPMENT_TYPE_ID, 1);
+		super(roleId, name, clothesId, MaterialType.EQUIPMENT_TYPE.getId(), MaterialType.EQUIPMENT_TYPE.getName(), 1);
 		this.inUsed = false;
 		this.maxDurability = maxDurability;
 		this.durability = durability;
@@ -35,7 +35,7 @@ public class UserEquipment extends Material {
 	
 	public UserEquipment(int roleId, String name, int id,
 			boolean inUsed, int maxDurability, int durability, String attributes, long gainTime, String sellPrice) {
-		super(roleId, name, id, MaterialType.EQUIPMENT_TYPE_ID, 1);
+		super(roleId, name, id, MaterialType.EQUIPMENT_TYPE.getId(), MaterialType.EQUIPMENT_TYPE.getName(), 1);
 		this.inUsed = inUsed;
 		this.maxDurability = maxDurability;
 		this.durability = durability;
@@ -98,8 +98,8 @@ public class UserEquipment extends Material {
 
 	@Override
 	public String toString() {
-		return "UserClothes [name=" + getName() + ", id=" + getId() + ", maxDurability=" + maxDurability
-				+ ", durability=" + durability + ", sellPrice=" + getSellPrice() + "]";
+		return "UserEquiment [name=" + getName() + ", id=" + getId() + ", 最大耐久度=" + maxDurability
+				+ ", 耐久度=" + durability + "]";
 	}
 
 	public static final ResultBuilder<UserEquipment> BUILDER = new ResultBuilder<UserEquipment>() {

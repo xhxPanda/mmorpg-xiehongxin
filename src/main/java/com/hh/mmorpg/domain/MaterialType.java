@@ -1,9 +1,25 @@
 package com.hh.mmorpg.domain;
 
-public class MaterialType {
+public enum MaterialType {
+	EQUIPMENT_TYPE(1, "武器"), 
+	ITEM_TYPE(2, "道具"), 
+	TREASURE_TYPE(3, "财富");
+	
+	private int id;
+	private String name;
+	
+	private MaterialType(int id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+	public int getId() {
+		return id;
+	}
+	public String getName() {
+		return name;
+	}
 
-	public static final int EQUIPMENT_TYPE_ID = 1;
-	public static final int ITEM_TYPE_ID = 2;
-	public static final int TREASURE_TYPE_ID = 3;
+	
+	
 
 }

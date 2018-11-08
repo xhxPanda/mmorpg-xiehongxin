@@ -17,7 +17,8 @@ public class RoleDomain {
 
 		for (String strList : attributeStr.split(",")) {
 			String str[] = strList.split(":");
-			Attribute attribute = new Attribute(Integer.parseInt(str[0]), Integer.parseInt(str[2]), str[1]);
+			Attribute attribute = new Attribute(Integer.parseInt(str[0]), Integer.parseInt(str[2]), str[1],
+					Integer.parseInt(str[3]));
 			attributeMap.put(attribute.getId(), attribute);
 		}
 

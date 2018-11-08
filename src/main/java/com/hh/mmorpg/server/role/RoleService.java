@@ -89,7 +89,7 @@ public class RoleService {
 			EventHandlerManager.INSATNCE.methodInvoke(EventType.ROLE_CHANGE, new EventDealData<RoleChangeData>(data));
 		}
 		
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		ReplyDomain replyDomain = new ReplyDomain("使用角色" + ResultCode.SUCCESS);
 		return replyDomain;
 	}
 

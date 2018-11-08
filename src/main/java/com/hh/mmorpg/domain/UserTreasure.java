@@ -8,7 +8,7 @@ import com.hh.mmorpg.jdbc.ResultBuilder;
 public class UserTreasure extends Material {
 
 	public UserTreasure(int roleId, String name, int id, int quantity) {
-		super(roleId, name, id, MaterialType.TREASURE_TYPE_ID, quantity);
+		super(roleId, name, id, MaterialType.TREASURE_TYPE.getId(), MaterialType.TREASURE_TYPE.getName(), quantity);
 		// TODO Auto-generated constructor stub
 	}
 

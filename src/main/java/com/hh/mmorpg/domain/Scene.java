@@ -74,7 +74,7 @@ public class Scene {
 		this.monsterBeKillBonusmap = new HashMap<>();
 		this.npcRoleMap = domain.getNpcRoleMap();
 		start();
-		
+
 		// 监听怪物死亡事件
 		EventHandlerManager.INSATNCE.register(this);
 	}
@@ -91,16 +91,20 @@ public class Scene {
 		userMap.put(sceneUserCache.getUserId(), sceneUserCache);
 		ReplyDomain domain = new ReplyDomain();
 		domain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_ENTER);
+		domain.setStringDomain("角色名称", sceneUserCache.getRole().getName());
+		domain.setIntDomain("角色id", sceneUserCache.getRole().getId());
 		notifyOtherUser(sceneUserCache.getUserId(), domain);
 		return ReplyDomain.SUCCESS;
 	}
 
-	public SceneUserCache userLeaveScene(User user) {
-		SceneUserCache cache = userMap.remove(user.getUserId());
+	public SceneUserCache userLeaveScene(int userId) {
+		SceneUserCache sceneUserCache = userMap.remove(userId);
 		ReplyDomain domain = new ReplyDomain();
 		domain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_LEAVE);
-		notifyOtherUser(user.getUserId(), domain);
-		return cache;
+		domain.setStringDomain("角色名称", sceneUserCache.getRole().getName());
+		domain.setIntDomain("角色id", sceneUserCache.getRole().getId());
+		notifyOtherUser(userId, domain);
+		return sceneUserCache;
 	}
 
 	public void notifyOtherUser(int useId, ReplyDomain domain) {
@@ -174,7 +178,8 @@ public class Scene {
 		monsterMap.put(monster.getUniqueId(), monster);
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_ENTRE);
-		replyDomain.setStringDomain("cmdDir", "新的怪物进入");
+		replyDomain.setIntDomain("怪物id", monster.getId());
+		replyDomain.setStringDomain("怪物名称", monster.getName());
 		notifyAllUser(replyDomain);
 	}
 
@@ -189,16 +194,19 @@ public class Scene {
 	}
 
 	public MonsterBeKillBonus getRoleKillMonsterBonus(int roleId, int bonusId) {
-		return monsterBeKillBonusmap.get(roleId).get(bonusId);
+		 Map<Integer, MonsterBeKillBonus> roleBonusMap = monsterBeKillBonusmap.get(roleId);
+		if(roleBonusMap == null || roleBonusMap.size() == 0) {
+			return null;
+		}
+		return roleBonusMap.get(bonusId);
 	}
 
 	public List<MonsterBeKillBonus> getRoleKillMonsterBonusInfo(int roleId) {
-		if(monsterBeKillBonusmap.get(roleId) != null) {
+		if (monsterBeKillBonusmap.get(roleId) != null) {
 			return new ArrayList<MonsterBeKillBonus>(monsterBeKillBonusmap.get(roleId).values());
 		} else {
 			return null;
 		}
-		
 	}
 
 	public ConcurrentHashMap<Integer, Monster> getMonsterMap() {
@@ -236,7 +244,7 @@ public class Scene {
 				}
 			}
 		}
-		
+
 		for (SceneUserCache cache : userMap.values()) {
 			cache.getRole().takeEffect();
 
@@ -266,7 +274,7 @@ public class Scene {
 		}
 		return true;
 	}
-	
+
 	public boolean isEmpty() {
 		return userMap.size() == 0;
 	}
@@ -293,11 +301,11 @@ public class Scene {
 			if (monsterSetMap.size() <= roundId) {
 				return false;
 			}
-			for(Monster monster : monsterSetMap.get(roundId).values()) {
+			for (Monster monster : monsterSetMap.get(roundId).values()) {
 				monster.setSceneId(id);
 				putMonster(monster);
 			}
-			
+
 		}
 		return true;
 	}
