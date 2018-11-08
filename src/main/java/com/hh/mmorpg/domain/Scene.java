@@ -326,7 +326,6 @@ public class Scene {
 					// 完成所有轮数的怪物，副本结束
 					ReplyDomain replyDomain = new ReplyDomain();
 					replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
-					replyDomain.setStringDomain("cmdDir", "副本完成");
 					notifyAllUser(replyDomain);
 				}
 			}

@@ -102,30 +102,32 @@ public class SceneService {
 		if (scenedomain == null) {
 			return ReplyDomain.FAILE;
 		}
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		
+		Scene newScene = null;
 		if (scenedomain.isCopy()) {
 			if (oldSceneId == null) {
 				return ReplyDomain.FAILE;
 			}
-			sceneId = entreCopy(sceneUserCache, sceneTypeId);
+			newScene = entreCopy(sceneUserCache, sceneTypeId);
 		} else {
 			// 进入新场景
-			Scene newScene = sceneMap.get(sceneId);
+			newScene = sceneMap.get(sceneId);
 			if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
 				sceneUserMap.put(userId, sceneId);
 			}
-			replyDomain.setStringDomain("场景名称", newScene.getName());
-
-			replyDomain.setStringDomain("场景名称", newScene.getName());
-			replyDomain.setListDomain("u", newScene.getUserMap().values());
-			replyDomain.setListDomain("npc角色列表", newScene.getNpcRoleMap().values());
-			replyDomain.setListDomain("怪物列表", newScene.getMonsterMap().values());
+			
 		}
-
+		
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		replyDomain.setStringDomain("场景名称", newScene.getName());
+		replyDomain.setStringDomain("场景名称", newScene.getName());
+		replyDomain.setListDomain("u", newScene.getUserMap().values());
+		replyDomain.setListDomain("npc角色列表", newScene.getNpcRoleMap().values());
+		replyDomain.setListDomain("怪物列表", newScene.getMonsterMap().values());
 		return replyDomain;
 	}
 
-	private int entreCopy(SceneUserCache sceneUserCache, int sceneTypeId) {
+	private Scene entreCopy(SceneUserCache sceneUserCache, int sceneTypeId) {
 		SceneDomain sceneDomain = sceneDomainMap.get(sceneTypeId);
 
 		Scene scene = null;
@@ -142,7 +144,7 @@ public class SceneService {
 		}
 
 		finishScene(sceneId);
-		return sceneId;
+		return scene;
 	}
 
 	public void finishScene(int sceneId) {
@@ -226,7 +228,7 @@ public class SceneService {
 		notifyReplyDomain.setStringDomain("m", monster.toString());
 		notifyReplyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BE_ATTACK);
 		scene.notifyAllUser(notifyReplyDomain);
-		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
+		ReplyDomain domain = new ReplyDomain("攻击怪物" + ResultCode.SUCCESS);
 		return domain;
 	}
 

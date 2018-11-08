@@ -20,12 +20,11 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipme
 	@Override
 	public ReplyDomain gainMaterial(Role role, String[] materialStr) {
 		// TODO Auto-generated method stub
-
 		int id = Integer.parseInt(materialStr[1]);
 
 		// 检查用户背包中和装备栏上是否存在该装备（以后看看这个问题要怎样解决）
 		if (role.isContainMaterial(Integer.parseInt(materialStr[0]), id) || role.getEquipmentMap().containsKey(id)) {
-			return ReplyDomain.REPEAT_CLOTHES;
+			return ReplyDomain.SUCCESS;
 		}
 		EquimentDomain equimentDomain = equimentDomainMap.get(id);
 
