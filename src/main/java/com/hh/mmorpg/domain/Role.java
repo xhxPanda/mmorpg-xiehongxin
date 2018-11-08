@@ -72,7 +72,7 @@ public class Role extends LivingThing {
 	@Override
 	public String toString() {
 		return "Role [userId=" + userId + ", id=" + id + ", name=" + name + ", roleId=" + roleId + ", hp="
-				+ equipmentMap.get(3) + ", hp=" + equipmentMap.get(4) + "]";
+				+ getAttribute(3).getValue() + ", mp=" + getAttribute(4).getValue() + "]";
 	}
 
 	@Override
@@ -161,6 +161,9 @@ public class Role extends LivingThing {
 	}
 
 	public Material getMaterial(int materialType, int materialId) {
+		if(materialMap.get(materialType) == null || materialMap.get(materialType).size() == 0){
+			return null;
+		}
 		return materialMap.get(materialType).get(materialId);
 	}
 

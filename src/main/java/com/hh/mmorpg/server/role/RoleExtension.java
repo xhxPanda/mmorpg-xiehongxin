@@ -43,7 +43,8 @@ public class RoleExtension {
 
 	@CmdService(cmd = GET_USER_NOW_ROLE)
 	public void getUserNowRolet(User user, CMDdomain cmdDomain) {
-		service.getUserUsingRole(user);
+		ReplyDomain reply = service.getUserUsingRole(user);
+		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
 
 }

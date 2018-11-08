@@ -12,6 +12,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.Material;
+import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleDomain;
 import com.hh.mmorpg.domain.User;
@@ -145,10 +146,16 @@ public class RoleService {
 		}
 
 		for (UserItem userItem : userItemList) {
+			if(role.getMaterial(MaterialType.ITEM_TYPE.getId(), userItem.getId()) != null) {
+				continue;
+			}
 			role.addMaterial(userItem);
 		}
 		
 		for(UserTreasure userTreasure : userTreasureList) {
+			if(role.getMaterial(MaterialType.TREASURE_TYPE.getId(), userTreasure.getId()) != null) {
+				continue;
+			}
 			role.addMaterial(userTreasure);
 		}
 	}

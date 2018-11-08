@@ -121,7 +121,7 @@ public class SceneService {
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("场景名称", newScene.getName());
 		replyDomain.setStringDomain("场景名称", newScene.getName());
-		replyDomain.setListDomain("u", newScene.getUserMap().values());
+		replyDomain.setListDomain("角色列表", newScene.getUserMap().values());
 		replyDomain.setListDomain("npc角色列表", newScene.getNpcRoleMap().values());
 		replyDomain.setListDomain("怪物列表", newScene.getMonsterMap().values());
 		return replyDomain;

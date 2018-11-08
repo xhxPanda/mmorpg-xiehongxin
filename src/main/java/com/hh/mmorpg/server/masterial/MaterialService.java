@@ -73,17 +73,32 @@ public class MaterialService {
 		Goods goods = goodsMap.get(goodsId);
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
-		ReplyDomain decResult = decMasterial(user, role, goods.getPrice());
+		String price = concatenationGoods(goods.getPrice(), num);
+		
+		ReplyDomain decResult = decMasterial(user, role, price);
 		if (!decResult.isSuccess()) {
 			return decResult;
 		}
 
-		ReplyDomain gainResult = gainMasteral(user, role, goods.getItem());
+		String item = concatenationGoods(goods.getItem(), num);
+		ReplyDomain gainResult = gainMasteral(user, role, item);
 		if (!gainResult.isSuccess()) {
 			return gainResult;
 		}
 
 		return ReplyDomain.SUCCESS;
+	}
+	
+	private String concatenationGoods(String materialStr, int num) {
+		StringBuilder stringBuilder = new StringBuilder();
+		for(int i=0;i<num;i++) {
+			if(stringBuilder.length() > 0) {
+				stringBuilder.append("#");
+			}
+			stringBuilder.append(materialStr);
+		}
+		
+		return stringBuilder.toString();
 	}
 
 	public ReplyDomain gainMasteral(User user, Role role, String material) {

@@ -50,7 +50,6 @@ public class SkillService {
 			} else {
 				beAttackedObject.effectAttribute(entry.getKey(), entry.getValue());
 			}
-
 		}
 
 		for (Entry<Integer, Integer> entry : domain.getSelfEffectAttribute().entrySet()) {
