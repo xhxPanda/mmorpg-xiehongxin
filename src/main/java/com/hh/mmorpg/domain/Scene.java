@@ -55,7 +55,7 @@ public class Scene {
 		this.isCanBattle = domain.isCanBattle();
 		this.neighborSceneIds = domain.getNeighborSceneIds();
 		this.isCopy = domain.isCopy();
-		this.monsterSetMap = domain.getMonsterSetMap();
+		this.monsterSetMap = new HashMap<>(domain.getMonsterSetMap());
 		this.sceneTypeId = domain.getId();
 
 		this.buildTime = System.currentTimeMillis();
@@ -71,9 +71,11 @@ public class Scene {
 		}
 
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
+		start();
+		
 		this.monsterBeKillBonusmap = new HashMap<>();
 		this.npcRoleMap = domain.getNpcRoleMap();
-		start();
+		
 
 		// 监听怪物死亡事件
 		EventHandlerManager.INSATNCE.register(this);
