@@ -72,10 +72,9 @@ public class Scene {
 
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		start();
-		
+
 		this.monsterBeKillBonusmap = new HashMap<>();
 		this.npcRoleMap = domain.getNpcRoleMap();
-		
 
 		// 监听怪物死亡事件
 		EventHandlerManager.INSATNCE.register(this);
@@ -196,8 +195,8 @@ public class Scene {
 	}
 
 	public MonsterBeKillBonus getRoleKillMonsterBonus(int roleId, int bonusId) {
-		 Map<Integer, MonsterBeKillBonus> roleBonusMap = monsterBeKillBonusmap.get(roleId);
-		if(roleBonusMap == null || roleBonusMap.size() == 0) {
+		Map<Integer, MonsterBeKillBonus> roleBonusMap = monsterBeKillBonusmap.get(roleId);
+		if (roleBonusMap == null || roleBonusMap.size() == 0) {
 			return null;
 		}
 		return roleBonusMap.get(bonusId);
@@ -236,6 +235,12 @@ public class Scene {
 					continue;
 				} else {
 					monster.resurrection();
+
+					// 唤醒客户端
+					ReplyDomain domain = new ReplyDomain();
+					domain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_RESURRECTION);
+					domain.setStringDomain("怪物", monster.toString());
+					notifyAllUser(domain);
 				}
 			} else {
 				monster.takeEffect();
@@ -249,13 +254,6 @@ public class Scene {
 
 		for (SceneUserCache cache : userMap.values()) {
 			cache.getRole().takeEffect();
-
-			if (!cache.getRole().isDead()) {
-				// 加红蓝
-				cache.getRole().effectAttribute(3, 2);
-				cache.getRole().effectAttribute(4, 2);
-			}
-
 		}
 	}
 

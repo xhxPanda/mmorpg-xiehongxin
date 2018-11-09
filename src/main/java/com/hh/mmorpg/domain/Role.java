@@ -72,7 +72,8 @@ public class Role extends LivingThing {
 	@Override
 	public String toString() {
 		return "Role [userId=" + userId + ", id=" + id + ", name=" + name + ", roleId=" + roleId + ", hp="
-				+ getAttribute(3).getValue() + ", mp=" + getAttribute(4).getValue() + "]";
+				+ getAttribute(3).getValue() + ", mp=" + getAttribute(4).getValue() + ", 攻击力="
+				+ getAttribute(1).getValue() + ", 防御力=" + getAttribute(2).getValue() + "]";
 	}
 
 	@Override
@@ -114,7 +115,7 @@ public class Role extends LivingThing {
 		// 装备服装
 		equipmentMap.put(equipment.getType(), equipment);
 		for (Entry<Integer, Integer> entry : equipment.getAttributeMap().entrySet()) {
-			effectAttribute(entry.getKey(), entry.getValue());
+			effectAttribute(entry.getKey(), entry.getValue(), "穿上装备");
 		}
 		equipment.setInUsed(true);
 		MaterialDao.INSTANCE.updateRoleEquiment(equipment);
@@ -128,7 +129,7 @@ public class Role extends LivingThing {
 
 			// 卸下服装
 			for (Entry<Integer, Integer> entry : userEquipment.getAttributeMap().entrySet()) {
-				effectAttribute(entry.getKey(), -entry.getValue());
+				effectAttribute(entry.getKey(), -entry.getValue(), "卸下装备");
 			}
 			userEquipment.setInUsed(false);
 			addMaterial(userEquipment);
@@ -161,14 +162,14 @@ public class Role extends LivingThing {
 	}
 
 	public Material getMaterial(int materialType, int materialId) {
-		if(materialMap.get(materialType) == null || materialMap.get(materialType).size() == 0){
+		if (materialMap.get(materialType) == null || materialMap.get(materialType).size() == 0) {
 			return null;
 		}
 		return materialMap.get(materialType).get(materialId);
 	}
 
 	@Override
-	public void notifyAttributeChange(Attribute attribute) {
+	public void notifyAttributeChange(Attribute attribute, String reason) {
 		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getUserScene(userId);
 		if (scene == null) {

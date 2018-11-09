@@ -15,13 +15,19 @@ public class RoleDomain {
 		this.name = name;
 		this.attributeMap = new HashMap<>();
 
+		// 组建角色初始属性
 		for (String strList : attributeStr.split(",")) {
 			String str[] = strList.split(":");
-			Attribute attribute = new Attribute(Integer.parseInt(str[0]), Integer.parseInt(str[2]), str[1],
-					Integer.parseInt(str[3]));
+			int attributeId = Integer.parseInt(str[0]);
+			int attributeValue = Integer.parseInt(str[1]);
+
+			AttributeEnum attributeEnum = AttributeEnum.getUserTreasureType(attributeId);
+
+			Attribute attribute = new Attribute(attributeId, attributeValue, attributeEnum.getName());
 			attributeMap.put(attribute.getId(), attribute);
 		}
 
+		// 组建用户技能
 		this.roleSkillMap = new HashMap<>();
 		for (String strList : skillStr.split(",")) {
 			int skillId = Integer.parseInt(strList);

@@ -26,8 +26,11 @@ public class MonsterDomain {
 		this.attributeMap = new HashMap<>();
 		for (String attributeDomain : attributeStr.split(",")) {
 			String str[] = attributeDomain.split(":");
+			int attributeId = Integer.parseInt(str[0]);
+			int attributeValue = Integer.parseInt(str[1]);
+			AttributeEnum attributeEnum = AttributeEnum.getUserTreasureType(attributeId);
 
-			Attribute attribute = new Attribute(Integer.parseInt(str[0]), Integer.parseInt(str[2]), str[1], Integer.parseInt(str[2]));
+			Attribute attribute = new Attribute(attributeId, attributeValue, attributeEnum.getName());
 			this.attributeMap.put(attribute.getId(), attribute);
 		}
 

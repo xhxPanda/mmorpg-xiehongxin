@@ -34,7 +34,7 @@ public class ItemService {
 		}
 
 		for (Entry<Integer, Integer> entry : userItem.getEffectAttributeMap().entrySet()) {
-			role.effectAttribute(entry.getKey(), entry.getValue());
+			role.effectAttribute(entry.getKey(), entry.getValue(), "使用道具");
 		}
 		if (userItem.getBuffList().size() != 0) {
 			for (Integer buffId : userItem.getBuffList()) {

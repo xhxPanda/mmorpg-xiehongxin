@@ -81,13 +81,14 @@ public class Monster extends LivingThing {
 	}
 
 	@Override
-	public void notifyAttributeChange(Attribute attribute) {
+	public void notifyAttributeChange(Attribute attribute, String reason) {
 		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getSceneMap().get(sceneId);
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_ATTRIBUATE_CHANGE);
 		replyDomain.setIntDomain("变化后的" + attribute.getName(), attribute.getValue());
 		replyDomain.setIntDomain("怪物id", getUniqueId());
+		replyDomain.setStringDomain("怪物名称", getName());
 		replyDomain.setStringDomain("怪物名称", getName());
 		scene.notifyAllUser(replyDomain);
 	}

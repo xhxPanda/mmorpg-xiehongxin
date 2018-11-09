@@ -89,23 +89,23 @@ public abstract class LivingThing {
 		List<RoleBuff> needRemoveBuff = new ArrayList<RoleBuff>();
 		long now = System.currentTimeMillis();
 		for (RoleBuff buff : buffsMap.values()) {
-			if (!status || buff.isExpire(now) ) {
+			if (!status || buff.isExpire(now)) {
 				needRemoveBuff.add(buff);
 				continue;
 			}
-			
-			if((now - buff.getLastUsedTime()) < buff.getHeartbeatTime()) {
+
+			if ((now - buff.getLastUsedTime()) < buff.getHeartbeatTime()) {
 				continue;
 			}
 
 			buff.setLastUsedTime(System.currentTimeMillis());
 			for (Entry<Integer, Integer> entry : buff.getEffectValue().entrySet()) {
-				if(buff.isBuff()) {
-					effectAttribute(entry.getKey(), -entry.getValue());
+				if (!buff.isBuff()) {
+					effectAttribute(entry.getKey(), entry.getValue(), buff.getName() + buff.getName() + "buff作用");
 				} else {
-					effectAttribute(entry.getKey(), entry.getValue());
+					effectAttribute(entry.getKey(), -entry.getValue(), buff.getName() +  buff.getName() + "buff作用");
 				}
-				
+
 				buff.setLastUsedTime(now);
 			}
 		}
@@ -113,7 +113,11 @@ public abstract class LivingThing {
 		for (RoleBuff roleBuff : needRemoveBuff) {
 			if (roleBuff.isResore()) {
 				for (Entry<Integer, Integer> entry : roleBuff.getEffectValue().entrySet()) {
-					resoreAttribute(entry.getKey(), entry.getValue(), roleBuff.isBuff());
+					if (!roleBuff.isBuff()) {
+						effectAttribute(entry.getKey(), -entry.getValue(), roleBuff.getName() +  roleBuff.getName() + "buff移除");
+					} else {
+						effectAttribute(entry.getKey(), entry.getValue(), roleBuff.getName() +  roleBuff.getName() + "buff作用");
+					}
 				}
 			}
 			buffsMap.remove(roleBuff.getBuffId());
@@ -132,38 +136,56 @@ public abstract class LivingThing {
 		return attributeMap.get(4).getValue();
 	}
 
-	public int effectAttribute(int key, int value) {
+	public int effectAttribute(int key, int value, String reason) {
 		Attribute attribute = attributeMap.get(key);
-		
+
+		if (attribute.getId() == AttributeEnum.HP.getId()) {
+			if (attribute.getValue() == attributeMap.get(AttributeEnum.MAX_HP.getId()).getValue()) {
+				return attribute.getValue();
+			}
+		}
+		if (attribute.getId() == AttributeEnum.MP.getId()) {
+			if (attribute.getValue() == attributeMap.get(AttributeEnum.MAX_MP.getId()).getValue()) {
+				return attribute.getValue();
+			}
+		}
+
 		int oldValue = attribute.getValue();
-		
+
 		int newValue = attribute.changeValue(value);
 		if (isDead()) {
 			afterDead();
 		}
+
+		if (attribute.getId() == AttributeEnum.MAX_MP.getId()
+				&& attributeMap.get(AttributeEnum.MP.getId()).getValue() == attribute.getValue()) {
+			effectAttribute(AttributeEnum.MP.getId(), newValue, "最大mp改变");
+		}
+
+		if (attribute.getId() == AttributeEnum.MAX_HP.getId()
+				&& attributeMap.get(AttributeEnum.HP.getId()).getValue() == attribute.getValue()) {
+			effectAttribute(AttributeEnum.HP.getId(), newValue, "最大mp改变");
+		}
 		
-		if(oldValue != newValue) {
-			notifyAttributeChange(attribute);
+		if (oldValue != newValue) {
+			notifyAttributeChange(attribute, reason);
 		}
 
 		return newValue;
 	}
 
 	public void resurrection() {
-		Attribute attribute = attributeMap.get(3);
-		
-		attribute.changeValue(attribute.getMax());
-	}
+		Attribute hp = attributeMap.get(AttributeEnum.HP.getId());
+		Attribute mp = attributeMap.get(AttributeEnum.MP.getId());
 
-	public void resoreAttribute(int key, int value, boolean isBuff) {
-		Attribute attribute = attributeMap.get(key);
-		attribute.changeValue(value);
+		hp.changeValue(attributeMap.get(AttributeEnum.MAX_HP.getId()).getValue());
+		mp.changeValue(attributeMap.get(AttributeEnum.MAX_MP.getId()).getValue());
 	}
 
 	public abstract void afterDead();
-	
-	public abstract void notifyAttributeChange(Attribute attribute);
-	
+
+	public abstract void notifyAttributeChange(Attribute attribute, String reason);
+
 	public abstract void afterBuffAdd(RoleBuff roleBuff);
-	
+
 }

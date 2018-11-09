@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 0：敌人，1：自己 -->
 <skills>
-	<skill id="1" name="普攻" skillType="0"  cd="1000" effectAttribute="3:-20"
-		selfEffectAttribute="" needMp="20">
+	<skill id="1" name="普攻" skillType="0" cd="1000"
+		effectAttribute="3:-200" selfEffectAttribute="" needMp="20">
 	</skill>
-	<skill id="2" name="坚如磐石" skillType="1" cd="2000" effectAttribute=""
-		selfEffectAttribute="1:20" needMp="20">
-		<buff id="3" probability="100" />
+	<skill id="2" name="坚如磐石" skillType="1" cd="2000"
+		effectAttribute="" selfEffectAttribute="1:20" needMp="20">
+		<buff id="1" probability="100" />
 	</skill>
-	<skill id="3" name="毒牙" skillType="0" cd="120000" effectAttribute="3:-200"
-		selfEffectAttribute="3:20" needMp="20">
-		<buff id="4" probability="100" />
+	<skill id="3" name="毒牙" skillType="0" cd="120000"
+		effectAttribute="3:-200" selfEffectAttribute="3:20" needMp="20">
+		<buff id="2" probability="100" />
 	</skill>
-	<skill id="4" name="怪物普攻" skillType="0"  cd="60000" effectAttribute="3:-50"
-		selfEffectAttribute="" needMp="0">
+	<skill id="4" name="怪物普攻" skillType="0" cd="60000"
+		effectAttribute="3:-50" selfEffectAttribute="" needMp="0">
 	</skill>
 </skills>

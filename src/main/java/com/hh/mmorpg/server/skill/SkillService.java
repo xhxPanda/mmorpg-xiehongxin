@@ -30,30 +30,30 @@ public class SkillService {
 	public ReplyDomain dealSkillEffect(RoleSkill roleSkill, LivingThing attackedObject, LivingThing beAttackedObject,
 			long now) {
 		SkillDomain domain = getSkillDomain(roleSkill.getSkillId());
-		
+
 		// 是否在cd
 		if (now - roleSkill.getLastUseTime() <= domain.getCd()) {
 			return ReplyDomain.IN_CD;
 		}
-		
+
 		// 扣除mp
-		if(domain.getNeedMp() > attackedObject.getAttribute(4).getValue()) {
+		if (domain.getNeedMp() > attackedObject.getAttribute(4).getValue()) {
 			return ReplyDomain.MP_NOT_ENOUGH;
 		}
-		attackedObject.effectAttribute(4, -domain.getNeedMp());
-		
+		attackedObject.effectAttribute(4, -domain.getNeedMp(), "使用技能消耗mp");
 
 		for (Entry<Integer, Integer> entry : domain.getEffectAttribute().entrySet()) {
 			if (entry.getKey() == 3 && entry.getValue() < 0) {
 				beAttackedObject.effectAttribute(entry.getKey(), entry.getValue()
-						- attackedObject.getAttribute(1).getValue() + beAttackedObject.getAttribute(2).getValue());
+						- attackedObject.getAttribute(1).getValue() + beAttackedObject.getAttribute(2).getValue(),
+						domain.getName() + "技能作用");
 			} else {
-				beAttackedObject.effectAttribute(entry.getKey(), entry.getValue());
+				beAttackedObject.effectAttribute(entry.getKey(), entry.getValue(), domain.getName() + "技能作用");
 			}
 		}
 
 		for (Entry<Integer, Integer> entry : domain.getSelfEffectAttribute().entrySet()) {
-			attackedObject.effectAttribute(entry.getKey(), entry.getValue());
+			attackedObject.effectAttribute(entry.getKey(), entry.getValue(), domain.getName() + "技能作用");
 		}
 
 		List<BuffDomain> buffList = getSkillBuff(domain);
@@ -77,8 +77,8 @@ public class SkillService {
 	private RoleBuff dealBuffAttribute(BuffDomain buffDomain) {
 		Map<Integer, Integer> map = buffDomain.getAttributeEffect();
 		long now = System.currentTimeMillis();
-		RoleBuff buff = new RoleBuff(buffDomain.getName(), buffDomain.getId(), now, map, buffDomain.isBuff(), buffDomain.isCanResore(),
-				buffDomain.getLastTime(), buffDomain.getHeartbeatTime());
+		RoleBuff buff = new RoleBuff(buffDomain.getName(), buffDomain.getId(), now, map, buffDomain.isBuff(),
+				buffDomain.isCanResore(), buffDomain.getLastTime(), buffDomain.getHeartbeatTime());
 
 		return buff;
 	}

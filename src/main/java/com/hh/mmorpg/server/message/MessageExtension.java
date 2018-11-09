@@ -17,8 +17,8 @@ import com.hh.mmorpg.server.ExtensionSender;
 public class MessageExtension {
 	private MessageService service = MessageService.INSTANCE;
 
-	private static final String SEND_WORLD_MESSAGE = "发送世界信息";
-	private static final String SEND_TO_USER = "发送私聊信息";
+	private static final String SEND_WORLD_MESSAGE = "sendWorldMessage";
+	private static final String SEND_TO_USER = "sendToUser";
 
 	public static final String NOTIFY_USER_WORLD_MESSAGE = "世界信息";
 	private static final String NOTIFY_USER_MESSAGE = "私聊信息";

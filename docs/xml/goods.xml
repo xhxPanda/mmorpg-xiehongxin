@@ -8,4 +8,6 @@
 		priceName="9000金币"></goods>
 	<goods id="4" name="坚强胸甲" item="1:100002:1" price="3:1:9000"
 		priceName="9000金币"></goods>
+	<goods id="5" name="坚强腿甲" item="1:100003:1" price="3:1:9000"
+		priceName="9000金币"></goods>
 </goodsDomains>

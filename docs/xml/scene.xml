@@ -16,7 +16,7 @@
 		</npcs>
 		<monsters monster="4:1$3:1" />
 	</scene>
-	<scene id="3" name="峡谷" neighborScenes="1" isCanBattle="true"
+	<scene id="3" name="峡谷" neighborScenes="1" isCanBattle="false"
 		isCopy="false">
 		<npcs>
 			<npc id="5" name="峡谷帝君"></npc>
