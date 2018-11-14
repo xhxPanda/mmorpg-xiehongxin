@@ -11,8 +11,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.hh.mmorpg.Increment.IncrementManager;
-import com.hh.mmorpg.domain.Material;
-import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleDomain;
 import com.hh.mmorpg.domain.User;
@@ -35,6 +33,9 @@ public class RoleService {
 	public static final RoleService INSTANCE = new RoleService();
 
 	private Map<Integer, RoleDomain> roleDomainMap;
+	
+	// 默认格子数量
+	private static final int DEFAULT_CAPACITY = 20;
 
 	// 热点数据，用户角色数据缓存
 	private LoadingCache<Integer, Map<Integer, Role>> cache = CacheBuilder.newBuilder()
@@ -81,7 +82,7 @@ public class RoleService {
 			return ReplyDomain.FAILE;
 		}
 
-		assemblingRole(role);
+		
 		userRoleMap.put(userId, role);
 
 		if (oldRole != null) {
@@ -113,7 +114,7 @@ public class RoleService {
 	public ReplyDomain creatRole(User user, int roleDomainId, String name) {
 		// TODO Auto-generated method stub
 		int id = IncrementManager.INSTANCE.increase("role");
-		Role role = new Role(user.getUserId(), id, name, roleDomainId);
+		Role role = new Role(user.getUserId(), id, name, roleDomainId, DEFAULT_CAPACITY);
 		int i = RoleDao.INSTANCE.insertRole(role);
 		if (i < 0) {
 			return ReplyDomain.FAILE;
@@ -133,7 +134,7 @@ public class RoleService {
 		role.setAttributeMap(roleDomain.getAttributeMap());
 		role.setSkillMap(roleDomain.getRoleSkillMap());
 
-		List<UserEquipment> userEquipmentList = MaterialDao.INSTANCE.getAllUserClothes(roleId);
+		List<UserEquipment> userEquipmentList = MaterialDao.INSTANCE.getAllUserEquiment(roleId);
 		List<UserItem> userItemList = MaterialDao.INSTANCE.getAllItem(roleId);
 		List<UserTreasure> userTreasureList = MaterialDao.INSTANCE.getAllTreasure(roleId);
 
@@ -141,22 +142,18 @@ public class RoleService {
 			if (userEquipment.isInUsed()) {
 				role.setEquipment(userEquipment);
 			} else {
-				role.addMaterial(userEquipment);
+				role.pushMaterial(userEquipment);
 			}
 		}
 
 		for (UserItem userItem : userItemList) {
-			if(role.getMaterial(MaterialType.ITEM_TYPE.getId(), userItem.getId()) != null) {
-				continue;
-			}
-			role.addMaterial(userItem);
+			
+			role.pushMaterial(userItem);
 		}
 		
 		for(UserTreasure userTreasure : userTreasureList) {
-			if(role.getMaterial(MaterialType.TREASURE_TYPE.getId(), userTreasure.getId()) != null) {
-				continue;
-			}
-			role.addMaterial(userTreasure);
+			UserTreasure treasure = role.getRoleTreasure(userTreasure.getId());
+			treasure.changeQuantity(userTreasure.getQuantity());
 		}
 	}
 
@@ -166,7 +163,9 @@ public class RoleService {
 
 	public Role getUserRole(int userId, int roleId) {
 		try {
-			return cache.get(userId).get(roleId);
+			Role role = cache.get(userId).get(roleId);
+			assemblingRole(role);
+			return role;
 		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -189,27 +188,8 @@ public class RoleService {
 
 		int userId = userLostData.getUser().getUserId();
 		Role role = userRoleMap.remove(userId);
-		persistenceRoleMatetrial(role);
+		MaterialService.INSTANCE.persistenceRoleMatetrial(role);
 		System.out.println("删除用户缓存使用角色");
 	}
 	
-
-	// 用户切换角色后将角色物品持久化
-	@Event(eventType = EventType.ROLE_CHANGE)
-	public void handleRoleChange(EventDealData<RoleChangeData> data) {
-		int userId = data.getData().getUserId();
-		
-		int oldRoleId = data.getData().getOldRoleId();
-				
-		Role role = RoleService.INSTANCE.getUserRole(userId, oldRoleId);
-		persistenceRoleMatetrial(role);
-	} 
-	
-	private void persistenceRoleMatetrial(Role role) {
-		for(Map<Integer, Material> materialMap : role.getMaterialMap().values()) {
-			for(Material material : materialMap.values()) {
-				MaterialService.INSTANCE.persistenceMatetrial(material);
-			}
-		}
-	}
 }

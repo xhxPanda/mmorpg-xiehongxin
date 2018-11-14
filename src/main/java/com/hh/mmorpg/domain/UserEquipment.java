@@ -9,17 +9,19 @@ import java.util.Map.Entry;
 import com.hh.mmorpg.jdbc.ResultBuilder;
 import com.hh.mmorpg.result.ReplyDomain;
 
-public class UserEquipment extends Material {
+public class UserEquipment extends BagMaterial {
 
 	private boolean inUsed;
 	private int maxDurability;
 	private int durability;
+	private int equimentType;
 	private Map<Integer, Integer> attributeMap;
 	private long gainTime;
 
-	public UserEquipment(int roleId, String name, int clothesId, int maxDurability, int durability, String attributes,
-			long gainTime, String sellPrice) {
-		super(roleId, name, clothesId, MaterialType.EQUIPMENT_TYPE.getId(), MaterialType.EQUIPMENT_TYPE.getName(), 1);
+	public UserEquipment(int roleId, String name, int id, int maxDurability, int durability, String attributes,
+			long gainTime, String sellPrice, int index, int equimentType) {
+		super(roleId, name, id, MaterialType.EQUIPMENT_TYPE.getId(), MaterialType.EQUIPMENT_TYPE.getName(), 1, index,
+				sellPrice);
 		this.inUsed = false;
 		this.maxDurability = maxDurability;
 		this.durability = durability;
@@ -30,12 +32,13 @@ public class UserEquipment extends Material {
 		}
 
 		this.gainTime = gainTime;
-		this.setSellPrice(sellPrice);
+		this.equimentType = equimentType;
 	}
-	
-	public UserEquipment(int roleId, String name, int id,
-			boolean inUsed, int maxDurability, int durability, String attributes, long gainTime, String sellPrice) {
-		super(roleId, name, id, MaterialType.EQUIPMENT_TYPE.getId(), MaterialType.EQUIPMENT_TYPE.getName(), 1);
+
+	public UserEquipment(int roleId, String name, int id, boolean inUsed, int maxDurability, int durability,
+			String attributes, long gainTime, String sellPrice, int index, int equimentType) {
+		super(roleId, name, id, MaterialType.EQUIPMENT_TYPE.getId(), MaterialType.EQUIPMENT_TYPE.getName(), 1, index,
+				sellPrice);
 		this.inUsed = inUsed;
 		this.maxDurability = maxDurability;
 		this.durability = durability;
@@ -46,7 +49,7 @@ public class UserEquipment extends Material {
 		}
 
 		this.gainTime = gainTime;
-		this.setSellPrice(sellPrice);
+		this.equimentType = equimentType;
 	}
 
 	public boolean isInUsed() {
@@ -69,20 +72,24 @@ public class UserEquipment extends Material {
 		return attributeMap;
 	}
 
+	public int getEquimentType() {
+		return equimentType;
+	}
+
 	public ReplyDomain dropDurability() {
-		if(this.durability - 1 > 0) {
+		if (this.durability - 1 > 0) {
 			return ReplyDomain.SUCCESS;
 		} else {
 			this.durability = 0;
 			return ReplyDomain.FAILE;
 		}
-		
+
 	}
 
 	public long getGainTime() {
 		return gainTime;
 	}
-	
+
 	public String getAttributeStr() {
 		StringBuilder builder = new StringBuilder();
 
@@ -98,8 +105,8 @@ public class UserEquipment extends Material {
 
 	@Override
 	public String toString() {
-		return "UserEquiment [name=" + getName() + ", id=" + getId() + ", 最大耐久度=" + maxDurability
-				+ ", 耐久度=" + durability + "]";
+		return "UserEquiment [name=" + getName() + ", id=" + getId() + ", 最大耐久度=" + maxDurability + ", 耐久度="
+				+ durability + "]";
 	}
 
 	public static final ResultBuilder<UserEquipment> BUILDER = new ResultBuilder<UserEquipment>() {
@@ -115,8 +122,11 @@ public class UserEquipment extends Material {
 			int maxDurability = result.getInt(6);
 			int durability = result.getInt(7);
 			String sellPrice = result.getString("sellPrice");
-			boolean inUsed = result.getBoolean("inUsed");
-			return new UserEquipment(roleId, name, id, inUsed, maxDurability, durability, attributeStr, gainTime, sellPrice);
+			boolean inUsed = result.getBoolean("isInUsed");
+			int index = result.getInt("index");
+			int type = result.getInt("type");
+			return new UserEquipment(roleId, name, id, inUsed, maxDurability, durability, attributeStr, gainTime,
+					sellPrice, index, type);
 		}
 	};
 }

@@ -184,7 +184,7 @@ public class SceneService {
 		// TODO Auto-generated method stub
 		int userId = user.getUserId();
 		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) {
+		if (sceneId == null) { 
 			return ReplyDomain.FAILE;
 		}
 

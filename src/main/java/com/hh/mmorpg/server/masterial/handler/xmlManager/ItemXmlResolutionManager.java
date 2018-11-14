@@ -11,7 +11,6 @@ import org.dom4j.io.SAXReader;
 
 import com.hh.mmorpg.domain.ItemDomain;
 
-
 public class ItemXmlResolutionManager {
 
 	public static final ItemXmlResolutionManager INSTANCE = new ItemXmlResolutionManager();
@@ -38,11 +37,12 @@ public class ItemXmlResolutionManager {
 			String effect = element.attributeValue("effect");
 			String buffs = element.attributeValue("buffs");
 			String sellPrice = element.attributeValue("sellPrice");
-			map.put(id, new ItemDomain(id, name, effect, buffs, cd, sellPrice));
+			int pileNum = Integer.parseInt(element.attributeValue("pileNum"));
+			map.put(id, new ItemDomain(id, name, effect, buffs, cd, sellPrice, pileNum));
 		}
 		return map;
 	}
-	
+
 	public static final void main(String args[]) {
 		ItemXmlResolutionManager.INSTANCE.resolution();
 	}

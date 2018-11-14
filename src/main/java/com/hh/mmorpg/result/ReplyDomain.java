@@ -20,6 +20,7 @@ public class ReplyDomain {
 	public static final ReplyDomain BONS_NOT_EXIT = new ReplyDomain(ResultCode.BONS_NOT_EXIT);
 	public static final ReplyDomain CAN_NOT_BATTLE = new ReplyDomain(ResultCode.CAN_NOT_BATTLE);
 	public static final ReplyDomain EQUIMENT_DURABILITY_HARM = new ReplyDomain(ResultCode.EQUIMENT_DURABILITY_HARM);
+	public static final ReplyDomain BOX_SPACE_NOT_ENOUGH = new ReplyDomain(ResultCode.BOX_SPACE_NOT_ENOUGH);
 
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();
@@ -55,6 +56,10 @@ public class ReplyDomain {
 		domainMap.put(key, value);
 	}
 
+	public Object getDomain(String key) {
+		return domainMap.get(key);
+	}
+	
 	public String parseJsonObject() {
 		JSONObject jsonObject = new JSONObject(domainMap);
 		return jsonObject.toJSONString();

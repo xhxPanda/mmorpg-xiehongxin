@@ -5,11 +5,30 @@ import java.sql.SQLException;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
-public class UserTreasure extends Material {
+/**
+ * 
+ * @author xhx
+ *	财富
+ */
+public class UserTreasure extends Material{
 
-	public UserTreasure(int roleId, String name, int id, int quantity) {
-		super(roleId, name, id, MaterialType.TREASURE_TYPE.getId(), MaterialType.TREASURE_TYPE.getName(), quantity);
-		// TODO Auto-generated constructor stub
+	private long quantity;
+
+	public UserTreasure(int roleId, String name, int id, long quantity) {
+		super(roleId, name, id, MaterialType.TREASURE_TYPE.getId(), MaterialType.TREASURE_TYPE.getName());
+		this.quantity = quantity;
+	}
+
+	public long changeQuantity(long value) {
+		return quantity += value;
+	}
+	
+	public long getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(long quantity) {
+		this.quantity = quantity;
 	}
 
 	public static final ResultBuilder<UserTreasure> BUILDER = new ResultBuilder<UserTreasure>() {
@@ -20,7 +39,7 @@ public class UserTreasure extends Material {
 			int roleId = result.getInt("roleId");
 			int id = result.getInt("treasureId");
 			String name = result.getString("name");
-			int quantity = result.getInt("quantity");
+			long quantity = result.getLong("quantity");
 			return new UserTreasure(roleId, name, id, quantity);
 		}
 	};

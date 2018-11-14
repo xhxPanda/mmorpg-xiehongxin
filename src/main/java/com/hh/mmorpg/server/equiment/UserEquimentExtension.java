@@ -13,21 +13,11 @@ public class UserEquimentExtension {
 	private UserEquimentService service = UserEquimentService.INSTANCE;
 	
 	private static final String SHOW_EQUIMENT = "showEquiment";
-	private static final String WEAR_EQUIMENT = "wearEquiment";
 	private static final String TAKE_OFF_EQUIMENT = "takeOffEquiment";
 	
 	@CmdService(cmd = SHOW_EQUIMENT)
 	public void showEquiment(User user, CMDdomain cmDdomain) {
 		ReplyDomain replyDomain = service.showEquiment(user);
-		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
-	}
-	
-	@CmdService(cmd = WEAR_EQUIMENT)
-	public void wearEquiment(User user, CMDdomain cmDdomain) {
-		
-		int equientId = cmDdomain.getIntParam(2);
-		
-		ReplyDomain replyDomain = service.wearEquiment(user, equientId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	

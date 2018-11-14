@@ -14,5 +14,5 @@ public class ResultCode {
 	public static final String CAN_NOT_BATTLE = "该场景不能攻击用户";
 	public static final String CAN_NOT_ENTER = "不能进入该场景";
 	public static final String EQUIMENT_DURABILITY_HARM = "装备耐久已无";
-
+	public static final String BOX_SPACE_NOT_ENOUGH = "背包容量不足";
 }

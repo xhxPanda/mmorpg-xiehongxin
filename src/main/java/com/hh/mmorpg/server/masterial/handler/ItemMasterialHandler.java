@@ -1,14 +1,15 @@
 package com.hh.mmorpg.server.masterial.handler;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.hh.mmorpg.domain.ItemDomain;
-import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.ItemXmlResolutionManager;
+import com.hh.mmorpg.server.skill.SkillService;
 
 public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 
@@ -27,12 +28,10 @@ public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 
 		ItemDomain itemDomain = itemDomainMap.get(id);
 		UserItem userItem = new UserItem(role.getId(), itemDomain.getName(), id, needNum, System.currentTimeMillis(), 0,
-				itemDomain.getEffectAttribuate(), itemDomain.getBuffs(), itemDomain.getCd(), itemDomain.getSellPrice());
-		role.addMaterial(userItem);
+				itemDomain.getEffectAttribuate(), itemDomain.getBuffs(), itemDomain.getCd(), itemDomain.getSellPrice(),
+				-1);
 
-		MaterialDao.INSTANCE.updateRoleItem(userItem);
-
-		return ReplyDomain.SUCCESS;
+		return role.addMaterial(userItem);
 	}
 
 	@Override
@@ -41,25 +40,35 @@ public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 		int id = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
 
-		if (!role.isContainMaterial(Integer.parseInt(materialStr[0]), id)) {
-			return ReplyDomain.FAILE;
-		}
-
-		UserItem material = (UserItem) role.getMaterial(MaterialType.ITEM_TYPE.getId(), id);
-
-		if (material == null || needNum > material.getQuantity()) {
-			return ReplyDomain.NOT_ENOUGH;
-		}
-//		MaterialDao.INSTANCE.updateRoleItem(material);
 		role.decMaterial(Integer.parseInt(materialStr[0]), id, needNum);
+		
+		return ReplyDomain.SUCCESS;
+	}
 
+	public ReplyDomain useMaterial(Role role, UserItem userItem) {
+
+		for (Entry<Integer, Integer> entry : userItem.getEffectAttributeMap().entrySet()) {
+			role.effectAttribute(entry.getKey(), entry.getValue(), "使用道具");
+		}
+		if (userItem.getBuffList().size() != 0) {
+			for (Integer buffId : userItem.getBuffList()) {
+				SkillService.INSTANCE.addBuff(role, buffId);
+			}
+
+		}
 		return ReplyDomain.SUCCESS;
 	}
 
 	@Override
-	public void persistence(UserItem material) {
+	public void persistence(UserItem userItem) {
 		// TODO Auto-generated method stub
-		MaterialDao.INSTANCE.updateRoleItem(material);
+		MaterialDao.INSTANCE.updateRoleItem(userItem);
+	}
+
+	@Override
+	public int getPileNum(int materialId) {
+		// TODO Auto-generated method stub
+		return itemDomainMap.get(materialId).getPileNum();
 	}
 
 }

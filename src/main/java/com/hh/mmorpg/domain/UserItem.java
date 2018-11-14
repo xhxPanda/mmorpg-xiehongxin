@@ -10,19 +10,18 @@ import java.util.Map.Entry;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
-public class UserItem extends Material {
+public class UserItem extends BagMaterial {
 
 	private long lastUsedTime;
 	private Map<Integer, Integer> effectAttributeMap;
 	private List<Integer> buffList;
 	private long cd;
 	private long gainTime;
-	private String sellPrice;
 
 	public UserItem(int roleId, String name, int id, int quantity, long gainTime, long lastUsedTime, String effect,
-			String buffs, long cd, String sellPrice) {
+			String buffs, long cd, String sellPrice, int index) {
 		// TODO Auto-generated constructor stub
-		super(roleId, name, id, MaterialType.ITEM_TYPE.getId(), MaterialType.ITEM_TYPE.getName(), quantity);
+		super(roleId, name, id, MaterialType.ITEM_TYPE.getId(), MaterialType.ITEM_TYPE.getName(), quantity, index, sellPrice);
 		this.lastUsedTime = lastUsedTime;
 
 		this.effectAttributeMap = new HashMap<>();
@@ -38,10 +37,9 @@ public class UserItem extends Material {
 				buffList.add(Integer.parseInt(str));
 			}
 		}
-
+		
 		this.cd = cd;
 		this.gainTime = gainTime;
-		this.sellPrice = sellPrice;
 	}
 
 	public Map<Integer, Integer> getEffectAttributeMap() {
@@ -62,10 +60,6 @@ public class UserItem extends Material {
 
 	public long getCd() {
 		return cd;
-	}
-
-	public String getSellPrice() {
-		return sellPrice;
 	}
 
 	public boolean isPartCD() {
@@ -111,7 +105,7 @@ public class UserItem extends Material {
 		public UserItem build(ResultSet result) throws SQLException {
 			// TODO Auto-generated method stub
 			int roleId = result.getInt("roleId");
-			int id = result.getInt("itemId");
+			int id = result.getInt("id");
 			String name = result.getString("name");
 			int quantity = result.getInt("quantity");
 			long gainTime = result.getLong("gainTime");
@@ -120,7 +114,8 @@ public class UserItem extends Material {
 			String effects = result.getString("effectAttribute");
 			String buffs = result.getString("buffs");
 			String sellPrice = result.getString("sellPrice");
-			return new UserItem(roleId, name, id, quantity, gainTime, lastUserdTime, effects, buffs, cd, sellPrice);
+			int index = result.getInt("index");
+			return new UserItem(roleId, name, id, quantity, gainTime, lastUserdTime, effects, buffs, cd, sellPrice, index);
 		}
 	};
 

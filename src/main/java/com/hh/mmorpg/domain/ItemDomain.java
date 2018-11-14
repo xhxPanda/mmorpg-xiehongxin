@@ -8,14 +8,16 @@ public class ItemDomain {
 	private String buffs;
 	private long cd;
 	private String sellPrice;
+	private int pileNum;
 
-	public ItemDomain(int id, String name, String effectAttribuate, String buffs, long cd, String sellPrice) {
+	public ItemDomain(int id, String name, String effectAttribuate, String buffs, long cd, String sellPrice, int pileNum) {
 		this.id = id;
 		this.name = name;
 		this.effectAttribuate = effectAttribuate;
 		this.buffs = buffs;
 		this.cd = cd;
 		this.sellPrice = sellPrice;
+		this.pileNum = pileNum;
 	}
 
 	public int getId() {
@@ -40,6 +42,10 @@ public class ItemDomain {
 
 	public String getSellPrice() {
 		return sellPrice;
+	}
+
+	public int getPileNum() {
+		return pileNum;
 	}
 
 }

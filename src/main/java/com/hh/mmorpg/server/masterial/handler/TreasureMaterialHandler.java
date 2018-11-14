@@ -1,9 +1,7 @@
 package com.hh.mmorpg.server.masterial.handler;
 
-import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserTreasure;
-import com.hh.mmorpg.domain.UserTreasureType;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 
@@ -12,12 +10,26 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler<UserTreasur
 	@Override
 	public ReplyDomain gainMaterial(Role role, String[] materialStr) {
 		// TODO Auto-generated method stub
-		int materialId = Integer.parseInt(materialStr[1]);
+		int id = Integer.parseInt(materialStr[1]);
 		int num = Integer.parseInt(materialStr[2]);
-		UserTreasureType userTreasureType = UserTreasureType.getUserTreasureType(materialId);
-		UserTreasure material = new UserTreasure(role.getId(), userTreasureType.getName(), materialId, num);
+		
+		UserTreasure treasure = role.getRoleTreasure(id);
+		treasure.changeQuantity(num);
+		return ReplyDomain.SUCCESS;
+	}
 
-		role.addMaterial(material);
+	public ReplyDomain checkDecMaterial(Role role, String[] materialStr) {
+		int id = Integer.parseInt(materialStr[1]);
+		int needNum = Integer.parseInt(materialStr[2]);
+
+		UserTreasure treasure = role.getRoleTreasure(id);
+		if (treasure == null) {
+			return ReplyDomain.FAILE;
+		}
+
+		if (treasure.getQuantity() < needNum) {
+			return ReplyDomain.NOT_ENOUGH;
+		}
 
 		return ReplyDomain.SUCCESS;
 	}
@@ -28,24 +40,24 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler<UserTreasur
 		int materialId = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
 
-		if (!role.isContainMaterial(Integer.parseInt(materialStr[0]), materialId)) {
-			return ReplyDomain.FAILE;
-		}
-
-		UserTreasure material = (UserTreasure) role.getMaterial(MaterialType.TREASURE_TYPE.getId(), materialId);
-
-		if (material == null || needNum > material.getQuantity()) {
-			return ReplyDomain.NOT_ENOUGH;
-		}
-		role.decMaterial(MaterialType.TREASURE_TYPE.getId(), materialId, needNum);
-
+		UserTreasure treasure = role.getRoleTreasure(materialId);
+		
+		treasure.changeQuantity(-needNum);
+		
 		return ReplyDomain.SUCCESS;
 	}
 
 	@Override
-	public void persistence(UserTreasure material) {
+	public void persistence(UserTreasure treasure) {
 		// TODO Auto-generated method stub
-		MaterialDao.INSTANCE.updateRoleTreasure(material);
+		MaterialDao.INSTANCE.updateRoleTreasure(treasure);
+		
+	}
+
+	@Override
+	public int getPileNum(int materialId) {
+		// TODO Auto-generated method stub
+		return -1;
 	}
 
 }

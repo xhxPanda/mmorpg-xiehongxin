@@ -45,8 +45,8 @@ public class EquimentXmlResolutionManager {
 		return map;
 	}
 	
-//	public static final void main(String args[]) {
-//		EquimentXmlResolutionManager.INSTANCE.resolution();
-//	}
+	public static final void main(String args[]) {
+		EquimentXmlResolutionManager.INSTANCE.resolution();
+	}
 
 }
