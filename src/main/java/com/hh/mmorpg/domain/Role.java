@@ -354,11 +354,13 @@ public class Role extends LivingThing {
 	public void afterBuffAdd(RoleBuff roleBuff) {
 		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getUserScene(userId);
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
-		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_BUFF_ADD);
-		replyDomain.setStringDomain("buff名称", roleBuff.getName());
-		replyDomain.setIntDomain("角色id", id);
-		scene.notifyAllUser(replyDomain);
+		if(scene != null) {
+			ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+			replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_BUFF_ADD);
+			replyDomain.setStringDomain("buff名称", roleBuff.getName());
+			replyDomain.setIntDomain("角色id", id);
+			scene.notifyAllUser(replyDomain);
+		}
 	}
 
 	public Map<Integer, BagMaterial> getMaterialMap() {

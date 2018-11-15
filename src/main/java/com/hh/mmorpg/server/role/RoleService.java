@@ -27,6 +27,7 @@ import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.MaterialService;
+import com.hh.mmorpg.server.skill.SkillService;
 
 public class RoleService {
 
@@ -68,6 +69,12 @@ public class RoleService {
 		return replyDomain;
 	}
 
+	/**
+	 * 使用角色
+	 * @param user
+	 * @param roleId
+	 * @return
+	 */
 	public ReplyDomain userUseRole(User user, int roleId) {
 		int userId = user.getUserId();
 		Role oldRole = userRoleMap.get(userId);
@@ -133,7 +140,8 @@ public class RoleService {
 		RoleDomain roleDomain = getRoleDomain(role.getRoleId());
 		role.setAttributeMap(roleDomain.getAttributeMap());
 		role.setSkillMap(roleDomain.getRoleSkillMap());
-
+		
+		// 建立用户物品栏
 		List<UserEquipment> userEquipmentList = MaterialDao.INSTANCE.getAllUserEquiment(roleId);
 		List<UserItem> userItemList = MaterialDao.INSTANCE.getAllItem(roleId);
 		List<UserTreasure> userTreasureList = MaterialDao.INSTANCE.getAllTreasure(roleId);
@@ -155,6 +163,9 @@ public class RoleService {
 			UserTreasure treasure = role.getRoleTreasure(userTreasure.getId());
 			treasure.changeQuantity(userTreasure.getQuantity());
 		}
+		
+		SkillService.INSTANCE.addBuff(role, 1);
+		SkillService.INSTANCE.addBuff(role, 2);
 	}
 
 	public boolean isUserRoleOnline(int userId, int roleId) {

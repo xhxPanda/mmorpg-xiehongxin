@@ -81,7 +81,7 @@ public class MaterialDao {
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ITEM,
 				new Object[] { userItem.getRoleId(), userItem.getId(), userItem.getName(), userItem.getQuantity(),
 						userItem.getGainTime(), userItem.getLastUsedTime(), userItem.getCd(),
-						userItem.getAttributeStr(), userItem.getBuffStr(), userItem.getSellPrice(), userItem.getIndex() });
+						userItem.getAttributeStr(), userItem.getBuffStr(), userItem.getSellPrice(), userItem.getIndex(), userItem.getQuantity() });
 	}
 
 	public int updateRoleEquiment(UserEquipment equipment) {

@@ -37,7 +37,7 @@ public class UserTreasure extends Material{
 		public UserTreasure build(ResultSet result) throws SQLException {
 			// TODO Auto-generated method stub
 			int roleId = result.getInt("roleId");
-			int id = result.getInt("treasureId");
+			int id = result.getInt("id");
 			String name = result.getString("name");
 			long quantity = result.getLong("quantity");
 			return new UserTreasure(roleId, name, id, quantity);

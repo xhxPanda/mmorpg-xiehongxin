@@ -38,6 +38,7 @@ public class SkillXmlResolution {
 			String name = skillTopEle.attributeValue("name");
 			int needMp = Integer.parseInt(skillTopEle.attributeValue("needMp"));
 			int cd = Integer.parseInt(skillTopEle.attributeValue("cd"));
+			boolean magicSkill = Boolean.parseBoolean(skillTopEle.attributeValue("isMagicSkill"));
 			Map<Integer, Integer> buffprobabilityMap = new HashMap<>();
 
 			List<Element> buffs = skillTopEle.elements("buff");
@@ -66,7 +67,7 @@ public class SkillXmlResolution {
 				}
 			}
 
-			SkillDomain skillDomain = new SkillDomain(id, name, cd, effectAttributeMap,
+			SkillDomain skillDomain = new SkillDomain(id, name, cd, magicSkill, effectAttributeMap,
 					selfEffectAttributeMap, buffprobabilityMap, needMp);
 			map.put(skillDomain.getId(), skillDomain);
 		}
@@ -104,7 +105,4 @@ public class SkillXmlResolution {
 		return map;
 	}
 	
-//	public static final void main(String args[]) {
-//		new SkillXmlResolution().buffResolution();
-//	}
 }

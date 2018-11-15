@@ -21,6 +21,8 @@ public class ReplyDomain {
 	public static final ReplyDomain CAN_NOT_BATTLE = new ReplyDomain(ResultCode.CAN_NOT_BATTLE);
 	public static final ReplyDomain EQUIMENT_DURABILITY_HARM = new ReplyDomain(ResultCode.EQUIMENT_DURABILITY_HARM);
 	public static final ReplyDomain BOX_SPACE_NOT_ENOUGH = new ReplyDomain(ResultCode.BOX_SPACE_NOT_ENOUGH);
+	public static final ReplyDomain IN_HALO = new ReplyDomain(ResultCode.IN_HALO);
+	public static final ReplyDomain IN_SILENT = new ReplyDomain(ResultCode.IN_SILENT);
 
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

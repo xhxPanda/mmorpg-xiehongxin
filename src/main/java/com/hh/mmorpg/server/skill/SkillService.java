@@ -31,6 +31,14 @@ public class SkillService {
 			long now) {
 		SkillDomain domain = getSkillDomain(roleSkill.getSkillId());
 
+		if (attackedObject.isContainBuff(5)) {
+			return ReplyDomain.IN_HALO;
+		}
+
+		if (domain.isMagicSkill() && attackedObject.isContainBuff(6)) {
+			return ReplyDomain.IN_SILENT;
+		}
+
 		// 是否在cd
 		if (now - roleSkill.getLastUseTime() <= domain.getCd()) {
 			return ReplyDomain.IN_CD;
@@ -56,9 +64,9 @@ public class SkillService {
 			attackedObject.effectAttribute(entry.getKey(), entry.getValue(), domain.getName() + "技能作用");
 		}
 
-		List<BuffDomain> buffList = getSkillBuff(domain);
-		for (BuffDomain buffDomain : buffList) {
-			RoleBuff buff = dealBuffAttribute(buffDomain);
+		List<Integer> buffList = getSkillBuff(domain);
+		for (Integer buffDomainId : buffList) {
+			RoleBuff buff = dealBuffAttribute(buffDomainId);
 			beAttackedObject.addBuff(buff);
 		}
 
@@ -68,13 +76,13 @@ public class SkillService {
 	}
 
 	public void addBuff(Role role, int buffId) {
-		BuffDomain buffDomain = getBuffDomain(buffId);
 
-		RoleBuff buff = dealBuffAttribute(buffDomain);
+		RoleBuff buff = dealBuffAttribute(buffId);
 		role.addBuff(buff);
 	}
 
-	private RoleBuff dealBuffAttribute(BuffDomain buffDomain) {
+	public RoleBuff dealBuffAttribute(int buffId) {
+		BuffDomain buffDomain = getBuffDomain(buffId);
 		Map<Integer, Integer> map = buffDomain.getAttributeEffect();
 		long now = System.currentTimeMillis();
 		RoleBuff buff = new RoleBuff(buffDomain.getName(), buffDomain.getId(), now, map, buffDomain.isBuff(),
@@ -83,15 +91,15 @@ public class SkillService {
 		return buff;
 	}
 
-	private List<BuffDomain> getSkillBuff(SkillDomain domain) {
+	private List<Integer> getSkillBuff(SkillDomain domain) {
 		Random random = new Random();
 		int probability = random.nextInt(100);
 
-		List<BuffDomain> buffs = new ArrayList<>();
+		List<Integer> buffs = new ArrayList<>();
 
 		for (Entry<Integer, Integer> entry : domain.getBuffprobabilityMap().entrySet()) {
 			if (entry.getValue() >= probability) {
-				buffs.add(buffMap.get(entry.getKey()));
+				buffs.add(entry.getKey());
 			}
 		}
 
@@ -103,7 +111,7 @@ public class SkillService {
 		return domain;
 	}
 
-	private BuffDomain getBuffDomain(int buffId) {
+	public BuffDomain getBuffDomain(int buffId) {
 		return buffMap.get(buffId);
 	}
 }

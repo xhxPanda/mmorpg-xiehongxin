@@ -100,10 +100,10 @@ public abstract class LivingThing {
 
 			buff.setLastUsedTime(System.currentTimeMillis());
 			for (Entry<Integer, Integer> entry : buff.getEffectValue().entrySet()) {
-				if (!buff.isBuff()) {
+				if (buff.isBuff()) {
 					effectAttribute(entry.getKey(), entry.getValue(), buff.getName() + buff.getName() + "buff作用");
 				} else {
-					effectAttribute(entry.getKey(), -entry.getValue(), buff.getName() +  buff.getName() + "buff作用");
+					effectAttribute(entry.getKey(), -entry.getValue(), buff.getName() + buff.getName() + "buff作用");
 				}
 
 				buff.setLastUsedTime(now);
@@ -114,9 +114,11 @@ public abstract class LivingThing {
 			if (roleBuff.isResore()) {
 				for (Entry<Integer, Integer> entry : roleBuff.getEffectValue().entrySet()) {
 					if (!roleBuff.isBuff()) {
-						effectAttribute(entry.getKey(), -entry.getValue(), roleBuff.getName() +  roleBuff.getName() + "buff移除");
+						effectAttribute(entry.getKey(), -entry.getValue(),
+								roleBuff.getName() + roleBuff.getName() + "buff移除");
 					} else {
-						effectAttribute(entry.getKey(), entry.getValue(), roleBuff.getName() +  roleBuff.getName() + "buff作用");
+						effectAttribute(entry.getKey(), entry.getValue(),
+								roleBuff.getName() + roleBuff.getName() + "buff作用");
 					}
 				}
 			}
@@ -139,14 +141,29 @@ public abstract class LivingThing {
 	public int effectAttribute(int key, int value, String reason) {
 		Attribute attribute = attributeMap.get(key);
 
-		if (attribute.getId() == AttributeEnum.HP.getId()) {
-			if (attribute.getValue() == attributeMap.get(AttributeEnum.MAX_HP.getId()).getValue()) {
-				return attribute.getValue();
+		// 加血限制
+		if (value > 0) {
+			if (attribute.getId() == AttributeEnum.HP.getId()) {
+				if (attribute.getValue() == attributeMap.get(AttributeEnum.MAX_HP.getId()).getValue()) {
+					return attribute.getValue();
+				}
 			}
-		}
-		if (attribute.getId() == AttributeEnum.MP.getId()) {
-			if (attribute.getValue() == attributeMap.get(AttributeEnum.MAX_MP.getId()).getValue()) {
-				return attribute.getValue();
+			if (attribute.getId() == AttributeEnum.MP.getId()) {
+				if (attribute.getValue() == attributeMap.get(AttributeEnum.MAX_MP.getId()).getValue()) {
+					return attribute.getValue();
+				}
+			}
+
+			if (attribute.getId() == AttributeEnum.MAX_HP.getId()) {
+				if (attributeMap.get(AttributeEnum.HP.getId()).getValue() == attribute.getValue()) {
+					effectAttribute(AttributeEnum.HP.getId(), value, "最大血量变化");
+				}
+			}
+
+			if (attribute.getId() == AttributeEnum.MAX_MP.getId()) {
+				if (attributeMap.get(AttributeEnum.MP.getId()).getValue() == attribute.getValue()) {
+					effectAttribute(AttributeEnum.MP.getId(), value, "最大法力变化");
+				}
 			}
 		}
 
@@ -166,12 +183,16 @@ public abstract class LivingThing {
 				&& attributeMap.get(AttributeEnum.HP.getId()).getValue() == attribute.getValue()) {
 			effectAttribute(AttributeEnum.HP.getId(), newValue, "最大mp改变");
 		}
-		
+
 		if (oldValue != newValue) {
 			notifyAttributeChange(attribute, reason);
 		}
 
 		return newValue;
+	}
+	
+	public boolean isContainBuff(int buffId) {
+		return buffsMap.containsKey(buffId);
 	}
 
 	public void resurrection() {

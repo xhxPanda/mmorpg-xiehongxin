@@ -14,15 +14,17 @@ public class SkillDomain {
 	private int cd;
 	private String name;
 	private int needMp;
+	private boolean magicSkill;
 	private Map<Integer, Integer> effectAttribute;
 	private Map<Integer, Integer> selfEffectAttribute;
 	private Map<Integer, Integer> buffprobabilityMap;
 
-	public SkillDomain(int id, String name, int cd, Map<Integer, Integer> effectAttribute,
+	public SkillDomain(int id, String name, int cd, boolean magicSkill, Map<Integer, Integer> effectAttribute,
 			Map<Integer, Integer> selfEffectAttribute, Map<Integer, Integer> buffprobabilityMap, int needMp) {
 		this.id = id;
 		this.name = name;
 		this.cd = cd;
+		this.magicSkill = magicSkill;
 		this.selfEffectAttribute = selfEffectAttribute;
 		this.effectAttribute = effectAttribute;
 		this.buffprobabilityMap = buffprobabilityMap;
@@ -55,6 +57,10 @@ public class SkillDomain {
 
 	public int getNeedMp() {
 		return needMp;
+	}
+
+	public boolean isMagicSkill() {
+		return magicSkill;
 	}
 
 }
