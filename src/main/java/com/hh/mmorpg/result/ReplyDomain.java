@@ -23,7 +23,12 @@ public class ReplyDomain {
 	public static final ReplyDomain BOX_SPACE_NOT_ENOUGH = new ReplyDomain(ResultCode.BOX_SPACE_NOT_ENOUGH);
 	public static final ReplyDomain IN_HALO = new ReplyDomain(ResultCode.IN_HALO);
 	public static final ReplyDomain IN_SILENT = new ReplyDomain(ResultCode.IN_SILENT);
-
+	public static final ReplyDomain LEVEL_NOT_ENOUGH = new ReplyDomain(ResultCode.LEVEL_NOT_ENOUGH);
+	public static final ReplyDomain HAD_HAS_GUILD = new ReplyDomain(ResultCode.HAD_HAS_GUILD);
+	public static final ReplyDomain GUILD_FULL = new ReplyDomain(ResultCode.GUILD_FULL);
+	public static final ReplyDomain HAS_SENT_APPLY = new ReplyDomain(ResultCode.HAS_SENT_APPLY);
+	public static final ReplyDomain HAS_IN_GUILD = new ReplyDomain(ResultCode.HAS_IN_GUILD);
+	
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();
 	}

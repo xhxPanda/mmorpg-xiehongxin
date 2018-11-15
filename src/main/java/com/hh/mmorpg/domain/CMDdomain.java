@@ -19,6 +19,11 @@ public class CMDdomain {
 	public int getIntParam(int index) {
 		return Integer.parseInt(domainStringArry[index]);
 	}
+	
+	public boolean getBooleanParam(int index) {
+		return Boolean.parseBoolean(domainStringArry[index]);
+	}
+
 
 	public Channel getChannel() {
 		return channel;

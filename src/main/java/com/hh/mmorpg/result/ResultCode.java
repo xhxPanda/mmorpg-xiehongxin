@@ -17,4 +17,9 @@ public class ResultCode {
 	public static final String BOX_SPACE_NOT_ENOUGH = "背包容量不足";
 	public static final String IN_HALO = "打晕";
 	public static final String IN_SILENT = "沉默";
+	public static final String LEVEL_NOT_ENOUGH = "等级不足";
+	public static final String HAD_HAS_GUILD = "已有公会";
+	public static final String GUILD_FULL = "公会人数已满";
+	public static final String HAS_SENT_APPLY = "已经发过公会申请了";
+	public static final String HAS_IN_GUILD = "已在公会";
 }

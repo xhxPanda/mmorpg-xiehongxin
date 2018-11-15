@@ -13,11 +13,11 @@ public class RoleDao {
 	private static final int DB_INDEX = 1000 * 10000;
 
 	private static final String SELECT_USER_ROLE = "SELECT * FROM role%s where userId = ?";
+	private static final String INSERT_USER_ROLE = "INSERT INTO role%s('userId', 'roleId', `name`, `capacity`, `guildId`) values (?, ?, ?, ? ,?) ";
 
-	private static final String INSERT_USER_ROLE = "INSERT INTO role%s('userId','roleId', `name`) values (?, ?, ?) ";
+	private static final String UPDATE_USER_GUILD = "UPDATE role%s SET guildId = ? WHERE roleId = ? AND UserId = ?";
 
-	@SuppressWarnings("unchecked")
-	public List<Role> selectUserRole(int userId) {
+	@SuppressWarnings("unchecked") public List<Role> selectUserRole(int userId) {
 		int dbIndex = userId / DB_INDEX;
 		List<Role> list = null;
 		try {
@@ -34,7 +34,15 @@ public class RoleDao {
 	public int insertRole(Role role) {
 		int dbIndex = role.getUserId() / DB_INDEX;
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(String.format(INSERT_USER_ROLE, dbIndex),
-				new Object[] { role.getUserId(), role.getId(), role.getRoleId(), role.getName() });
+				new Object[] { role.getUserId(), role.getId(), role.getRoleId(), role.getName(), role.getCapacity(),
+						role.getGuildId() });
+
+	}
+	
+	public int updateRoleGuild(int roleId, int userId, int guildId) {
+		int dbIndex = userId / DB_INDEX;
+		return JDBCManager.INSTANCE.getConn("part0").excuteObject(String.format(UPDATE_USER_GUILD, dbIndex),
+				new Object[] { roleId, userId, guildId });
 
 	}
 }

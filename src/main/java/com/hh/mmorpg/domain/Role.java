@@ -30,6 +30,9 @@ public class Role extends LivingThing {
 	private String name;
 	private int roleId;
 	private int capacity;
+	private int level; // 等级
+	private int exp; // 经验
+	private int guildId; // 公会id
 
 	// 背包
 	private Map<Integer, BagMaterial> materialMap;
@@ -40,7 +43,7 @@ public class Role extends LivingThing {
 	// 装备栏
 	private Map<Integer, UserEquipment> equipmentMap;
 
-	public Role(int userId, int id, String name, int roleId, int capacity) {
+	public Role(int userId, int id, String name, int roleId, int capacity, int level, int exp) {
 		super(roleId, id);
 		this.userId = userId;
 		this.id = id;
@@ -48,6 +51,10 @@ public class Role extends LivingThing {
 		this.roleId = roleId;
 		this.capacity = capacity;
 		this.materialMap = new HashMap<>();
+		
+		this.level = level;
+		this.exp = exp;
+		
 		for (int i = 0; i < capacity; i++) {
 			materialMap.put(i, null);
 		}
@@ -89,7 +96,9 @@ public class Role extends LivingThing {
 			int roleId = result.getInt(3);
 			String name = result.getString(4);
 			int capacity = result.getInt("capacity");
-			return new Role(userId, id, name, roleId, capacity);
+			int level = result.getInt("level");
+			int exp = result.getInt("exp");
+			return new Role(userId, id, name, roleId, capacity, level, exp);
 		}
 	};
 
@@ -324,17 +333,17 @@ public class Role extends LivingThing {
 
 	public ReplyDomain sortBag(int fromIndex, int toIndex) {
 		BagMaterial fromMaterial = materialMap.get(fromIndex);
-		if(fromMaterial == null) {
+		if (fromMaterial == null) {
 			return ReplyDomain.FAILE;
 		}
-		
+
 		BagMaterial toMaterial = materialMap.get(toIndex);
 		materialMap.put(fromIndex, toMaterial);
 		materialMap.put(toIndex, fromMaterial);
-		
+
 		return ReplyDomain.SUCCESS;
 	}
-	
+
 	@Override
 	public void notifyAttributeChange(Attribute attribute, String reason) {
 		// TODO Auto-generated method stub
@@ -354,13 +363,21 @@ public class Role extends LivingThing {
 	public void afterBuffAdd(RoleBuff roleBuff) {
 		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getUserScene(userId);
-		if(scene != null) {
+		if (scene != null) {
 			ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 			replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_BUFF_ADD);
 			replyDomain.setStringDomain("buff名称", roleBuff.getName());
 			replyDomain.setIntDomain("角色id", id);
 			scene.notifyAllUser(replyDomain);
 		}
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public int getExp() {
+		return exp;
 	}
 
 	public Map<Integer, BagMaterial> getMaterialMap() {
@@ -370,4 +387,13 @@ public class Role extends LivingThing {
 	public Map<Integer, UserTreasure> getTreasureMap() {
 		return treasureMap;
 	}
+
+	public int getGuildId() {
+		return guildId;
+	}
+
+	public void setGuildId(int guildId) {
+		this.guildId = guildId;
+	}
+
 }

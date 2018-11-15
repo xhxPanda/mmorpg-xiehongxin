@@ -34,7 +34,9 @@ public class RoleService {
 	public static final RoleService INSTANCE = new RoleService();
 
 	private Map<Integer, RoleDomain> roleDomainMap;
-	
+
+	private ConcurrentHashMap<Integer, Integer> roleToUser;
+
 	// 默认格子数量
 	private static final int DEFAULT_CAPACITY = 20;
 
@@ -56,6 +58,8 @@ public class RoleService {
 		userRoleMap = new ConcurrentHashMap<>();
 		roleDomainMap = RoleXmlResolutionManager.INSTANCE.resolution();
 
+		this.roleToUser = new ConcurrentHashMap<>();
+
 		EventHandlerManager.INSATNCE.register(this);
 	}
 
@@ -71,6 +75,7 @@ public class RoleService {
 
 	/**
 	 * 使用角色
+	 * 
 	 * @param user
 	 * @param roleId
 	 * @return
@@ -89,15 +94,19 @@ public class RoleService {
 			return ReplyDomain.FAILE;
 		}
 
-		
 		userRoleMap.put(userId, role);
 
 		if (oldRole != null) {
+			// 删除缓存
+			roleToUser.remove(oldRole.getId());
+			roleToUser.put(roleId, userId);
+
 			// 抛出替换角色的事件
 			RoleChangeData data = new RoleChangeData(userId, oldRole.getId(), roleId);
 			EventHandlerManager.INSATNCE.methodInvoke(EventType.ROLE_CHANGE, new EventDealData<RoleChangeData>(data));
 		}
-		
+
+		roleToUser.put(roleId, userId);
 		ReplyDomain replyDomain = new ReplyDomain("使用角色" + ResultCode.SUCCESS);
 		return replyDomain;
 	}
@@ -121,7 +130,7 @@ public class RoleService {
 	public ReplyDomain creatRole(User user, int roleDomainId, String name) {
 		// TODO Auto-generated method stub
 		int id = IncrementManager.INSTANCE.increase("role");
-		Role role = new Role(user.getUserId(), id, name, roleDomainId, DEFAULT_CAPACITY);
+		Role role = new Role(user.getUserId(), id, name, roleDomainId, DEFAULT_CAPACITY, 1, 0);
 		int i = RoleDao.INSTANCE.insertRole(role);
 		if (i < 0) {
 			return ReplyDomain.FAILE;
@@ -140,7 +149,7 @@ public class RoleService {
 		RoleDomain roleDomain = getRoleDomain(role.getRoleId());
 		role.setAttributeMap(roleDomain.getAttributeMap());
 		role.setSkillMap(roleDomain.getRoleSkillMap());
-		
+
 		// 建立用户物品栏
 		List<UserEquipment> userEquipmentList = MaterialDao.INSTANCE.getAllUserEquiment(roleId);
 		List<UserItem> userItemList = MaterialDao.INSTANCE.getAllItem(roleId);
@@ -155,27 +164,29 @@ public class RoleService {
 		}
 
 		for (UserItem userItem : userItemList) {
-			
+
 			role.pushMaterial(userItem);
 		}
-		
-		for(UserTreasure userTreasure : userTreasureList) {
+
+		for (UserTreasure userTreasure : userTreasureList) {
 			UserTreasure treasure = role.getRoleTreasure(userTreasure.getId());
 			treasure.changeQuantity(userTreasure.getQuantity());
 		}
-		
+
 		SkillService.INSTANCE.addBuff(role, 1);
 		SkillService.INSTANCE.addBuff(role, 2);
 	}
 
 	public boolean isUserRoleOnline(int userId, int roleId) {
+		 if(getUserUsingRole(userId) == null) {
+			 return false;
+		 }
 		return getUserUsingRole(userId).getId() == roleId;
 	}
 
 	public Role getUserRole(int userId, int roleId) {
 		try {
 			Role role = cache.get(userId).get(roleId);
-			assemblingRole(role);
 			return role;
 		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
@@ -187,6 +198,10 @@ public class RoleService {
 	private Map<Integer, Role> getUserAllRole(int userId) {
 
 		List<Role> roles = RoleDao.INSTANCE.selectUserRole(userId);
+		
+		for(Role role : roles) {
+			assemblingRole(role);
+		}
 		Map<Integer, Role> map = roles.stream().collect(Collectors.toMap(Role::getId, a -> a));
 
 		return map;
@@ -199,8 +214,10 @@ public class RoleService {
 
 		int userId = userLostData.getUser().getUserId();
 		Role role = userRoleMap.remove(userId);
+
+		roleToUser.remove(role.getId());
 		MaterialService.INSTANCE.persistenceRoleMatetrial(role);
 		System.out.println("删除用户缓存使用角色");
 	}
-	
+
 }
