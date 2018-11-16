@@ -6,7 +6,6 @@ import com.hh.mmorpg.domain.CMDdomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
-import com.hh.mmorpg.server.scene.SceneExtension;
 
 /**
  * 
@@ -75,6 +74,14 @@ public class GuildExtension {
 	@CmdService(cmd = LEAVE_GUILD)
 	public void leaveGuild(User user, CMDdomain cmdDomain) {
 		ReplyDomain replyDomain = serivice.leaveGuild(user);
+
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
+	@CmdService(cmd = TRANSFER_GUILD)
+	public void transferGuild(User user, CMDdomain cmdDomain) {
+		int roleId = cmdDomain.getIntParam(2);
+		ReplyDomain replyDomain = serivice.transferGuild(user, roleId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

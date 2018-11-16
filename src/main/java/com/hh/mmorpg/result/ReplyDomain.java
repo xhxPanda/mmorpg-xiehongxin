@@ -29,6 +29,7 @@ public class ReplyDomain {
 	public static final ReplyDomain HAS_SENT_APPLY = new ReplyDomain(ResultCode.HAS_SENT_APPLY);
 	public static final ReplyDomain HAS_IN_GUILD = new ReplyDomain(ResultCode.HAS_IN_GUILD);
 	public static final ReplyDomain LACK_OF_GUILD_JURISDICTION = new ReplyDomain(ResultCode.LACK_OF_GUILD_JURISDICTION);
+	public static final ReplyDomain MISSION_NOT_EXIST = new ReplyDomain(ResultCode.MISSION_NOT_EXIST);
 	
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

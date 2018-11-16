@@ -23,4 +23,6 @@ public class ResultCode {
 	public static final String HAS_SENT_APPLY = "已经发过公会申请了";
 	public static final String HAS_IN_GUILD = "已在公会";
 	public static final String LACK_OF_GUILD_JURISDICTION = "公会权限不足";
+	public static final String MISSION_NOT_EXIST = "任务不存在";
+	
 }
