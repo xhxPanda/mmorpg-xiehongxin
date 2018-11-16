@@ -22,4 +22,5 @@ public class ResultCode {
 	public static final String GUILD_FULL = "公会人数已满";
 	public static final String HAS_SENT_APPLY = "已经发过公会申请了";
 	public static final String HAS_IN_GUILD = "已在公会";
+	public static final String LACK_OF_GUILD_JURISDICTION = "公会权限不足";
 }

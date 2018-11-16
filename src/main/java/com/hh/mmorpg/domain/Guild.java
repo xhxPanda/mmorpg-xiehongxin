@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
+import com.hh.mmorpg.server.guild.GuildDao;
 
 /**
  * 
@@ -32,6 +33,10 @@ public class Guild {
 		this.guildMemberMap = new ConcurrentHashMap<>();
 		this.guildApplyMap = new ConcurrentHashMap<>();
 	}
+	
+	public GuildMember getGuildMember(int roleId) {
+		return guildMemberMap.get(roleId);
+	}
 
 	/**
 	 * 获取成员数量
@@ -41,7 +46,16 @@ public class Guild {
 	public int getMemberNum() {
 		return guildMemberMap.size();
 	}
-
+	
+	/**
+	 * 踢用户
+	 * @param roleId
+	 */
+	public void removeGuildMember(int roleId) {
+		guildMemberMap.remove(roleId);
+		GuildDao.INSTANCE.deleteMember(roleId, id);
+	}
+	
 	/**
 	 * 添加公会申请
 	 * 
@@ -51,8 +65,13 @@ public class Guild {
 		guildApplyMap.put(guildApply.getRoleId(), guildApply);
 	}
 	
-	public void removeApply(int id) {
-		guildApplyMap.remove(id);
+	/**
+	 * 移除缓存中的申请
+	 * @param id
+	 */
+	public void removeApply(GuildApply guildApply) {
+		GuildDao.INSTANCE.deleteApply(guildApply.getRoleId(), guildApply.getGuildId());
+		guildApplyMap.remove(guildApply.getRoleId());
 	}
 
 	/**

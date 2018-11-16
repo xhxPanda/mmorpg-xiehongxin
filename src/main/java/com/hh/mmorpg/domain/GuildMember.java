@@ -11,8 +11,8 @@ public class GuildMember {
 	private int contributionPoint;
 	private boolean isOnline;
 
-	public GuildMember(int roleId, int userId, String roleName, int level, int memberIdentityId, String memberIdentityName,
-			int contributionPoint, boolean isOnline) {
+	public GuildMember(int roleId, int userId, String roleName, int level, int memberIdentityId,
+			String memberIdentityName, int contributionPoint, boolean isOnline) {
 		this.roleId = roleId;
 		this.userId = userId;
 		this.roleName = roleName;
@@ -53,6 +53,11 @@ public class GuildMember {
 
 	public int getUserId() {
 		return userId;
+	}
+
+	public void setMemberIdentityId(int memberIdentityId) {
+		this.memberIdentityId = memberIdentityId;
+		this.memberIdentityName = GuildMemberIdentity.getGuildMemberIdentity(memberIdentityId).getName();
 	}
 
 }

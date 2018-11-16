@@ -25,9 +25,12 @@ public class GuildExtension {
 	private static final String EXAMINATION_APPLY = "eaminationApply"; // 审查申请
 	private static final String DONATE_MATERIAL = "donateMaterial"; // 公会捐献
 	private static final String TICK_OUT_MEMBER = "tickOutMember"; // 踢出公会
-	private static final String LEVEL_GUILD = "levelGuild"; // 退出公会
+	private static final String LEAVE_GUILD = "leaveGuild"; // 退出公会
+	private static final String TRANSFER_GUILD = "transferGuild"; // 转让公会
 	
-	private static final String NOTIFY_USER_JOIN_GUILD = "公会申请通过";
+	public static final String NOTIFY_USER_JOIN_GUILD = "公会申请通过";
+	public static final String NOTIFY_USER_TICK_OUT = "踢出公会";
+	public static final String NOTIFY_PRESIDENT_CHANGE = "会长变更";
 	
 	
 	@CmdService(cmd = CREAT_GUILD)
@@ -60,8 +63,24 @@ public class GuildExtension {
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	
-	public static void notifyUserJoinGuild(User user, ReplyDomain replyDomain) {
-		replyDomain.setStringDomain("cmd", NOTIFY_USER_JOIN_GUILD);
+	@CmdService(cmd = TICK_OUT_MEMBER)
+	public void tickOutMember(User user, CMDdomain cmdDomain) {
+		int roleId = cmdDomain.getIntParam(2);
+
+		ReplyDomain replyDomain = serivice.tickOutRole(user, roleId);
+
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
+	@CmdService(cmd = LEAVE_GUILD)
+	public void leaveGuild(User user, CMDdomain cmdDomain) {
+		ReplyDomain replyDomain = serivice.leaveGuild(user);
+
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
+	
+	public static void notifyUser(User user, ReplyDomain replyDomain) {
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 }

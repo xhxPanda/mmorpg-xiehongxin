@@ -42,7 +42,7 @@ public class RoleDao {
 	public int updateRoleGuild(int roleId, int userId, int guildId) {
 		int dbIndex = userId / DB_INDEX;
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(String.format(UPDATE_USER_GUILD, dbIndex),
-				new Object[] { roleId, userId, guildId });
+				new Object[] { guildId, roleId, userId  });
 
 	}
 }

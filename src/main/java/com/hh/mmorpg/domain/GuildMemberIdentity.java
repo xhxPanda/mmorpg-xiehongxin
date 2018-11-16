@@ -10,6 +10,15 @@ public enum GuildMemberIdentity {
 	private int id;
 	private String name;
 
+	public static GuildMemberIdentity getGuildMemberIdentity(int id) {
+		for (GuildMemberIdentity type : GuildMemberIdentity.values()) {
+			if (type.getId() == id) {
+				return type;
+			}
+		}
+		return null;
+	}
+
 	private GuildMemberIdentity(int id, String name) {
 		this.id = id;
 		this.name = name;
