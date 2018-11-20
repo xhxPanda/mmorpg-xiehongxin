@@ -3,6 +3,7 @@ package com.hh.mmorpg.service.user;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
@@ -11,6 +12,7 @@ import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
+import com.hh.mmorpg.server.role.RoleService;
 
 import io.netty.channel.Channel;
 
@@ -92,8 +94,10 @@ public class UserService {
 			user.getChannel().close();
 		}
 
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
 		// 抛出用户离线事件
-		UserLostData data = new UserLostData(user);
+		UserLostData data = new UserLostData(user, role);
 		EventHandlerManager.INSATNCE.methodInvoke(EventType.USER_LOST, new EventDealData<UserLostData>(data));
 	}
 

@@ -153,18 +153,6 @@ public abstract class LivingThing {
 					return attribute.getValue();
 				}
 			}
-
-			if (attribute.getId() == AttributeEnum.MAX_HP.getId()) {
-				if (attributeMap.get(AttributeEnum.HP.getId()).getValue() == attribute.getValue()) {
-					effectAttribute(AttributeEnum.HP.getId(), value, "最大血量变化");
-				}
-			}
-
-			if (attribute.getId() == AttributeEnum.MAX_MP.getId()) {
-				if (attributeMap.get(AttributeEnum.MP.getId()).getValue() == attribute.getValue()) {
-					effectAttribute(AttributeEnum.MP.getId(), value, "最大法力变化");
-				}
-			}
 		}
 
 		int oldValue = attribute.getValue();

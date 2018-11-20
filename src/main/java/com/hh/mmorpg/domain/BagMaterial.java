@@ -12,6 +12,13 @@ public class BagMaterial extends Material {
 	private String sellPrice;
 	private int quantity;
 
+	public BagMaterial(BagMaterial bagMaterial, int roleId, int quantity) {
+		super(roleId, bagMaterial.getName(), bagMaterial.getId(), bagMaterial.getType(), bagMaterial.getTypeName());
+		this.quantity = quantity;
+		this.index = bagMaterial.getIndex();
+		this.sellPrice = bagMaterial.getSellPrice();
+	}
+
 	public BagMaterial(int roleId, String name, int id, int type, String typeName, int quantity, int index,
 			String sellPrice) {
 		super(roleId, name, id, type, typeName);

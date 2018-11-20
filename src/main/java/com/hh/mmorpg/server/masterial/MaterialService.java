@@ -25,6 +25,7 @@ import com.hh.mmorpg.server.masterial.handler.xmlManager.GoodsXmlResolutionManag
 import com.hh.mmorpg.server.role.RoleService;
 
 /**
+ * 这个类主要处理的是有关用户新增物品（由String组成的物品代号）进行的material插入
  * 
  * @author xhx
  * 
@@ -42,6 +43,7 @@ public class MaterialService {
 		this.handlerMap = new HashMap<>();
 		this.handlerMap.put(MaterialType.EQUIPMENT_TYPE.getId(), new EquipmentMaterialHandle());
 		this.handlerMap.put(MaterialType.ITEM_TYPE.getId(), new ItemMasterialHandler());
+		this.handlerMap.put(MaterialType.TREASURE_TYPE.getId(), new TreasureMaterialHandler());
 		this.handlerMap.put(MaterialType.TREASURE_TYPE.getId(), new TreasureMaterialHandler());
 
 		goodsMap = GoodsXmlResolutionManager.INSTANCE.resolution();
@@ -196,7 +198,7 @@ public class MaterialService {
 	public ReplyDomain useMaterial(User user, int index) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
-		Material material = role.decMaterialIndex(index);
+		Material material = role.decMaterialIndex(index, 1);
 		if (material == null) {
 			return ReplyDomain.FAILE;
 		}
@@ -276,8 +278,7 @@ public class MaterialService {
 	public ReplyDomain sortBag(User user, int fromIndex, int toIndex) {
 		// TODO Auto-generated method stub
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
-	
-		
+
 		return role.sortBag(fromIndex, toIndex);
 	}
 }

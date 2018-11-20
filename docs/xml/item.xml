@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <items>
-	<item id="1" name="红药" effect="3:200" cd="2000" buffs="" sellPrice = "3:1:20" pileNum="999"/>
-	<item id="2" name="蓝药" effect="4:200" cd="2000" buffs="" sellPrice = "3:1:100" pileNum="999"/>
-	<item id="3" name="回血蘑菇" effect="4:200" cd="2000" buffs="5"  sellPrice = "3:1:150" pileNum="999"/>
+	<item id="200001" name="红药" effect="3:200" cd="2000" buffs="" sellPrice = "3:1:20" pileNum="999"/>
+	<item id="200002" name="蓝药" effect="4:200" cd="2000" buffs="" sellPrice = "3:1:100" pileNum="999"/>
+	<item id="200003" name="回血蘑菇" effect="4:200" cd="2000" buffs="5"  sellPrice = "3:1:150" pileNum="999"/>
 </items>

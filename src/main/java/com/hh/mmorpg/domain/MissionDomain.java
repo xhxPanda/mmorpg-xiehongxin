@@ -13,12 +13,14 @@ public class MissionDomain {
 	private String bonus;
 	private Map<Integer, Integer> competeAttribute;
 
+	private int nextMissionId;
+
 	public MissionDomain(int id, String name, String bonus, String competeAttributeStr) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.bonus = bonus;
-		
+
 		this.competeAttribute = new HashMap<>();
 		for (String s : competeAttributeStr.split(",")) {
 			String attributes[] = s.split(":");
@@ -38,6 +40,10 @@ public class MissionDomain {
 
 	public String getBonus() {
 		return bonus;
+	}
+
+	public int getNextMissionId() {
+		return nextMissionId;
 	}
 
 	public Map<Integer, Integer> getCompeteAttribute() {

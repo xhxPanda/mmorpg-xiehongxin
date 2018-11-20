@@ -2,6 +2,7 @@ package com.hh.mmorpg.domain;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,10 +22,16 @@ public class Guild {
 	private long guildDonatePoint; // 公会贡献点数
 	private String guildDeclaration; // 公会宣言
 
+	private int guildWarehouseCapasity;
+
 	private ConcurrentHashMap<Integer, GuildMember> guildMemberMap; // 公会成员
 	private ConcurrentHashMap<Integer, GuildApply> guildApplyMap; // 公会申请
 
-	public Guild(int id, String name, long guildDonatePoint, String guildDeclaration, int level) {
+	private Map<Integer, Map<Integer, BagMaterial>> guildWarehourse;
+	private Map<Integer, Integer> treasureMap;
+
+	public Guild(int id, String name, long guildDonatePoint, String guildDeclaration, int level,
+			int guildWarehouseCapasity) {
 		this.id = id;
 		this.name = name;
 		this.level = level;
@@ -32,8 +39,13 @@ public class Guild {
 		this.guildDeclaration = guildDeclaration;
 		this.guildMemberMap = new ConcurrentHashMap<>();
 		this.guildApplyMap = new ConcurrentHashMap<>();
+
+		this.guildWarehouseCapasity = guildWarehouseCapasity;
+
+		this.guildWarehourse = new HashMap<>();
+		this.treasureMap = new HashMap<>();
 	}
-	
+
 	public GuildMember getGuildMember(int roleId) {
 		return guildMemberMap.get(roleId);
 	}
@@ -46,16 +58,17 @@ public class Guild {
 	public int getMemberNum() {
 		return guildMemberMap.size();
 	}
-	
+
 	/**
 	 * 踢用户
+	 * 
 	 * @param roleId
 	 */
 	public void removeGuildMember(int roleId) {
 		guildMemberMap.remove(roleId);
 		GuildDao.INSTANCE.deleteMember(roleId, id);
 	}
-	
+
 	/**
 	 * 添加公会申请
 	 * 
@@ -64,9 +77,10 @@ public class Guild {
 	public void addApply(GuildApply guildApply) {
 		guildApplyMap.put(guildApply.getRoleId(), guildApply);
 	}
-	
+
 	/**
 	 * 移除缓存中的申请
+	 * 
 	 * @param id
 	 */
 	public void removeApply(GuildApply guildApply) {
@@ -76,6 +90,7 @@ public class Guild {
 
 	/**
 	 * 取出申请
+	 * 
 	 * @param applyId
 	 * @return
 	 */
@@ -128,7 +143,8 @@ public class Guild {
 			int level = result.getInt("level");
 			String guildDeclaration = result.getString("guildDeclaration");
 			int guildDonatePoint = result.getInt("guildDonatePoint");
-			return new Guild(id, name, guildDonatePoint, guildDeclaration, level);
+			int guildWarehouseCapasity = result.getInt("guildWarehouseCapasity");
+			return new Guild(id, name, guildDonatePoint, guildDeclaration, level, guildWarehouseCapasity);
 		}
 	};
 }

@@ -322,6 +322,21 @@ public class GuildSerivice {
 		return ReplyDomain.SUCCESS;
 	}
 
+
+	public ReplyDomain donateMaterial(User user, int index) {
+		// TODO Auto-generated method stub
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		if (role.getGuildId() == 0) {
+			return ReplyDomain.FAILE;
+		}
+		
+		Guild guild = guildCache.get(role.getGuildId());
+		
+		
+		return null;
+	}
+	
 	/**
 	 * 更新角色公会信息
 	 * 
@@ -358,4 +373,5 @@ public class GuildSerivice {
 			GuildExtension.notifyUser(user, domain);
 		}
 	}
+
 }

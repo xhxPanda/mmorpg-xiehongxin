@@ -95,6 +95,12 @@ public class SceneService {
 			if (role == null) {
 				return ReplyDomain.FAILE;
 			}
+
+			// 正在交易不能离开场景
+			if (role.getTransactionPerson() != 0) {
+				return ReplyDomain.IN_TRANSACTION;
+			}
+
 			sceneUserCache = new SceneUserCache(userId, role);
 		}
 
@@ -102,7 +108,7 @@ public class SceneService {
 		if (scenedomain == null) {
 			return ReplyDomain.FAILE;
 		}
-		
+
 		Scene newScene = null;
 		if (scenedomain.isCopy()) {
 			if (oldSceneId == null) {
@@ -115,9 +121,9 @@ public class SceneService {
 			if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
 				sceneUserMap.put(userId, sceneId);
 			}
-			
+
 		}
-		
+
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("场景名称", newScene.getName());
 		replyDomain.setStringDomain("场景名称", newScene.getName());
@@ -184,7 +190,7 @@ public class SceneService {
 		// TODO Auto-generated method stub
 		int userId = user.getUserId();
 		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) { 
+		if (sceneId == null) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -294,8 +300,13 @@ public class SceneService {
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
+		// 正在交易，不能捡取物品
+		if (role.getTransactionPerson() != 0) {
+			return ReplyDomain.IN_TRANSACTION;
+		}
+
 		List<MonsterBeKillBonus> monsterBeKillBonus = scene.getRoleKillMonsterBonusInfo(role.getId());
-		
+
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		if (monsterBeKillBonus != null) {
 			replyDomain.setListDomain("bonusList", monsterBeKillBonus);
@@ -371,7 +382,7 @@ public class SceneService {
 		int userId = data.getData().getUserId();
 
 		Integer sceneId = sceneUserMap.remove(userId);
-		if(sceneId == null) {
+		if (sceneId == null) {
 			return;
 		}
 

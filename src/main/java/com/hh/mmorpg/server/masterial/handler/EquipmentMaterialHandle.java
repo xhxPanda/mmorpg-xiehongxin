@@ -2,7 +2,9 @@ package com.hh.mmorpg.server.masterial.handler;
 
 import java.util.Map;
 
+import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.EquimentDomain;
+import com.hh.mmorpg.domain.Material;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -31,7 +33,7 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipme
 		return role.addMaterial(userEquipment);
 
 	}
-
+	
 	@Override
 	public ReplyDomain decMasterial(Role role, String[] materialStr) {
 		// TODO Auto-generated method stub
@@ -57,5 +59,6 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler<UserEquipme
 		// TODO Auto-generated method stub
 		return 1;
 	}
+
 
 }

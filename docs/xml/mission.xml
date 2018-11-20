@@ -1,0 +1,8 @@
+<missions>
+	<mission id="1" name="提升自我" 
+		dec="把等级升到5级" type="1"
+		missionCondition="l:5"></mission>
+	<mission id="1" name="都城保卫战"
+		dec="为了保护都城，需要抵御遗忘者的进攻，杀死4个遗忘者士兵，4个遗忘者将军" type="2"
+		missionCondition="m:1:4,2:4"></mission>
+</missions>

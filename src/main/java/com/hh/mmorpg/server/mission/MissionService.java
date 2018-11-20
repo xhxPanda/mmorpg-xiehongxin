@@ -60,9 +60,9 @@ public class MissionService {
 		// TODO Auto-generated method stub
 		int userId = user.getUserId();
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
-		
+
 		Map<Integer, RoleMission> roleMission = roleMissionCache.get(role.getId());
-		
+
 		ReplyDomain replyDomain = new ReplyDomain();
 		return replyDomain;
 	}
@@ -72,4 +72,8 @@ public class MissionService {
 		ReplyDomain replyDomain = new ReplyDomain();
 		return replyDomain;
 	}
+
+//	public Map<Integer, RoleMission> getRoleMissions(int roleId)｛
+//		
+//	｝
 }

@@ -30,7 +30,11 @@ public class ReplyDomain {
 	public static final ReplyDomain HAS_IN_GUILD = new ReplyDomain(ResultCode.HAS_IN_GUILD);
 	public static final ReplyDomain LACK_OF_GUILD_JURISDICTION = new ReplyDomain(ResultCode.LACK_OF_GUILD_JURISDICTION);
 	public static final ReplyDomain MISSION_NOT_EXIST = new ReplyDomain(ResultCode.MISSION_NOT_EXIST);
-	
+	public static final ReplyDomain OTHER_NOT_ONLINE = new ReplyDomain(ResultCode.OTHER_NOT_ONLINE);
+	public static final ReplyDomain OTHER_NOT_IN_SCENE = new ReplyDomain(ResultCode.OTHER_NOT_IN_SCENE);
+	public static final ReplyDomain NOT_IN_SCENE = new ReplyDomain(ResultCode.NOT_IN_SCENE);
+	public static final ReplyDomain IN_TRANSACTION = new ReplyDomain(ResultCode.IN_TRANSACTION);
+
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();
 	}
@@ -68,7 +72,7 @@ public class ReplyDomain {
 	public Object getDomain(String key) {
 		return domainMap.get(key);
 	}
-	
+
 	public String parseJsonObject() {
 		JSONObject jsonObject = new JSONObject(domainMap);
 		return jsonObject.toJSONString();

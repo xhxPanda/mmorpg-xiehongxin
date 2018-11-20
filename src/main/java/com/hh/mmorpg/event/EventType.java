@@ -5,5 +5,6 @@ public class EventType {
 	public static final int USER_LOST = 1;
 	public static final int MONSTER_DEAD = 2;
 	public static final int ROLE_CHANGE = 3;
+	public static final int LEVEL_UP = 4;
 
 }

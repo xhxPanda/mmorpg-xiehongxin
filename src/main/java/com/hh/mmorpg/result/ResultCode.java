@@ -24,5 +24,9 @@ public class ResultCode {
 	public static final String HAS_IN_GUILD = "已在公会";
 	public static final String LACK_OF_GUILD_JURISDICTION = "公会权限不足";
 	public static final String MISSION_NOT_EXIST = "任务不存在";
-	
+	public static final String OTHER_NOT_ONLINE = "对方不在线";
+	public static final String OTHER_NOT_IN_SCENE = "对方不在你的场景中";
+	public static final String NOT_IN_SCENE = "不在场景中";
+	public static final String IN_TRANSACTION = "正在交易中";
+
 }

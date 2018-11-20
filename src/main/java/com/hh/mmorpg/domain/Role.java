@@ -29,17 +29,17 @@ public class Role extends LivingThing {
 	private int id;
 	private String name;
 	private int roleId;
-	private int capacity;
+	private int capacity; // 背包容量
 	private int level; // 等级
 	private int exp; // 经验
 	private int guildId; // 公会id
 
+	private int transactionPerson; // 交易状态
+
 	// 背包
 	private Map<Integer, BagMaterial> materialMap;
-
 	// 财富背包
 	private Map<Integer, UserTreasure> treasureMap;
-
 	// 装备栏
 	private Map<Integer, UserEquipment> equipmentMap;
 
@@ -51,10 +51,10 @@ public class Role extends LivingThing {
 		this.roleId = roleId;
 		this.capacity = capacity;
 		this.materialMap = new HashMap<>();
-		
+
 		this.level = level;
 		this.exp = exp;
-		
+
 		for (int i = 0; i < capacity; i++) {
 			materialMap.put(i, null);
 		}
@@ -64,6 +64,8 @@ public class Role extends LivingThing {
 		for (UserTreasureType type : UserTreasureType.values()) {
 			treasureMap.put(type.getId(), new UserTreasure(roleId, type.getName(), type.getId(), 0));
 		}
+
+		this.transactionPerson = 0;
 	}
 
 	public int getUserId() {
@@ -115,6 +117,11 @@ public class Role extends LivingThing {
 
 	}
 
+	/**
+	 * 角色初始化时把物品放进格子之中
+	 * 
+	 * @param material
+	 */
 	public void pushMaterial(BagMaterial material) {
 		materialMap.put(material.getIndex(), material);
 	}
@@ -142,7 +149,7 @@ public class Role extends LivingThing {
 			}
 		}
 
-		if (material.getQuantity() > 0) {
+		while (material.getQuantity() > 0) {
 			// 寻找新的格子
 			int index = findFreeBox();
 			if (index != -1) {
@@ -150,6 +157,10 @@ public class Role extends LivingThing {
 				material.setIndex(index);
 				addNum += material.getQuantity();
 			} else {
+
+				ReplyDomain replyDomain = new ReplyDomain();
+				replyDomain.setStringDomain("不能成功添加的物品", material.getName());
+				replyDomain.setIntDomain("数量为", material.getQuantity());
 				return ReplyDomain.BOX_SPACE_NOT_ENOUGH;
 			}
 		}
@@ -206,14 +217,14 @@ public class Role extends LivingThing {
 		materialMap.putAll(materialMap);
 	}
 
-	public Map<Integer, UserEquipment> getEquipmentMap() {
-		return equipmentMap;
-	}
-
-	public void setEquipmentMap(Map<Integer, UserEquipment> equipmentMap) {
-		this.equipmentMap = equipmentMap;
-	}
-
+	/**
+	 * 减少背包中某一种物品，使用物品id进行查询
+	 * 
+	 * @param materialType
+	 * @param id
+	 * @param quantity
+	 * @return
+	 */
 	public ReplyDomain decMaterial(int materialType, int id, int quantity) {
 		List<BagMaterial> materials = getMaterialById(id);
 
@@ -244,14 +255,21 @@ public class Role extends LivingThing {
 		return ReplyDomain.SUCCESS;
 	}
 
-	public Material decMaterialIndex(int index) {
+	/**
+	 * 减少某个格子中的物品数量
+	 * 
+	 * @param index
+	 * @param num
+	 * @return
+	 */
+	public Material decMaterialIndex(int index, int num) {
 		BagMaterial material = materialMap.get(index);
 
 		if (material == null || material.getQuantity() == 0) {
 			return null;
 		}
 
-		material.changeQuantity(-1);
+		material.changeQuantity(num);
 		if (material.getQuantity() == 0) {
 			materialMap.put(material.getIndex(), null);
 		}
@@ -269,6 +287,12 @@ public class Role extends LivingThing {
 		return -1;
 	}
 
+	/**
+	 * 使用物品id获取物品
+	 * 
+	 * @param materialId
+	 * @return
+	 */
 	public List<BagMaterial> getMaterialById(int materialId) {
 		List<BagMaterial> materials = new ArrayList<>();
 		for (Entry<Integer, BagMaterial> entry : materialMap.entrySet()) {
@@ -281,10 +305,19 @@ public class Role extends LivingThing {
 		return materials;
 	}
 
+	/**
+	 * 使用财富id获取财富类的物品
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public UserTreasure getRoleTreasure(int id) {
 		return treasureMap.get(id);
 	}
 
+	/**
+	 * 整理背包
+	 */
 	public void arrangeBag() {
 
 		// 拷贝出副本
@@ -331,6 +364,13 @@ public class Role extends LivingThing {
 
 	}
 
+	/**
+	 * 物品排序
+	 * 
+	 * @param fromIndex
+	 * @param toIndex
+	 * @return
+	 */
 	public ReplyDomain sortBag(int fromIndex, int toIndex) {
 		BagMaterial fromMaterial = materialMap.get(fromIndex);
 		if (fromMaterial == null) {
@@ -342,6 +382,93 @@ public class Role extends LivingThing {
 		materialMap.put(toIndex, fromMaterial);
 
 		return ReplyDomain.SUCCESS;
+	}
+
+	/**
+	 * 使用materialId判断该物品是否足够
+	 * 
+	 * @param materialId
+	 * @param num
+	 * @return
+	 */
+	public boolean isMaterialEnough(int materialId, int num) {
+		// TODO Auto-generated method stub
+
+		if (materialId < 100001) {
+			return getRoleTreasure(materialId).getQuantity() > num;
+		}
+		List<BagMaterial> materials = getMaterialById(materialId);
+		int totalNum = 0;
+		for (BagMaterial bagMaterial : materials) {
+			totalNum += bagMaterial.getQuantity();
+		}
+
+		return totalNum > num;
+	}
+
+	/**
+	 * 当要插入一堆物品的时候，查看用户的背包是否足够，保证事务的正确
+	 * 
+	 * @param bagMaterials
+	 * @return
+	 */
+	public boolean isMaterialBoxEnough(List<BagMaterial> bagMaterials) {
+
+		// 获取当前空闲的格子数
+		int freeBoxNum = getFreeBoxNum();
+
+		for (BagMaterial bagMaterial : bagMaterials) {
+			List<BagMaterial> ownBagMaterials = getMaterialById(bagMaterial.getId());
+
+			// 查看堆叠个数
+			int pileNum = MaterialService.INSTANCE.getMaterialPileNum(bagMaterial.getType(), bagMaterial.getId());
+			for (BagMaterial material : ownBagMaterials) {
+				if (material.getQuantity() + bagMaterial.getQuantity() > pileNum) {
+					freeBoxNum--;
+					if (freeBoxNum == 0) {
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * 获取当前没装东西的格子的数量
+	 * 
+	 * @return
+	 */
+	private int getFreeBoxNum() {
+		int total = 0;
+
+		for (BagMaterial bagMaterial : materialMap.values()) {
+			if (bagMaterial == null) {
+				total += 1;
+			}
+		}
+		return total;
+	}
+
+	/**
+	 * 获取财富类型物品的数量
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public long getTreasureNum(int id) {
+		return treasureMap.get(id) == null ? 0 : treasureMap.get(id).getQuantity();
+	}
+
+	/**
+	 * 获取格子中的物品
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public BagMaterial getBagMaterialIndex(int index) {
+		return materialMap.get(index);
 	}
 
 	@Override
@@ -372,6 +499,14 @@ public class Role extends LivingThing {
 		}
 	}
 
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public void setExp(int exp) {
+		this.exp = exp;
+	}
+
 	public int getLevel() {
 		return level;
 	}
@@ -394,6 +529,22 @@ public class Role extends LivingThing {
 
 	public void setGuildId(int guildId) {
 		this.guildId = guildId;
+	}
+
+	public int getTransactionPerson() {
+		return transactionPerson;
+	}
+
+	public void setTransactionPerson(int transactionPerson) {
+		this.transactionPerson = transactionPerson;
+	}
+
+	public Map<Integer, UserEquipment> getEquipmentMap() {
+		return equipmentMap;
+	}
+
+	public void setEquipmentMap(Map<Integer, UserEquipment> equipmentMap) {
+		this.equipmentMap = equipmentMap;
 	}
 
 }

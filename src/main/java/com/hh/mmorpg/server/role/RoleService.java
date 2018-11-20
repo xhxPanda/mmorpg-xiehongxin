@@ -27,6 +27,7 @@ import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.MaterialService;
+import com.hh.mmorpg.server.scene.SceneService;
 import com.hh.mmorpg.server.skill.SkillService;
 
 public class RoleService {
@@ -111,6 +112,29 @@ public class RoleService {
 		return replyDomain;
 	}
 
+	/**
+	 * 获取角色userId，可以用来判断角色是否在线
+	 * 
+	 * @param roleId
+	 * @return
+	 */
+	public boolean isOnline(int roleId) {
+		Integer userId = roleToUser.get(roleId);
+		if (userId == null) {
+			return false;
+		}
+
+		if (SceneService.INSTANCE.getUserScene(userId) == null) {
+			return false;
+		}
+
+		return true;
+	}
+	
+	public Integer getUserId(int roleId) {
+		return roleToUser.get(roleId);
+	}
+
 	public ReplyDomain getUserUsingRole(User user) {
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		Role role = getUserUsingRole(user.getUserId());
@@ -177,10 +201,16 @@ public class RoleService {
 		SkillService.INSTANCE.addBuff(role, 2);
 	}
 
+	/**
+	 * 判断一个角色是否在线
+	 * @param userId
+	 * @param roleId
+	 * @return
+	 */
 	public boolean isUserRoleOnline(int userId, int roleId) {
-		 if(getUserUsingRole(userId) == null) {
-			 return false;
-		 }
+		if (getUserUsingRole(userId) == null) {
+			return false;
+		}
 		return getUserUsingRole(userId).getId() == roleId;
 	}
 
@@ -198,8 +228,8 @@ public class RoleService {
 	private Map<Integer, Role> getUserAllRole(int userId) {
 
 		List<Role> roles = RoleDao.INSTANCE.selectUserRole(userId);
-		
-		for(Role role : roles) {
+
+		for (Role role : roles) {
 			assemblingRole(role);
 		}
 		Map<Integer, Role> map = roles.stream().collect(Collectors.toMap(Role::getId, a -> a));
