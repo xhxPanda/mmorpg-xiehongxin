@@ -155,6 +155,7 @@ public class Role extends LivingThing {
 			if (index != -1) {
 				materialMap.put(index, material);
 				material.setIndex(index);
+				material.setRoleId(id);
 				addNum += material.getQuantity();
 			} else {
 
@@ -449,16 +450,6 @@ public class Role extends LivingThing {
 			}
 		}
 		return total;
-	}
-
-	/**
-	 * 获取财富类型物品的数量
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public long getTreasureNum(int id) {
-		return treasureMap.get(id) == null ? 0 : treasureMap.get(id).getQuantity();
 	}
 
 	/**

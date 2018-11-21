@@ -10,6 +10,7 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.Transaction;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventType;
@@ -208,8 +209,8 @@ public class TransactionService {
 			return ReplyDomain.OTHER_NOT_ONLINE;
 		}
 
-		long treasureNum = role.getTreasureNum(id);
-		if (treasureNum < num) {
+		UserTreasure userTreasure = role.getRoleTreasure(id);
+		if (userTreasure.getQuantity() < num) {
 			return ReplyDomain.NOT_ENOUGH;
 		}
 

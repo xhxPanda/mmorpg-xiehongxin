@@ -28,5 +28,6 @@ public class ResultCode {
 	public static final String OTHER_NOT_IN_SCENE = "对方不在你的场景中";
 	public static final String NOT_IN_SCENE = "不在场景中";
 	public static final String IN_TRANSACTION = "正在交易中";
-
+	public static final String GUILD_AUTHORITY = "公会权限不足";
+	
 }

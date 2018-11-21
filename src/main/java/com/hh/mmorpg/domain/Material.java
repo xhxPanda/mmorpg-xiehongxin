@@ -41,5 +41,7 @@ public class Material {
 		return typeName;
 	}
 
-
+	public void setRoleId(int roleId) {
+		this.roleId = roleId;
+	}
 }

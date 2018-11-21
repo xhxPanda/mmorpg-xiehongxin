@@ -4,9 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
+import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.guild.GuildDao;
 
 /**
@@ -27,8 +29,10 @@ public class Guild {
 	private ConcurrentHashMap<Integer, GuildMember> guildMemberMap; // 公会成员
 	private ConcurrentHashMap<Integer, GuildApply> guildApplyMap; // 公会申请
 
-	private Map<Integer, Map<Integer, BagMaterial>> guildWarehourse;
-	private Map<Integer, Integer> treasureMap;
+	private Map<Integer, BagMaterial> guildBank;
+	private Map<Integer, Long> treasureMap;
+
+	private Map<Integer, GuildMemberAuthority> authorityMap;
 
 	public Guild(int id, String name, long guildDonatePoint, String guildDeclaration, int level,
 			int guildWarehouseCapasity) {
@@ -42,7 +46,7 @@ public class Guild {
 
 		this.guildWarehouseCapasity = guildWarehouseCapasity;
 
-		this.guildWarehourse = new HashMap<>();
+		this.guildBank = new HashMap<>();
 		this.treasureMap = new HashMap<>();
 	}
 
@@ -89,13 +93,77 @@ public class Guild {
 	}
 
 	/**
-	 * 取出申请
+	 * 获取申请
 	 * 
 	 * @param applyId
 	 * @return
 	 */
 	public GuildApply getApply(int applyId) {
 		return guildApplyMap.get(applyId);
+	}
+
+	/**
+	 * 获取公会某一种财富的数量
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public long getTreasureNum(int id) {
+		return treasureMap.get(id);
+	}
+
+	/**
+	 * 对公会某一种财富进行存取
+	 * 
+	 * @param id
+	 * @param value
+	 */
+	public void accessTreasure(int id, int value) {
+		long num = treasureMap.get(id);
+		treasureMap.put(id, num + value);
+	}
+
+	/**
+	 * 存入物品
+	 * 
+	 * @param bagMaterial
+	 * @return
+	 */
+	public ReplyDomain accessMaterial(BagMaterial bagMaterial) {
+		int index = findFirstFreeIndex();
+
+		if (index == -1) {
+			return ReplyDomain.BOX_SPACE_NOT_ENOUGH;
+		}
+
+		bagMaterial.setIndex(index);
+		guildBank.put(index, bagMaterial);
+
+		return ReplyDomain.SUCCESS;
+	}
+	
+	public void decBankMaterial(int index, int num) {
+		if(guildBank.get(index).changeQuantity(-num) == 0) {
+			guildBank.put(index, null);
+		}
+	}
+	
+	public BagMaterial getIndexMaterial(int index) {
+		return guildBank.get(index);
+	}
+
+	public int findFirstFreeIndex() {
+		for (Entry<Integer, BagMaterial> entry : guildBank.entrySet()) {
+			if (entry.getValue() == null) {
+				return entry.getKey();
+			}
+		}
+
+		return -1;
+	}
+
+	public GuildMemberAuthority getGuildMemberAuthority(int authorityId) {
+		return authorityMap.get(authorityId);
 	}
 
 	public int getId() {
@@ -132,6 +200,22 @@ public class Guild {
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	public int getGuildWarehouseCapasity() {
+		return guildWarehouseCapasity;
+	}
+
+	public GuildMemberAuthority getAuthorityMap(int authorityId) {
+		return authorityMap.get(authorityId);
+	}
+
+	public void setAuthorityMap(Map<Integer, GuildMemberAuthority> authorityMap) {
+		this.authorityMap = authorityMap;
+	}
+
+	public static ResultBuilder<Guild> getBuilder() {
+		return BUILDER;
 	}
 
 	public static final ResultBuilder<Guild> BUILDER = new ResultBuilder<Guild>() {
