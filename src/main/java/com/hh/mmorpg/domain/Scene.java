@@ -279,6 +279,16 @@ public class Scene {
 		return userMap.size() == 0;
 	}
 
+	/**
+	 * 获取场景中的npc
+	 * 
+	 * @param npcId
+	 * @return
+	 */
+	public NpcRole getNpcRole(int npcId) {
+		return npcRoleMap.get(npcId);
+	}
+
 	private void monsterAIAttack(Monster monster) {
 		List<RoleSkill> monsterSkillList = new ArrayList<>(monster.getSkillMap().values());
 

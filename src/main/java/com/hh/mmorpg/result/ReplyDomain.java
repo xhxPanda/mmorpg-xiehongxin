@@ -35,6 +35,8 @@ public class ReplyDomain {
 	public static final ReplyDomain NOT_IN_SCENE = new ReplyDomain(ResultCode.NOT_IN_SCENE);
 	public static final ReplyDomain IN_TRANSACTION = new ReplyDomain(ResultCode.IN_TRANSACTION);
 	public static final ReplyDomain GUILD_AUTHORITY = new ReplyDomain(ResultCode.GUILD_AUTHORITY);
+	public static final ReplyDomain HAD_HAS_MISSION = new ReplyDomain(ResultCode.HAD_HAS_MISSION);
+	public static final ReplyDomain NPC_NOT_EXIT = new ReplyDomain(ResultCode.NPC_NOT_EXIT);
 
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

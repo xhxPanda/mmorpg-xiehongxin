@@ -29,5 +29,6 @@ public class ResultCode {
 	public static final String NOT_IN_SCENE = "不在场景中";
 	public static final String IN_TRANSACTION = "正在交易中";
 	public static final String GUILD_AUTHORITY = "公会权限不足";
-	
+	public static final String HAD_HAS_MISSION = "已经接受了这个任务了";
+	public static final String NPC_NOT_EXIT = "不存在该npc";
 }

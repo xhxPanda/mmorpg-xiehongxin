@@ -61,7 +61,7 @@ public class ExpMaterialHandler extends AbstractMaterialHandler<Exp> {
 			role.setExp(newExp);
 
 			// 抛出升级事件
-			UpdateLevelData data = new UpdateLevelData(oldExp, nextLevel, role.getUserId(), role.getId());
+			UpdateLevelData data = new UpdateLevelData(oldExp, nextLevel, role);
 			EventHandlerManager.INSATNCE.methodInvoke(EventType.LEVEL_UP, new EventDealData<UpdateLevelData>(data));
 		}
 

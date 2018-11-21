@@ -36,6 +36,8 @@ public class Role extends LivingThing {
 
 	private int transactionPerson; // 交易状态
 
+	private Map<Integer, Map<Integer, RoleMission>> roleMissionCache;
+
 	// 背包
 	private Map<Integer, BagMaterial> materialMap;
 	// 财富背包
@@ -462,6 +464,27 @@ public class Role extends LivingThing {
 		return materialMap.get(index);
 	}
 
+	/**
+	 * 获取用户已接受的任务
+	 * 
+	 * @param type
+	 * @param missionId
+	 * @return
+	 */
+	public RoleMission getMission(int type, int missionId) {
+		return roleMissionCache.get(type).get(missionId);
+	}
+
+	public void reciveMission(RoleMission roleMission) {
+		Map<Integer, RoleMission> roleMissionMap = roleMissionCache.get(roleMission.getType());
+		if (roleMission == null) {
+			roleMissionMap = new HashMap<>();
+			roleMissionCache.put(roleMission.getType(), roleMissionMap);
+		}
+
+		roleMissionMap.put(roleMission.getMissionId(), roleMission);
+	}
+
 	@Override
 	public void notifyAttributeChange(Attribute attribute, String reason) {
 		// TODO Auto-generated method stub
@@ -536,6 +559,10 @@ public class Role extends LivingThing {
 
 	public void setEquipmentMap(Map<Integer, UserEquipment> equipmentMap) {
 		this.equipmentMap = equipmentMap;
+	}
+
+	public Map<Integer, Map<Integer, RoleMission>> getRoleMissionCache() {
+		return roleMissionCache;
 	}
 
 }

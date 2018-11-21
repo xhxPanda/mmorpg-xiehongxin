@@ -15,6 +15,7 @@ import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.Monster;
 import com.hh.mmorpg.domain.MonsterBeKillBonus;
 import com.hh.mmorpg.domain.MonsterDomain;
+import com.hh.mmorpg.domain.NpcRole;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.Scene;
@@ -26,6 +27,7 @@ import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MonsterDeadData;
+import com.hh.mmorpg.event.data.NpcTalkData;
 import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -361,6 +363,27 @@ public class SceneService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	public ReplyDomain  taklToNpc(User user, int npcId) {
+		int userId = user.getUserId();
+		Integer sceneId = sceneUserMap.get(userId);
+		if (sceneId == null) {
+			return ReplyDomain.FAILE;
+		}
+		
+		Scene scene = sceneMap.get(sceneId);
+		Role role = scene.getUserRole(userId);
+		
+		NpcRole npcRole = scene.getNpcRole(npcId);
+		if(npcRole == null) {
+			return ReplyDomain.NPC_NOT_EXIT;
+		}
+		
+		NpcTalkData data = new NpcTalkData(role, npcId);
+		EventHandlerManager.INSATNCE.methodInvoke(EventType.TALK_TO_NPC, new EventDealData<NpcTalkData>(data));
+		
+		return ReplyDomain.SUCCESS;
+	}
+	
 	// 用户下线，把他的缓存删除
 	@Event(eventType = EventType.USER_LOST)
 	public void handleUserLost(EventDealData<UserLostData> data) {

@@ -18,24 +18,26 @@ public class MissionExtension {
 	private static final String SHOW_MISSION_CAN_ACCEPT = "showMissionCanAccept"; // 显示可接任务
 	private static final String SHOW_MISSION_ACCEPTED = "showMissionAccept"; // 显示已接任务
 
+	public static final String NOTIFY_MISSION_COMPETE = "任务已完成";
+
 	@CmdService(cmd = SHOW_MISSION_CAN_ACCEPT)
 	public void showMissionCanAccept(User user, CMDdomain cmdDomain) {
-		
+
 		ReplyDomain replyDomain = service.showMissionCanAccept(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = SHOW_MISSION_ACCEPTED)
 	public void showMissionAccept(User user, CMDdomain cmdDomain) {
-		
-		ReplyDomain replyDomain = service.showMissionAccept(user);
-		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+
+//		ReplyDomain replyDomain = service.showMissionAccept(user);
+//		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = ACCEPT_MISSION)
 	public void acceptMission(User user, CMDdomain cmdDomain) {
 		int missionId = cmdDomain.getIntParam(2);
-		
+
 		ReplyDomain replyDomain = service.accpetMission(user, missionId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
@@ -43,19 +45,21 @@ public class MissionExtension {
 	@CmdService(cmd = MISSION_COMPETE)
 	public void missionCompete(User user, CMDdomain cmdDomain) {
 		int missionId = cmdDomain.getIntParam(2);
-
-		ReplyDomain replyDomain = service.missionCompete(user, missionId);
-		
-		
-		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+//
+//		ReplyDomain replyDomain = service.missionCompete(user, missionId);
+//
+//		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = GIVE_UP_MISSION)
 	public void giveUpMission(User user, CMDdomain cmdDomain) {
 		int missionId = cmdDomain.getIntParam(2);
 
-		ReplyDomain replyDomain = service.giveUpMission(user, missionId);
-		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+//		ReplyDomain replyDomain = service.giveUpMission(user, missionId);
+//		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
+	public static void notifyRoleMissionInfo(User user, ReplyDomain replyDomain) {
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
 }

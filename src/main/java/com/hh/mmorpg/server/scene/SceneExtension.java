@@ -19,6 +19,8 @@ public class SceneExtension {
 	private static final String GET_ROLE_KILL_MONSTER_BONUS_INFO = "getRoleKillMonsterBonusInfo";
 	private static final String GET_ROLE_KILL_MONSTER_BONUS = "getRoleKillMonsterBonus";
 
+	private static final String TALK_TO_NPC = "takeToNpc"; // 与npc交谈
+
 	public static final String NOTIFY_USER_ENTER = "用户进入场景";
 	public static final String NOTIFY_USER_LEAVE = "用户离开场景";
 	public static final String NOTIFT_USER_ATTRIBUATE_CHANGE = "角色属性变化";
@@ -80,6 +82,15 @@ public class SceneExtension {
 		int bonusId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.getRoleKillMonsterBonus(user, bonusId);
+
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
+	@CmdService(cmd = TALK_TO_NPC)
+	public void takeToNpc(User user, CMDdomain cmdDomain) {
+		int npcId = cmdDomain.getIntParam(2);
+
+		ReplyDomain replyDomain = service.taklToNpc(user, npcId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

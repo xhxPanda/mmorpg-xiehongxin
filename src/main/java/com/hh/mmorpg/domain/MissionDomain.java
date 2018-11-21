@@ -11,23 +11,31 @@ public class MissionDomain {
 	private int id;
 	private String name;
 	private String bonus;
-	private Map<Integer, Integer> competeAttribute;
+	private String dec;
 
-	private int nextMissionId;
+	private int type; // 任务类型
+	private int needLevel; // 所需等级
 
-	public MissionDomain(int id, String name, String bonus, String competeAttributeStr) {
+	private Map<String, Integer> competeAttribute;
+
+	public MissionDomain(int id, String name, String bonus, String dec, int type, int needLevel, String competeAttributeStr) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.bonus = bonus;
+		this.dec = dec;
+
+		this.type = type;
+		this.needLevel = needLevel;
 
 		this.competeAttribute = new HashMap<>();
 		for (String s : competeAttributeStr.split(",")) {
 			String attributes[] = s.split(":");
-			int key = Integer.parseInt(attributes[0]);
+			String key = attributes[0];
 			int value = Integer.parseInt(attributes[1]);
 			competeAttribute.put(key, value);
 		}
+
 	}
 
 	public int getId() {
@@ -42,12 +50,20 @@ public class MissionDomain {
 		return bonus;
 	}
 
-	public int getNextMissionId() {
-		return nextMissionId;
+	public Map<String, Integer> getCompeteAttribute() {
+		return competeAttribute;
 	}
 
-	public Map<Integer, Integer> getCompeteAttribute() {
-		return competeAttribute;
+	public int getNeedLevel() {
+		return needLevel;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public String getDec() {
+		return dec;
 	}
 
 }

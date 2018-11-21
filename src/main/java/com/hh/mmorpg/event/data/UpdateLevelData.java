@@ -1,19 +1,18 @@
 package com.hh.mmorpg.event.data;
 
+import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.event.EventData;
 
 public class UpdateLevelData extends EventData {
 
 	private int oldLevel;
 	private int newLevel;
-	private int userId;
-	private int roleId;
+	private Role role;
 
-	public UpdateLevelData(int oldLevel, int newLevel, int userId, int roleId) {
+	public UpdateLevelData(int oldLevel, int newLevel, Role role) {
 		this.oldLevel = oldLevel;
 		this.newLevel = newLevel;
-		this.userId = userId;
-		this.roleId = roleId;
+		this.role = role;
 	}
 
 	public int getOldLevel() {
@@ -24,12 +23,8 @@ public class UpdateLevelData extends EventData {
 		return newLevel;
 	}
 
-	public int getUserId() {
-		return userId;
-	}
-
-	public int getRoleId() {
-		return roleId;
+	public Role getRole() {
+		return role;
 	}
 
 }
