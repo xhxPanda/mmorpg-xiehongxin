@@ -18,6 +18,10 @@ import com.hh.mmorpg.domain.GuildMemberIdentity;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
+import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.GuildJoinData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.MaterialService;
@@ -203,6 +207,11 @@ public class GuildSerivice {
 
 					GuildExtension.notifyUser(UserService.INSTANCE.getUser(guildApply.getUserId()), notify);
 				}
+
+				// 抛出角色进入公会事件
+				GuildJoinData guildJoinData = new GuildJoinData(applyRole, guild.getId());
+				EventHandlerManager.INSATNCE.methodInvoke(EventType.JOIN_GUILD,
+						new EventDealData<GuildJoinData>(guildJoinData));
 			}
 
 			// 最后删除申请
@@ -371,7 +380,7 @@ public class GuildSerivice {
 		}
 
 		role.decMaterialIndex(index, num);
-		
+
 		BagMaterial guildMaterial = new BagMaterial(bagMaterial, 0, num);
 		ReplyDomain domain = guild.accessMaterial(guildMaterial);
 		return domain;

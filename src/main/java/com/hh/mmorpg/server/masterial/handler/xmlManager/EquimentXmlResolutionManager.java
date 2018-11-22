@@ -31,20 +31,24 @@ public class EquimentXmlResolutionManager {
 		List<Element> equipments = rootElm.elements("equipment");
 		for (Element element : equipments) {
 			int id = Integer.parseInt(element.attributeValue("id"));
-			int clothesType = Integer.parseInt(element.attributeValue("clothesType"));
+			int equimentType = Integer.parseInt(element.attributeValue("equimentType"));
 			String name = element.attributeValue("name");
 			int maxDurability = Integer.parseInt(element.attributeValue("maxDurability"));
 
 			String attribute = element.attributeValue("attribute");
 			String sellPrice = element.attributeValue("sellPrice");
-			
-			EquimentDomain clothesDomain = new EquimentDomain(id, clothesType, attribute, name, maxDurability, sellPrice);
-			map.put(id, clothesDomain);
+
+			int equimentSource = Integer.parseInt(element.attributeValue("equimentSource"));
+			int equimentLevel = Integer.parseInt(element.attributeValue("equimentLevel"));
+
+			EquimentDomain equimentDomain = new EquimentDomain(id, equimentType, attribute, name, maxDurability,
+					sellPrice, equimentSource, equimentLevel);
+			map.put(id, equimentDomain);
 		}
 
 		return map;
 	}
-	
+
 	public static final void main(String args[]) {
 		EquimentXmlResolutionManager.INSTANCE.resolution();
 	}

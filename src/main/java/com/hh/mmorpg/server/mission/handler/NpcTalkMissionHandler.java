@@ -36,7 +36,7 @@ public class NpcTalkMissionHandler extends AbstractMissionHandler<NpcTalkData> {
 			if (roleMission.getStatus() == 1) {
 				continue;
 			}
-			if (roleMission.isMissionConpete()) {
+			if (roleMission.isMissionCompete()) {
 				continue;
 			}
 			if (npcId != Integer.parseInt(roleMission.getDec())) {
@@ -44,7 +44,7 @@ public class NpcTalkMissionHandler extends AbstractMissionHandler<NpcTalkData> {
 			}
 
 			roleMission.updateMissionProcess(MISSION_ATT_KEY_LEVEL, 1);
-			if (roleMission.isMissionConpete()) {
+			if (roleMission.isMissionCompete()) {
 				dealFinishMission(role, roleMission);
 			}
 		}

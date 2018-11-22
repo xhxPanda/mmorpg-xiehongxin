@@ -11,6 +11,8 @@ import com.hh.mmorpg.result.ReplyDomain;
 
 public class UserEquipment extends BagMaterial {
 
+	private int equimentLevel; // 武器等级
+	private int equimentSource; // 武器评分
 	private boolean inUsed;
 	private int maxDurability;
 	private int durability;
@@ -101,6 +103,14 @@ public class UserEquipment extends BagMaterial {
 		}
 
 		return builder.toString();
+	}
+	
+	public int getEquimentLevel() {
+		return equimentLevel;
+	}
+
+	public int getEquimentSource() {
+		return equimentSource;
 	}
 
 	@Override

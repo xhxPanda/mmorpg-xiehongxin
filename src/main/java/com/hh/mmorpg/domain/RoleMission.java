@@ -1,6 +1,8 @@
 package com.hh.mmorpg.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -40,7 +42,7 @@ public class RoleMission {
 		this.attMap = new HashMap<>();
 		for (Entry<String, Integer> entry : missionAtts.entrySet()) {
 			MissionAttribute missionAttribute = new MissionAttribute(entry.getKey(), 0, entry.getValue());
-			attMap.put(missionAttribute.getDec(), missionAttribute);
+			attMap.put(missionAttribute.getKey(), missionAttribute);
 		}
 	}
 
@@ -49,7 +51,7 @@ public class RoleMission {
 	 * 
 	 * @return
 	 */
-	public boolean isMissionConpete() {
+	public boolean isMissionCompete() {
 		for (MissionAttribute missionAttribute : attMap.values()) {
 			if (missionAttribute.getPocess() < missionAttribute.getMax()) {
 				return false;
@@ -86,19 +88,27 @@ public class RoleMission {
 		return type;
 	}
 
+	public boolean isMissionContainKey(String key) {
+		return attMap.containsKey(key);
+	}
+	
+	public List<String> getKeys(){
+		return new ArrayList<>(attMap.keySet());
+	}
+
 	class MissionAttribute {
-		private String dec;
+		private String key;
 		private int pocess;
 		private int max;
 
-		public MissionAttribute(String dec, int pocess, int max) {
-			this.dec = dec;
+		public MissionAttribute(String key, int pocess, int max) {
+			this.key = key;
 			this.pocess = pocess;
 			this.max = max;
 		}
 
-		public String getDec() {
-			return dec;
+		public String getKey() {
+			return key;
 		}
 
 		public int getPocess() {

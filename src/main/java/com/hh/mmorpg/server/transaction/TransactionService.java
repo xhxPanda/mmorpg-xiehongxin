@@ -37,6 +37,8 @@ public class TransactionService {
 	}
 
 	/**
+	 * 请求交易
+	 * 
 	 * @param user
 	 * @param roleId
 	 * @return
@@ -180,7 +182,7 @@ public class TransactionService {
 		ReplyDomain notify = new ReplyDomain();
 		notify.setStringDomain("对方放入了", bagMaterial.getName() + "*" + bagMaterial.getQuantity());
 		TransactionExtension.notifyRole(UserService.INSTANCE.getUser(anotherRole.getUserId()), notify);
-		
+
 		return ReplyDomain.SUCCESS;
 	}
 

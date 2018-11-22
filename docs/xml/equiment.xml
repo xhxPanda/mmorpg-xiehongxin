@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <equipments>
-	<equipment id="100001" clothesType="1" name="凶猛长枪"
-		maxDurability="100" attribute="1:200,2:20" sellPrice = "3:1:900"></equipment>
-	<equipment id="100002" clothesType="2" name="坚强布甲"
-		maxDurability="100" attribute="1:20,2:200" sellPrice = "3:1:900"></equipment>
-	<equipment id="100003" clothesType="2" name="坚强腿甲"
-		maxDurability="100" attribute="2:200" sellPrice = "3:1:900"></equipment>
+	<equipment id="100001" equimentType="1" name="凶猛长枪"
+		maxDurability="100" attribute="1:200,2:20" sellPrice="3:1:900"
+		equimentSource="100" equimentLevel="1"></equipment>
+	<equipment id="100002" equimentType="2" name="坚强布甲"
+		maxDurability="100" attribute="1:20,2:200" sellPrice="3:1:900"
+		equimentSource="100" equimentLevel="1"></equipment>
+	<equipment id="100003" equimentType="2" name="坚强腿甲"
+		maxDurability="100" attribute="2:200" sellPrice="3:1:900"
+		equimentSource="100" equimentLevel="1"></equipment>
 </equipments>

@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
+
+import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.GetMaterialData;
 import com.hh.mmorpg.jdbc.ResultBuilder;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
@@ -169,6 +174,13 @@ public class Role extends LivingThing {
 		}
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setIntDomain("真实插入的数量", addNum);
+
+		// 抛出获得物品的事件
+		if (addNum > 0) {
+			GetMaterialData data = new GetMaterialData(this, material, addNum);
+			EventHandlerManager.INSATNCE.methodInvoke(EventType.TALK_TO_NPC, new EventDealData<GetMaterialData>(data));
+		}
+
 		return replyDomain;
 	}
 
@@ -214,6 +226,14 @@ public class Role extends LivingThing {
 			userEquipment.setInUsed(false);
 			addMaterial(userEquipment);
 		}
+	}
+
+	private int getEquimentSource() {
+		int totalSource = 0;
+		for (UserEquipment equipment : equipmentMap.values()) {
+			totalSource += equipment.getEquimentSource();
+		}
+		return totalSource;
 	}
 
 	public void addMaterial(Map<Integer, Material> materialMap) {
