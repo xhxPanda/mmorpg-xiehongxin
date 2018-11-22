@@ -176,6 +176,8 @@ public class GuildSerivice {
 			// 判断是否已经满人了
 			int guildLevel = guild.getLevel();
 			GuildLevelDomain guildLevelDomain = guildLevelDomainMap.get(guildLevel);
+			
+			// 判断是否满人
 			if (guild.getMemberNum() >= guildLevelDomain.getCanJoinMemberNum()) {
 				return ReplyDomain.GUILD_FULL;
 			}

@@ -20,7 +20,7 @@ public class ResultCode {
 	public static final String LEVEL_NOT_ENOUGH = "等级不足";
 	public static final String HAD_HAS_GUILD = "已有公会";
 	public static final String GUILD_FULL = "公会人数已满";
-	public static final String HAS_SENT_APPLY = "已经发过公会申请了";
+	public static final String HAS_SENT_APPLY = "已经发过申请了";
 	public static final String HAS_IN_GUILD = "已在公会";
 	public static final String LACK_OF_GUILD_JURISDICTION = "公会权限不足";
 	public static final String MISSION_NOT_EXIST = "任务不存在";
@@ -31,4 +31,6 @@ public class ResultCode {
 	public static final String GUILD_AUTHORITY = "公会权限不足";
 	public static final String HAD_HAS_MISSION = "已经接受了这个任务了";
 	public static final String NPC_NOT_EXIT = "不存在该npc";
+	public static final String HAS_IN_TEAM = "已在队伍中";
+	public static final String TEAM_FULL = "队伍已满";
 }

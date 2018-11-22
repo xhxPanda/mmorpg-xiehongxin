@@ -37,7 +37,9 @@ public class Role extends LivingThing {
 	private int capacity; // 背包容量
 	private int level; // 等级
 	private int exp; // 经验
+
 	private int guildId; // 公会id
+	private int teamId;
 
 	private int transactionPerson; // 交易状态
 
@@ -583,6 +585,14 @@ public class Role extends LivingThing {
 
 	public Map<Integer, Map<Integer, RoleMission>> getRoleMissionCache() {
 		return roleMissionCache;
+	}
+
+	public int getTeamId() {
+		return teamId;
+	}
+
+	public void setTeamId(int teamId) {
+		this.teamId = teamId;
 	}
 
 }
