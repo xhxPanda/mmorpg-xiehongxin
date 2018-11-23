@@ -17,9 +17,9 @@ public class MaterialExtension {
 	private static final String USE_MATERIAL = "useMaterial";
 
 	private static final String SHOW_ALL_MATERIAL = "showAllMaterial";
-	
+
 	private static final String ARRANGE_BAG = "arrangeBag";
-	
+
 	private static final String SORT_BAG = "sortBag";
 
 	private static final String NOTIFY_USER_GAIN_MATERIAL = "物品新增";
@@ -34,7 +34,14 @@ public class MaterialExtension {
 	@CmdService(cmd = BUY_GOODS)
 	public void buyGoods(User user, CMDdomain cmDdomain) {
 		int goodsId = cmDdomain.getIntParam(2);
-		int num = cmDdomain.getIntParam(3);
+		String numStr = cmDdomain.getStringParam(3);
+
+		// 检验参数
+		if (numStr.length() >= 9) {
+			ExtensionSender.INSTANCE.sendReply(user, ReplyDomain.FAILE);
+		}
+
+		int num = Integer.parseInt(numStr);
 
 		ReplyDomain replyDomain = MaterialService.INSTANCE.buyGoods(user, goodsId, num);
 
@@ -63,13 +70,13 @@ public class MaterialExtension {
 		ReplyDomain replyDomain = MaterialService.INSTANCE.useMaterial(user, index);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = ARRANGE_BAG)
 	public void arrangeBag(User user, CMDdomain cmDdomain) {
 		ReplyDomain replyDomain = MaterialService.INSTANCE.arrangeBag(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = SORT_BAG)
 	public void sortBag(User user, CMDdomain cmDdomain) {
 		int fromIndex = cmDdomain.getIntParam(2);

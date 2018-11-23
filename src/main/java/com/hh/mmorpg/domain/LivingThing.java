@@ -13,7 +13,7 @@ public abstract class LivingThing {
 	private int uniqueId;
 	private long beKilledTime;
 	private boolean status;
-	private Map<Integer, RoleSkill> skillMap;
+	private Map<Integer, RoleSkill> skillMap; // 技能库
 	private Map<Integer, Attribute> attributeMap;
 
 	private ConcurrentHashMap<Integer, RoleBuff> buffsMap;
@@ -178,7 +178,7 @@ public abstract class LivingThing {
 
 		return newValue;
 	}
-	
+
 	public boolean isContainBuff(int buffId) {
 		return buffsMap.containsKey(buffId);
 	}

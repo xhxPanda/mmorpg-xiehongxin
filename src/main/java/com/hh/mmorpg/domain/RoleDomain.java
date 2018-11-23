@@ -8,9 +8,8 @@ public class RoleDomain {
 	private int id;
 	private String name;
 	private Map<Integer, Attribute> attributeMap;
-	private Map<Integer, RoleSkill> roleSkillMap;
 
-	public RoleDomain(int id, String name, String attributeStr, String skillStr) {
+	public RoleDomain(int id, String name, String attributeStr) {
 		this.id = id;
 		this.name = name;
 		this.attributeMap = new HashMap<>();
@@ -27,12 +26,6 @@ public class RoleDomain {
 			attributeMap.put(attribute.getId(), attribute);
 		}
 
-		// 组建用户技能
-		this.roleSkillMap = new HashMap<>();
-		for (String strList : skillStr.split(",")) {
-			int skillId = Integer.parseInt(strList);
-			roleSkillMap.put(skillId, new RoleSkill(skillId));
-		}
 	}
 
 	public int getId() {
@@ -46,9 +39,4 @@ public class RoleDomain {
 	public Map<Integer, Attribute> getAttributeMap() {
 		return attributeMap;
 	}
-
-	public Map<Integer, RoleSkill> getRoleSkillMap() {
-		return roleSkillMap;
-	}
-
 }

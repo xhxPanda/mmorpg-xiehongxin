@@ -33,4 +33,6 @@ public class ResultCode {
 	public static final String NPC_NOT_EXIT = "不存在该npc";
 	public static final String HAS_IN_TEAM = "已在队伍中";
 	public static final String TEAM_FULL = "队伍已满";
+	public static final String HAS_LEARNED_SKILL = "技能已学";
+	public static final String OCCUPATION_NOT_MATCH = "职业不匹配";
 }

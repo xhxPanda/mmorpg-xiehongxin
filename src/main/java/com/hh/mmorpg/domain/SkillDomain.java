@@ -4,8 +4,7 @@ import java.util.Map;
 
 /**
  * 
- * @author xhx
- * 技能定义实体类
+ * @author xhx 技能定义实体类
  */
 
 public class SkillDomain {
@@ -15,16 +14,21 @@ public class SkillDomain {
 	private String name;
 	private int needMp;
 	private boolean magicSkill;
+	private int needLevel;
+	private int occupationId;
+
 	private Map<Integer, Integer> effectAttribute;
 	private Map<Integer, Integer> selfEffectAttribute;
 	private Map<Integer, Integer> buffprobabilityMap;
 
-	public SkillDomain(int id, String name, int cd, boolean magicSkill, Map<Integer, Integer> effectAttribute,
+	public SkillDomain(int id, String name, int cd, boolean magicSkill, int needLevel, int occupationId, Map<Integer, Integer> effectAttribute,
 			Map<Integer, Integer> selfEffectAttribute, Map<Integer, Integer> buffprobabilityMap, int needMp) {
 		this.id = id;
 		this.name = name;
 		this.cd = cd;
 		this.magicSkill = magicSkill;
+		this.needLevel = needLevel;
+		this.occupationId = occupationId;
 		this.selfEffectAttribute = selfEffectAttribute;
 		this.effectAttribute = effectAttribute;
 		this.buffprobabilityMap = buffprobabilityMap;
@@ -61,6 +65,14 @@ public class SkillDomain {
 
 	public boolean isMagicSkill() {
 		return magicSkill;
+	}
+
+	public int getNeedLevel() {
+		return needLevel;
+	}
+
+	public int getOccupationId() {
+		return occupationId;
 	}
 
 }

@@ -8,6 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.JoinTeamData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.server.scene.SceneService;
@@ -43,7 +47,7 @@ public class TeamService {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		User peopleUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(roleId));
-		
+
 		Scene myScene = SceneService.INSTANCE.getUserScene(user.getUserId());
 		Scene peopleScene = SceneService.INSTANCE.getUserScene(peopleUser.getUserId());
 
@@ -102,19 +106,25 @@ public class TeamService {
 		User peopleUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(roleId));
 		Role peopleRole = RoleService.INSTANCE.getUserUsingRole(peopleUser.getUserId());
 
+		Set<Integer> teamMate = null;
+
 		// 新建队伍
 		if (peopleRole.getTeamId() == 0) {
 			int teamUniqueId = teamId.incrementAndGet();
 
-			Set<Integer> teamMate = new HashSet<>();
+			teamMate = new HashSet<>();
 			teamsMap.put(teamUniqueId, teamMate);
 
 			teamMate.add(peopleRole.getId());
 			teamMate.add(role.getId());
 
 			peopleRole.setTeamId(teamUniqueId);
+
+			JoinTeamData joinTeamData = new JoinTeamData(peopleRole, teamMate);
+			EventHandlerManager.INSATNCE.methodInvoke(EventType.JOIN_GUILD,
+					new EventDealData<JoinTeamData>(joinTeamData));
 		} else {
-			Set<Integer> teamMate = teamsMap.get(peopleRole.getTeamId());
+			teamMate = teamsMap.get(peopleRole.getTeamId());
 
 			// 判断队伍是否满人了
 			if (teamMate.size() >= MAX_TEAM_CAPACITY) {
@@ -125,24 +135,38 @@ public class TeamService {
 		}
 
 		role.setTeamId(peopleRole.getTeamId());
+
+		JoinTeamData joinTeamData = new JoinTeamData(role, teamMate);
+		EventHandlerManager.INSATNCE.methodInvoke(EventType.JOIN_GUILD,
+				new EventDealData<JoinTeamData>(joinTeamData));
+		
 		return ReplyDomain.SUCCESS;
 	}
 
 	public ReplyDomain quitTeam(User user) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
+		int teamId = role.getTeamId();
+
 		if (role.getTeamId() == 0) {
 			return ReplyDomain.FAILE;
 		}
 
 		// 移除用户
-		Set<Integer> team = teamsMap.get(role.getTeamId());
+		Set<Integer> team = teamsMap.get(teamId);
 		team.remove(role.getId());
 
 		role.setTeamId(0);
 		notifyOneTeamMateQuit(team, role.getName());
+		if (team.size() == 0) {
+			teamsMap.remove(teamId);
+		}
 		return ReplyDomain.SUCCESS;
 	}
+
+//	public Set<Integer> getTeamInfo() {
+//
+//	}
 
 	private void removeTeamInvition(int roleId, int inviteId) {
 		Set<Integer> applySet = applyCache.get(roleId);

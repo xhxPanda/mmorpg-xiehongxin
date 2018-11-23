@@ -39,6 +39,8 @@ public class ReplyDomain {
 	public static final ReplyDomain NPC_NOT_EXIT = new ReplyDomain(ResultCode.NPC_NOT_EXIT);
 	public static final ReplyDomain HAS_IN_TEAM = new ReplyDomain(ResultCode.HAS_IN_TEAM);
 	public static final ReplyDomain TEAM_FULL = new ReplyDomain(ResultCode.TEAM_FULL);
+	public static final ReplyDomain HAS_LEARNED_SKILL = new ReplyDomain(ResultCode.HAS_LEARNED_SKILL);
+	public static final ReplyDomain OCCUPATION_NOT_MATCH = new ReplyDomain(ResultCode.OCCUPATION_NOT_MATCH);
 
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

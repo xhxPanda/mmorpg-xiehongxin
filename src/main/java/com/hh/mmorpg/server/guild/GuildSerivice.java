@@ -130,7 +130,7 @@ public class GuildSerivice {
 		}
 
 		// 不能重复发送
-		if (guild.getApply(role.getRoleId()) != null) {
+		if (guild.getApply(role.getId()) != null) {
 			return ReplyDomain.HAS_SENT_APPLY;
 		}
 

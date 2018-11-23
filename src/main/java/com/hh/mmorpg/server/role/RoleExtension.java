@@ -12,10 +12,11 @@ public class RoleExtension {
 
 	private RoleService service = RoleService.INSTANCE;
 
-	private static final String GET_ALL_ROLE = "getAllRole";
-	private static final String CREATE_ROLE = "createRole";
-	private static final String USE_ROLE = "useRole";
-	private static final String GET_USER_NOW_ROLE = "getUserNowRole";
+	private static final String GET_ALL_ROLE = "getAllRole"; // 获取用户所有的角色
+	private static final String CREATE_ROLE = "createRole"; // 创建角色
+	private static final String USE_ROLE = "useRole"; // 使用角色
+	private static final String GET_USER_NOW_ROLE = "getUserNowRole"; // 获取用户当前角色的信息
+	private static final String TRANSFER_OCCUPATION = "transferOccupation"; // 转职
 
 	@CmdService(cmd = GET_ALL_ROLE)
 	public void getAllRole(User user, CMDdomain cmdDomain) {
@@ -44,6 +45,14 @@ public class RoleExtension {
 	@CmdService(cmd = GET_USER_NOW_ROLE)
 	public void getUserNowRolet(User user, CMDdomain cmdDomain) {
 		ReplyDomain reply = service.getUserUsingRole(user);
+		ExtensionSender.INSTANCE.sendReply(user, reply);
+	}
+	
+	@CmdService(cmd = TRANSFER_OCCUPATION)
+	public void transferOccupation(User user, CMDdomain cmdDomain) {
+		int occupationId = cmdDomain.getIntParam(2);
+		
+		ReplyDomain reply = service.transferOccupation(user, occupationId);
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
 

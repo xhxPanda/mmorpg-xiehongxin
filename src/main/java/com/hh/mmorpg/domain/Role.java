@@ -33,10 +33,14 @@ public class Role extends LivingThing {
 	private int userId;
 	private int id;
 	private String name;
-	private int roleId;
+
+	private int tribeId; // 种族id
+	private int occupationId; // 职业id
+
 	private int capacity; // 背包容量
 	private int level; // 等级
 	private int exp; // 经验
+	private int lastJoinScene; // 掉线前所在的场景
 
 	private int guildId; // 公会id
 	private int teamId;
@@ -52,17 +56,18 @@ public class Role extends LivingThing {
 	// 装备栏
 	private Map<Integer, UserEquipment> equipmentMap;
 
-	public Role(int userId, int id, String name, int roleId, int capacity, int level, int exp) {
-		super(roleId, id);
+	public Role(int userId, int id, String name, int tribeId, int occupationId, int capacity, int level, int exp, int lastJoinScene) {
+		super(tribeId, id);
 		this.userId = userId;
 		this.id = id;
 		this.name = name;
-		this.roleId = roleId;
+		this.occupationId = occupationId;
 		this.capacity = capacity;
 		this.materialMap = new HashMap<>();
 
 		this.level = level;
 		this.exp = exp;
+		this.lastJoinScene = lastJoinScene;
 
 		for (int i = 0; i < capacity; i++) {
 			materialMap.put(i, null);
@@ -71,7 +76,7 @@ public class Role extends LivingThing {
 
 		this.treasureMap = new HashMap<>();
 		for (UserTreasureType type : UserTreasureType.values()) {
-			treasureMap.put(type.getId(), new UserTreasure(roleId, type.getName(), type.getId(), 0));
+			treasureMap.put(type.getId(), new UserTreasure(id, type.getName(), type.getId(), 0));
 		}
 
 		this.transactionPerson = 0;
@@ -89,10 +94,6 @@ public class Role extends LivingThing {
 		return name;
 	}
 
-	public int getRoleId() {
-		return roleId;
-	}
-
 	public int getCapacity() {
 		return capacity;
 	}
@@ -104,18 +105,20 @@ public class Role extends LivingThing {
 			// TODO Auto-generated method stub
 			int userId = result.getInt(1);
 			int id = result.getInt(2);
-			int roleId = result.getInt(3);
-			String name = result.getString(4);
+			String name = result.getString("name");
 			int capacity = result.getInt("capacity");
 			int level = result.getInt("level");
 			int exp = result.getInt("exp");
-			return new Role(userId, id, name, roleId, capacity, level, exp);
+			int tribeId = result.getInt("tribeId");
+			int occupationId = result.getInt("occupationId");
+			int lastJoinScene = result.getInt("lastJoinScene");
+			return new Role(userId, id, name, tribeId, occupationId, capacity, level, exp, lastJoinScene);
 		}
 	};
 
 	@Override
 	public String toString() {
-		return "Role [userId=" + userId + ", id=" + id + ", name=" + name + ", roleId=" + roleId + ", hp="
+		return "Role [userId=" + userId + ", id=" + id + ", name=" + name + ", 职业=" + occupationId + ", hp="
 				+ getAttribute(3).getValue() + ", mp=" + getAttribute(4).getValue() + ", 攻击力="
 				+ getAttribute(1).getValue() + ", 防御力=" + getAttribute(2).getValue() + "]";
 	}
@@ -230,13 +233,13 @@ public class Role extends LivingThing {
 		}
 	}
 
-	private int getEquimentSource() {
-		int totalSource = 0;
-		for (UserEquipment equipment : equipmentMap.values()) {
-			totalSource += equipment.getEquimentSource();
-		}
-		return totalSource;
-	}
+//	private int getEquimentSource() {
+//		int totalSource = 0;
+//		for (UserEquipment equipment : equipmentMap.values()) {
+//			totalSource += equipment.getEquimentSource();
+//		}
+//		return totalSource;
+//	}
 
 	public void addMaterial(Map<Integer, Material> materialMap) {
 		materialMap.putAll(materialMap);
@@ -499,12 +502,21 @@ public class Role extends LivingThing {
 
 	public void reciveMission(RoleMission roleMission) {
 		Map<Integer, RoleMission> roleMissionMap = roleMissionCache.get(roleMission.getType());
-		if (roleMission == null) {
+		if (roleMissionMap == null) {
 			roleMissionMap = new HashMap<>();
 			roleMissionCache.put(roleMission.getType(), roleMissionMap);
 		}
 
 		roleMissionMap.put(roleMission.getMissionId(), roleMission);
+	}
+
+	/**
+	 * 学习新的技能
+	 * 
+	 * @param roleSkill
+	 */
+	public void learnNewSkill(RoleSkill roleSkill) {
+		getSkillMap().put(roleSkill.getSkillId(), roleSkill);
 	}
 
 	@Override
@@ -593,6 +605,22 @@ public class Role extends LivingThing {
 
 	public void setTeamId(int teamId) {
 		this.teamId = teamId;
+	}
+
+	public int getOccupationId() {
+		return occupationId;
+	}
+
+	public void setOccupationId(int occupationId) {
+		this.occupationId = occupationId;
+	}
+
+	public int getTribeId() {
+		return tribeId;
+	}
+
+	public int getLastJoinScene() {
+		return lastJoinScene;
 	}
 
 }

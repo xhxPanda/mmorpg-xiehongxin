@@ -12,7 +12,9 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleBuff;
 import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.SkillDomain;
+import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
+import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.server.skill.xmlResolution.SkillXmlResolution;
 
 public class SkillService {
@@ -25,6 +27,36 @@ public class SkillService {
 	private SkillService() {
 		skillDomainMap = SkillXmlResolution.INSATNCE.skillResolution();
 		buffMap = SkillXmlResolution.INSATNCE.buffResolution();
+	}
+
+	/**
+	 * 学习技能
+	 * 
+	 * @param user
+	 * @param skillId
+	 * @return
+	 */
+	public ReplyDomain learnSkill(User user, int skillId) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		// 技能已学
+		if (role.getSkillMap().containsKey(skillId)) {
+			return ReplyDomain.HAS_LEARNED_SKILL;
+		}
+		SkillDomain skillDomain = skillDomainMap.get(skillId);
+
+		if (skillDomain.getNeedLevel() > role.getLevel()) {
+			return ReplyDomain.LEVEL_NOT_ENOUGH;
+		}
+		// 不符合职业
+		if (skillDomain.getOccupationId() != -1 || skillDomain.getOccupationId() != role.getOccupationId()) {
+			return ReplyDomain.OCCUPATION_NOT_MATCH;
+		}
+
+		RoleSkill roleSkill = new RoleSkill(role.getId(), skillId);
+		
+		role.learnNewSkill(roleSkill);
+		return ReplyDomain.SUCCESS;
 	}
 
 	public ReplyDomain dealSkillEffect(RoleSkill roleSkill, LivingThing attackedObject, LivingThing beAttackedObject,

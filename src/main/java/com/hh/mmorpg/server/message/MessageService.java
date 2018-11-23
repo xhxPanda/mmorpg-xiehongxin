@@ -40,7 +40,7 @@ public class MessageService {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		ReplyDomain message = new ReplyDomain();
-		message.setIntDomain("角色id", role.getRoleId());
+		message.setIntDomain("角色id", role.getId());
 		message.setStringDomain("角色名", role.getName());
 		message.setStringDomain("内容", content);
 		MessageExtension.notifyUserMessage(recipentUser, message);

@@ -252,7 +252,7 @@ public class TransactionService {
 		}
 		role.setTransactionPerson(0);
 
-		Role anotherRoleId = transaction.getAnotherRole(role.getRoleId());
+		Role anotherRoleId = transaction.getAnotherRole(role.getId());
 		anotherRoleId.setTransactionPerson(0);
 
 		User anOtherUser = UserService.INSTANCE.getUser(anotherRoleId.getUserId());

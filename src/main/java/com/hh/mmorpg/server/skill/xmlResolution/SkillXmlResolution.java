@@ -38,6 +38,8 @@ public class SkillXmlResolution {
 			String name = skillTopEle.attributeValue("name");
 			int needMp = Integer.parseInt(skillTopEle.attributeValue("needMp"));
 			int cd = Integer.parseInt(skillTopEle.attributeValue("cd"));
+			int needLevel = Integer.parseInt(skillTopEle.attributeValue("needLevel"));
+			int occupationId = Integer.parseInt(skillTopEle.attributeValue("occupationId"));
 			boolean magicSkill = Boolean.parseBoolean(skillTopEle.attributeValue("isMagicSkill"));
 			Map<Integer, Integer> buffprobabilityMap = new HashMap<>();
 
@@ -47,28 +49,28 @@ public class SkillXmlResolution {
 				int probability = Integer.parseInt(buff.attributeValue("probability"));
 				buffprobabilityMap.put(buffId, probability);
 			}
-			
+
 			Map<Integer, Integer> effectAttributeMap = new HashMap<>();
 			String effectAttribute = skillTopEle.attributeValue("effectAttribute");
-			if(!effectAttribute.isEmpty()) {
-				 String  effectAttributeList[] = effectAttribute.split(",");
-					for (String str : effectAttributeList) {
-						effectAttributeMap.put(Integer.parseInt(str.split(":")[0]), Integer.parseInt(str.split(":")[1]));
-					}
-			}
-		
-
-			Map<Integer, Integer> selfEffectAttributeMap = new HashMap<>();
-			String selfEffectAttribute = skillTopEle.attributeValue("selfEffectAttribute");
-			if(!selfEffectAttribute.isEmpty()) {
-				String selfEffectAttributeList[] = selfEffectAttribute.split(",");
-				for (String str : selfEffectAttributeList) {
-					selfEffectAttributeMap.put(Integer.parseInt(str.split(":")[0]), Integer.parseInt(str.split(":")[1]));
+			if (!effectAttribute.isEmpty()) {
+				String effectAttributeList[] = effectAttribute.split(",");
+				for (String str : effectAttributeList) {
+					effectAttributeMap.put(Integer.parseInt(str.split(":")[0]), Integer.parseInt(str.split(":")[1]));
 				}
 			}
 
-			SkillDomain skillDomain = new SkillDomain(id, name, cd, magicSkill, effectAttributeMap,
-					selfEffectAttributeMap, buffprobabilityMap, needMp);
+			Map<Integer, Integer> selfEffectAttributeMap = new HashMap<>();
+			String selfEffectAttribute = skillTopEle.attributeValue("selfEffectAttribute");
+			if (!selfEffectAttribute.isEmpty()) {
+				String selfEffectAttributeList[] = selfEffectAttribute.split(",");
+				for (String str : selfEffectAttributeList) {
+					selfEffectAttributeMap.put(Integer.parseInt(str.split(":")[0]),
+							Integer.parseInt(str.split(":")[1]));
+				}
+			}
+
+			SkillDomain skillDomain = new SkillDomain(id, name, cd, magicSkill, needLevel, occupationId,
+					effectAttributeMap, selfEffectAttributeMap, buffprobabilityMap, needMp);
 			map.put(skillDomain.getId(), skillDomain);
 		}
 		return map;
@@ -104,5 +106,5 @@ public class SkillXmlResolution {
 		}
 		return map;
 	}
-	
+
 }

@@ -34,8 +34,7 @@ public class RoleXmlResolutionManager {
 			int id = Integer.parseInt(element.attributeValue("id"));
 			String name = element.attributeValue("name");
 			String attributeStr = element.attributeValue("attribute");
-			String skills = element.attributeValue("skills");
-			RoleDomain domain = new RoleDomain(id, name, attributeStr, skills);
+			RoleDomain domain = new RoleDomain(id, name, attributeStr);
 			map.put(domain.getId(), domain);
 		}
 

@@ -1,5 +1,6 @@
 package com.hh.mmorpg.server.role;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,8 +12,11 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.hh.mmorpg.Increment.IncrementManager;
+import com.hh.mmorpg.domain.LevelLimitDomain;
+import com.hh.mmorpg.domain.OccupationEmun;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleDomain;
+import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserItem;
@@ -35,11 +39,12 @@ public class RoleService {
 	public static final RoleService INSTANCE = new RoleService();
 
 	private Map<Integer, RoleDomain> roleDomainMap;
-
-	private ConcurrentHashMap<Integer, Integer> roleToUser;
-
 	// 默认格子数量
 	private static final int DEFAULT_CAPACITY = 20;
+	
+	private Map<Integer, LevelLimitDomain> levelLimitMap;
+	
+	private ConcurrentHashMap<Integer, Integer> roleToUser;
 
 	// 热点数据，用户角色数据缓存
 	private LoadingCache<Integer, Map<Integer, Role>> cache = CacheBuilder.newBuilder()
@@ -72,6 +77,26 @@ public class RoleService {
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setListDomain("rs", map.values());
 		return replyDomain;
+	}
+
+	/**
+	 * 转职
+	 * 
+	 * @param user
+	 * @param occupationId
+	 * @return
+	 */
+	public ReplyDomain transferOccupation(User user, int occupationId) {
+		// TODO Auto-generated method stub
+		OccupationEmun occupationEmun = OccupationEmun.getOccupationEmun(occupationId);
+		if (occupationEmun == null) {
+			return ReplyDomain.FAILE;
+		}
+
+		Role role = getUserUsingRole(user.getUserId());
+		role.setOccupationId(occupationId);
+		
+		return null;
 	}
 
 	/**
@@ -130,7 +155,7 @@ public class RoleService {
 
 		return true;
 	}
-	
+
 	public Integer getUserId(int roleId) {
 		return roleToUser.get(roleId);
 	}
@@ -151,10 +176,10 @@ public class RoleService {
 		return role;
 	}
 
-	public ReplyDomain creatRole(User user, int roleDomainId, String name) {
+	public ReplyDomain creatRole(User user, int tribeId, String name) {
 		// TODO Auto-generated method stub
 		int id = IncrementManager.INSTANCE.increase("role");
-		Role role = new Role(user.getUserId(), id, name, roleDomainId, DEFAULT_CAPACITY, 1, 0);
+		Role role = new Role(user.getUserId(), id, name, tribeId, 0, DEFAULT_CAPACITY, 1, 0, -1);
 		int i = RoleDao.INSTANCE.insertRole(role);
 		if (i < 0) {
 			return ReplyDomain.FAILE;
@@ -170,9 +195,17 @@ public class RoleService {
 
 	private void assemblingRole(Role role) {
 		int roleId = role.getId();
-		RoleDomain roleDomain = getRoleDomain(role.getRoleId());
+		RoleDomain roleDomain = getRoleDomain(role.getTribeId());
 		role.setAttributeMap(roleDomain.getAttributeMap());
-		role.setSkillMap(roleDomain.getRoleSkillMap());
+		
+		List<RoleSkill> roleSkills = RoleDao.INSTANCE.getRoleSkill(roleId);
+		
+		// 建立用户技能
+		Map<Integer, RoleSkill> roleSkillmap = new HashMap<>();
+		for(RoleSkill roleSkill : roleSkills) {
+			roleSkillmap.put(roleSkill.getSkillId(), roleSkill);
+		}
+		role.setSkillMap(roleSkillmap);
 
 		// 建立用户物品栏
 		List<UserEquipment> userEquipmentList = MaterialDao.INSTANCE.getAllUserEquiment(roleId);
@@ -203,6 +236,7 @@ public class RoleService {
 
 	/**
 	 * 判断一个角色是否在线
+	 * 
 	 * @param userId
 	 * @param roleId
 	 * @return

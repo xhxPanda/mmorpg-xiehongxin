@@ -15,6 +15,7 @@ import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.EquimentLevelData;
 import com.hh.mmorpg.event.data.GetMaterialData;
 import com.hh.mmorpg.event.data.GuildJoinData;
+import com.hh.mmorpg.event.data.JoinTeamData;
 import com.hh.mmorpg.event.data.NpcTalkData;
 import com.hh.mmorpg.event.data.UpdateLevelData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -170,5 +171,13 @@ public class MissionService {
 	public void handleUserJoinGuild(EventDealData<GuildJoinData> data) {
 		GuildJoinData guildJoinData = data.getData();
 		handlerMap.get(MissionType.GUILD_MISSION).dealMission(guildJoinData);
+	}
+
+	// 处理用户加入公会的事件
+	@SuppressWarnings("unchecked")
+	@Event(eventType = EventType.JOIN_TEAM)
+	public void handleUserJoinTeam(EventDealData<JoinTeamData> data) {
+		JoinTeamData joinTeamData = data.getData();
+		handlerMap.get(MissionType.TEAM_MISSION).dealMission(joinTeamData);
 	}
 }
