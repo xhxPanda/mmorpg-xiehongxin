@@ -18,5 +18,6 @@ public class EventType {
 	public static final int WEAR_QUEIMENT = 8; // 穿上装备
 	public static final int JOIN_GUILD = 9; // 加入公会
 	public static final int JOIN_TEAM = 10; // 加入队伍
+	public static final int BECOME_FRIEND = 11; // 结为好友
 
 }

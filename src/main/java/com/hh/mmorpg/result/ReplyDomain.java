@@ -41,6 +41,7 @@ public class ReplyDomain {
 	public static final ReplyDomain TEAM_FULL = new ReplyDomain(ResultCode.TEAM_FULL);
 	public static final ReplyDomain HAS_LEARNED_SKILL = new ReplyDomain(ResultCode.HAS_LEARNED_SKILL);
 	public static final ReplyDomain OCCUPATION_NOT_MATCH = new ReplyDomain(ResultCode.OCCUPATION_NOT_MATCH);
+	public static final ReplyDomain FRIEND_FULL = new ReplyDomain(ResultCode.FRIEND_FULL);
 
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

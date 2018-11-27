@@ -35,4 +35,5 @@ public class ResultCode {
 	public static final String TEAM_FULL = "队伍已满";
 	public static final String HAS_LEARNED_SKILL = "技能已学";
 	public static final String OCCUPATION_NOT_MATCH = "职业不匹配";
+	public static final String FRIEND_FULL = "好友列表已满";
 }

@@ -14,13 +14,14 @@ public class RoleDao {
 	private static final int DB_INDEX = 1000 * 10000;
 
 	private static final String SELECT_USER_ROLE = "SELECT * FROM role%s where userId = ?";
+	private static final String SELECT_ROLE = "SELECT * FROM role0 where roleId = ?";
 	private static final String INSERT_USER_ROLE = "INSERT INTO role%s('userId', 'roleId', `name`, `capacity`, `guildId`) values (?, ?, ?, ? ,?) ";
 
 	private static final String UPDATE_ROLE_SKILL = "REPLACE INTO RoleSkill('roleId', 'SkillId', `LastUsedTime`) values (?, ?, ?) ";
 	private static final String SELECT_ROLE_SKILL = "SELECT * FROM RoleSkill where roleId = ?";
 
 	private static final String UPDATE_USER_GUILD = "UPDATE role%s SET guildId = ? WHERE roleId = ? AND UserId = ?";
-
+	
 	@SuppressWarnings("unchecked")
 	public List<Role> selectUserRole(int userId) {
 		int dbIndex = userId / DB_INDEX;
@@ -28,6 +29,19 @@ public class RoleDao {
 		try {
 			list = (List<Role>) JDBCManager.INSTANCE.getConn("part0")
 					.excuteObjectList(String.format(SELECT_USER_ROLE, dbIndex), new Object[] { userId }, Role.BUILDER);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+	
+	public Role selectRole(int roleId) {
+		Role list = null;
+		try {
+			list = (Role) JDBCManager.INSTANCE.getConn("part0")
+					.excuteObject(SELECT_ROLE, new Object[] { roleId }, Role.BUILDER);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

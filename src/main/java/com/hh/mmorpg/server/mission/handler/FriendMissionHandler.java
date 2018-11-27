@@ -5,27 +5,18 @@ import java.util.Map;
 import com.hh.mmorpg.domain.MissionType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
-import com.hh.mmorpg.event.data.GuildJoinData;
+import com.hh.mmorpg.event.data.FriendData;
 
-/**
- * 处理有关加入公会的任务
- * 
- * @author xhx
- *
- */
-public class GuildJoinMissionHandler extends AbstractMissionHandler<GuildJoinData> {
+public class FriendMissionHandler extends AbstractMissionHandler<FriendData>{
 
-	private static final String MISSION_ATT_KEY_GUILD = "g";
-
-	/**
-	 * 获取用户升级信息，处理有关升级的任务
-	 */
+	private static final String MISSION_ATT_KEY_FRIEND = "f";
+	
 	@Override
-	public void dealMission(GuildJoinData eventData) {
+	public void dealMission(FriendData eventData) {
 		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
-		Map<Integer, RoleMission> missionMap = role.getRoleMissionCache().get(MissionType.TLAK_NPC);
+		Map<Integer, RoleMission> missionMap = role.getRoleMissionCache().get(MissionType.ADD_FIREND);
 		if (missionMap == null || missionMap.size() == 0) {
 			return;
 		}
@@ -38,7 +29,7 @@ public class GuildJoinMissionHandler extends AbstractMissionHandler<GuildJoinDat
 				continue;
 			}
 
-			roleMission.updateMissionProcess(MISSION_ATT_KEY_GUILD, 1);
+			roleMission.updateMissionProcess(MISSION_ATT_KEY_FRIEND, 1);
 			if (roleMission.isMissionCompete()) {
 				dealFinishMission(role, roleMission);
 			}

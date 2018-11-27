@@ -41,9 +41,9 @@ public class RoleService {
 	private Map<Integer, RoleDomain> roleDomainMap;
 	// 默认格子数量
 	private static final int DEFAULT_CAPACITY = 20;
-	
+
 	private Map<Integer, LevelLimitDomain> levelLimitMap;
-	
+
 	private ConcurrentHashMap<Integer, Integer> roleToUser;
 
 	// 热点数据，用户角色数据缓存
@@ -95,7 +95,7 @@ public class RoleService {
 
 		Role role = getUserUsingRole(user.getUserId());
 		role.setOccupationId(occupationId);
-		
+
 		return null;
 	}
 
@@ -126,11 +126,11 @@ public class RoleService {
 			// 删除缓存
 			roleToUser.remove(oldRole.getId());
 			roleToUser.put(roleId, userId);
-
-			// 抛出替换角色的事件
-			RoleChangeData data = new RoleChangeData(userId, oldRole.getId(), roleId);
-			EventHandlerManager.INSATNCE.methodInvoke(EventType.ROLE_CHANGE, new EventDealData<RoleChangeData>(data));
 		}
+
+		// 抛出替换角色的事件
+		RoleChangeData data = new RoleChangeData(userId, oldRole == null ? 0 : oldRole.getId(), roleId);
+		EventHandlerManager.INSATNCE.methodInvoke(EventType.ROLE_CHANGE, new EventDealData<RoleChangeData>(data));
 
 		roleToUser.put(roleId, userId);
 		ReplyDomain replyDomain = new ReplyDomain("使用角色" + ResultCode.SUCCESS);
@@ -197,12 +197,12 @@ public class RoleService {
 		int roleId = role.getId();
 		RoleDomain roleDomain = getRoleDomain(role.getTribeId());
 		role.setAttributeMap(roleDomain.getAttributeMap());
-		
+
 		List<RoleSkill> roleSkills = RoleDao.INSTANCE.getRoleSkill(roleId);
-		
+
 		// 建立用户技能
 		Map<Integer, RoleSkill> roleSkillmap = new HashMap<>();
-		for(RoleSkill roleSkill : roleSkills) {
+		for (RoleSkill roleSkill : roleSkills) {
 			roleSkillmap.put(roleSkill.getSkillId(), roleSkill);
 		}
 		role.setSkillMap(roleSkillmap);
