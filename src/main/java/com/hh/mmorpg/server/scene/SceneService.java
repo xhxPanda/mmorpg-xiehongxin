@@ -78,6 +78,9 @@ public class SceneService {
 
 		SceneUserCache sceneUserCache = null;
 
+		// 初始进入场景
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
 		// 生成用户场景缓存
 		Integer oldSceneId = sceneUserMap.get(userId);
 		if (oldSceneId != null) {
@@ -92,8 +95,7 @@ public class SceneService {
 			sceneUserCache = scene.userLeaveScene(userId);
 			sceneUserCache.setLastSceneId(oldSceneId);
 		} else {
-			// 初始进入场景
-			Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
 			if (role == null) {
 				return ReplyDomain.FAILE;
 			}
@@ -125,6 +127,9 @@ public class SceneService {
 			}
 
 		}
+
+		// 设置离开前的那个场景
+		role.setLastJoinScene(sceneId);
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("场景名称", newScene.getName());
@@ -334,6 +339,12 @@ public class SceneService {
 		if (bonus == null) {
 			return ReplyDomain.BONS_NOT_EXIT;
 		}
+
+		// 正在交易，不能捡取物品
+		if (role.getTransactionPerson() != 0) {
+			return ReplyDomain.IN_TRANSACTION;
+		}
+
 		ReplyDomain gainMaterialResult = MaterialService.INSTANCE.gainMasteral(user, role, bonus.getBonus());
 		if (!gainMaterialResult.isSuccess()) {
 			return ReplyDomain.FAILE;
@@ -363,27 +374,27 @@ public class SceneService {
 		return ReplyDomain.SUCCESS;
 	}
 
-	public ReplyDomain  taklToNpc(User user, int npcId) {
+	public ReplyDomain taklToNpc(User user, int npcId) {
 		int userId = user.getUserId();
 		Integer sceneId = sceneUserMap.get(userId);
 		if (sceneId == null) {
 			return ReplyDomain.FAILE;
 		}
-		
+
 		Scene scene = sceneMap.get(sceneId);
 		Role role = scene.getUserRole(userId);
-		
+
 		NpcRole npcRole = scene.getNpcRole(npcId);
-		if(npcRole == null) {
+		if (npcRole == null) {
 			return ReplyDomain.NPC_NOT_EXIT;
 		}
-		
+
 		NpcTalkData data = new NpcTalkData(role, npcId);
 		EventHandlerManager.INSATNCE.methodInvoke(EventType.TALK_TO_NPC, new EventDealData<NpcTalkData>(data));
-		
+
 		return ReplyDomain.SUCCESS;
 	}
-	
+
 	// 用户下线，把他的缓存删除
 	@Event(eventType = EventType.USER_LOST)
 	public void handleUserLost(EventDealData<UserLostData> data) {

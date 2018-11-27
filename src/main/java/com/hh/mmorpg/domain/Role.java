@@ -56,7 +56,8 @@ public class Role extends LivingThing {
 	// 装备栏
 	private Map<Integer, UserEquipment> equipmentMap;
 
-	public Role(int userId, int id, String name, int tribeId, int occupationId, int capacity, int level, int exp, int lastJoinScene) {
+	public Role(int userId, int id, String name, int tribeId, int occupationId, int capacity, int level, int exp,
+			int lastJoinScene, int teamId) {
 		super(tribeId, id);
 		this.userId = userId;
 		this.id = id;
@@ -80,6 +81,7 @@ public class Role extends LivingThing {
 		}
 
 		this.transactionPerson = 0;
+		this.teamId = teamId;
 	}
 
 	public int getUserId() {
@@ -112,7 +114,8 @@ public class Role extends LivingThing {
 			int tribeId = result.getInt("tribeId");
 			int occupationId = result.getInt("occupationId");
 			int lastJoinScene = result.getInt("lastJoinScene");
-			return new Role(userId, id, name, tribeId, occupationId, capacity, level, exp, lastJoinScene);
+			int teamId = result.getInt("teamId");
+			return new Role(userId, id, name, tribeId, occupationId, capacity, level, exp, lastJoinScene, teamId);
 		}
 	};
 
@@ -621,6 +624,10 @@ public class Role extends LivingThing {
 
 	public int getLastJoinScene() {
 		return lastJoinScene;
+	}
+
+	public void setLastJoinScene(int lastJoinScene) {
+		this.lastJoinScene = lastJoinScene;
 	}
 
 }

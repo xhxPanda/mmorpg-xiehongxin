@@ -179,7 +179,7 @@ public class RoleService {
 	public ReplyDomain creatRole(User user, int tribeId, String name) {
 		// TODO Auto-generated method stub
 		int id = IncrementManager.INSTANCE.increase("role");
-		Role role = new Role(user.getUserId(), id, name, tribeId, 0, DEFAULT_CAPACITY, 1, 0, -1);
+		Role role = new Role(user.getUserId(), id, name, tribeId, 0, DEFAULT_CAPACITY, 1, 0, -1, 0);
 		int i = RoleDao.INSTANCE.insertRole(role);
 		if (i < 0) {
 			return ReplyDomain.FAILE;
@@ -279,9 +279,10 @@ public class RoleService {
 		int userId = userLostData.getUser().getUserId();
 		Role role = userRoleMap.remove(userId);
 
+		RoleDao.INSTANCE.updateRole(role);
+
 		roleToUser.remove(role.getId());
 		MaterialService.INSTANCE.persistenceRoleMatetrial(role);
 		System.out.println("删除用户缓存使用角色");
 	}
-
 }

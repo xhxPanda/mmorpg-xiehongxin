@@ -20,11 +20,12 @@ public class TeamExtension {
 	public static final String NOTIFY_TEAM_INVITE = "队伍邀请";
 	public static final String NOTIFY_TEAM_MATE_QUIT = "退出队伍";
 
-	@CmdService(cmd = INVITE_ROLE_ORGANIZE_TEAM)
+	@CmdService(cmd = GET_TEAM_INFO)
 	public void getTeamInfo(User user, CMDdomain cmdDomain) {
-		
+		ReplyDomain replyDomain = service.getTeamInfo(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = INVITE_ROLE_ORGANIZE_TEAM)
 	public void inviteRoleOrganizeTeam(User user, CMDdomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);

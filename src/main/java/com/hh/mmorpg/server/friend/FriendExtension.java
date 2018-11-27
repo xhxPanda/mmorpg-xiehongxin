@@ -31,6 +31,7 @@ public class FriendExtension {
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	
+	@CmdService(cmd = GET_FRIENDS_APPLICATION)
 	public void getFriendsApplication(User user, CMDdomain cmDdomain) {
 		ReplyDomain replyDomain = service.getFriendsApplication(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

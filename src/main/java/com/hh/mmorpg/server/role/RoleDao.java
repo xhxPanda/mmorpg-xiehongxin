@@ -15,13 +15,15 @@ public class RoleDao {
 
 	private static final String SELECT_USER_ROLE = "SELECT * FROM role%s where userId = ?";
 	private static final String SELECT_ROLE = "SELECT * FROM role0 where roleId = ?";
-	private static final String INSERT_USER_ROLE = "INSERT INTO role%s('userId', 'roleId', `name`, `capacity`, `guildId`) values (?, ?, ?, ? ,?) ";
+	private static final String INSERT_USER_ROLE = "INSERT INTO role%s('userId', 'id', `tribeId`, `occupationId`, `name`, `capacity`, `guildId`, `teamId`, `attribute`, `exp`, `Level`, `lastInSceneId`) values (?, ?, ?, ? , ?, ?, ?, ? ,?, ?, ?, ?) ";
 
 	private static final String UPDATE_ROLE_SKILL = "REPLACE INTO RoleSkill('roleId', 'SkillId', `LastUsedTime`) values (?, ?, ?) ";
 	private static final String SELECT_ROLE_SKILL = "SELECT * FROM RoleSkill where roleId = ?";
 
 	private static final String UPDATE_USER_GUILD = "UPDATE role%s SET guildId = ? WHERE roleId = ? AND UserId = ?";
-	
+
+	private static final String UPDATE_USER_ROLE = "REPLACE INTO role%s('userId', 'id', `tribeId`, `occupationId`, `name`, `capacity`, `guildId`, `teamId`, `attribute`, `exp`, `Level`, `lastInSceneId`) values (?, ?, ?, ? , ?, ?, ?, ? ,?, ?, ?, ?)";
+
 	@SuppressWarnings("unchecked")
 	public List<Role> selectUserRole(int userId) {
 		int dbIndex = userId / DB_INDEX;
@@ -36,12 +38,12 @@ public class RoleDao {
 
 		return list;
 	}
-	
+
 	public Role selectRole(int roleId) {
 		Role list = null;
 		try {
-			list = (Role) JDBCManager.INSTANCE.getConn("part0")
-					.excuteObject(SELECT_ROLE, new Object[] { roleId }, Role.BUILDER);
+			list = (Role) JDBCManager.INSTANCE.getConn("part0").excuteObject(SELECT_ROLE, new Object[] { roleId },
+					Role.BUILDER);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -53,8 +55,9 @@ public class RoleDao {
 	public int insertRole(Role role) {
 		int dbIndex = role.getUserId() / DB_INDEX;
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(String.format(INSERT_USER_ROLE, dbIndex),
-				new Object[] { role.getUserId(), role.getId(), role.getTribeId(), role.getName(), role.getCapacity(),
-						role.getGuildId() });
+				new Object[] { role.getUserId(), role.getId(), role.getTribeId(), role.getTribeId(), role.getName(),
+						role.getCapacity(), role.getGuildId(), role.getTeamId(), role.getAttributeMap(), role.getExp(),
+						role.getLevel(), role.getLastJoinScene() });
 
 	}
 
@@ -82,5 +85,13 @@ public class RoleDao {
 		}
 
 		return list;
+	}
+
+	public int updateRole(Role role) {
+		int dbIndex = role.getUserId() / DB_INDEX;
+		return JDBCManager.INSTANCE.getConn("part0").excuteObject(String.format(UPDATE_USER_ROLE, dbIndex),
+				new Object[] { role.getUserId(), role.getId(), role.getTribeId(), role.getTribeId(), role.getName(),
+						role.getCapacity(), role.getGuildId(), role.getTeamId(), role.getAttributeMap(), role.getExp(),
+						role.getLevel(), role.getLastJoinScene() });
 	}
 }

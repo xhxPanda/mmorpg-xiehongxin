@@ -276,7 +276,6 @@ public class FriendService {
 	// 用户使用角色后把旧角色的缓存移除，加入新角色的缓存
 	@Event(eventType = EventType.ROLE_CHANGE)
 	public void handleRoleChange(EventDealData<RoleChangeData> data) {
-		int userId = data.getData().getUserId();
 
 		int oldRoleId = data.getData().getOldRoleId();
 		if (oldRoleId != 0) {
@@ -285,8 +284,6 @@ public class FriendService {
 		}
 
 		int roleId = data.getData().getNewRoleId();
-
-		Role role = RoleService.INSTANCE.getUserRole(userId, roleId);
 
 		// 新角色的申请列表加入缓存
 		List<FriendApply> applies = FriendDao.INSTANCE.getRoleFriendsApply(roleId);
