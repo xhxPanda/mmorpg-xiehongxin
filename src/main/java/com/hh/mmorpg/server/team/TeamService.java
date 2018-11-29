@@ -19,7 +19,7 @@ import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.JoinTeamData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
-import com.hh.mmorpg.server.masterial.MaterialService;
+import com.hh.mmorpg.server.role.RoleDao;
 import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.server.scene.SceneService;
 import com.hh.mmorpg.service.user.UserService;
@@ -141,10 +141,13 @@ public class TeamService {
 			teamMate = new HashMap<>();
 			teamsMap.put(teamUniqueId, teamMate);
 
+			// 邀请人成为队长
 			teamMate.put(peopleRole.getId(), new TeamMate(peopleRole.getId(), peopleRole.getName(),
-					OccupationEmun.getOccupationEmun(peopleRole.getOccupationId()), true));
+					OccupationEmun.getOccupationEmun(peopleRole.getOccupationId()), true, true));
+
+			//
 			teamMate.put(role.getId(), new TeamMate(role.getId(), role.getName(),
-					OccupationEmun.getOccupationEmun(role.getOccupationId()), true));
+					OccupationEmun.getOccupationEmun(role.getOccupationId()), true, false));
 
 			peopleRole.setTeamId(teamUniqueId);
 
@@ -156,8 +159,9 @@ public class TeamService {
 				return ReplyDomain.TEAM_FULL;
 			}
 
+			// 只能成为队员
 			teamMate.put(role.getId(), new TeamMate(role.getId(), role.getName(),
-					OccupationEmun.getOccupationEmun(role.getOccupationId()), true));
+					OccupationEmun.getOccupationEmun(role.getOccupationId()), true, false));
 		}
 
 		role.setTeamId(peopleRole.getTeamId());
@@ -171,23 +175,86 @@ public class TeamService {
 	public ReplyDomain quitTeam(User user) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
-		int teamId = role.getTeamId();
-
 		if (role.getTeamId() == 0) {
 			return ReplyDomain.FAILE;
 		}
 
-		// 移除用户
-		Map<Integer, TeamMate> team = teamsMap.get(teamId);
+		Map<Integer, TeamMate> team = teamsMap.get(role.getTeamId());
 
+		// 判断是否队长
+		TeamMate teamMate = team.get(role.getId());
+		if (teamMate.isTeamLeader()) {
+			return ReplyDomain.FAILE;
+		}
+
+		// 移除用户
 		role.setTeamId(0);
 		notifyOneTeamMateQuit(team, role.getName());
 
 		// 如果队伍中已经没人了，就解散队伍
 		if (team.size() == 0) {
-			teamsMap.remove(teamId);
+			teamsMap.remove(role.getTeamId());
 		}
 		return ReplyDomain.SUCCESS;
+	}
+
+	public ReplyDomain transferCaptain(User user, int roleId) {
+		// TODO Auto-generated method stub
+
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		if (role.getTeamId() == 0) {
+			return ReplyDomain.FAILE;
+		}
+
+		Map<Integer, TeamMate> team = teamsMap.get(role.getTeamId());
+		if (!team.containsKey(roleId)) {
+			return ReplyDomain.FAILE;
+		}
+
+		team.get(role.getId()).setTeamLeader(false);
+		team.get(roleId).setTeamLeader(false);
+
+		return ReplyDomain.SUCCESS;
+	}
+
+	public ReplyDomain tickTeamMate(User user, int roleId) {
+		// TODO Auto-generated method stub
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		if (role.getTeamId() == 0) {
+			return ReplyDomain.FAILE;
+		}
+
+		Map<Integer, TeamMate> team = teamsMap.get(role.getTeamId());
+
+		if (!team.get(role.getId()).isTeamLeader()) {
+			return ReplyDomain.IS_NOT_TEAM_LEADER;
+		}
+
+		if (!team.containsKey(roleId)) {
+			return ReplyDomain.FAILE;
+		}
+
+		team.remove(roleId);
+		if (!RoleService.INSTANCE.isOnline(roleId)) {
+			// 如果不在线，修改数据库中他的队伍信息
+			RoleDao.INSTANCE.updateRoleTeam(roleId, 0);
+		} else {
+			Role peopleRole = RoleService.INSTANCE.getUserUsingRole(RoleService.INSTANCE.getUserId(roleId));
+			peopleRole.setTeamId(0);
+
+			User peopleUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(roleId));
+			ReplyDomain replyDomain = new ReplyDomain();
+			replyDomain.setStringDomain("cmd", TeamExtension.NOTIFY_BE_TICKED);
+			TeamExtension.notifyRole(peopleUser, replyDomain);
+		}
+
+		return ReplyDomain.SUCCESS;
+	}
+
+	public Map<Integer, TeamMate> getTeam(int teamId) {
+		return teamsMap.get(teamId);
 	}
 
 	private void removeTeamInvition(int roleId, int inviteId) {
@@ -228,4 +295,5 @@ public class TeamService {
 		TeamMate teamMate = teamsMap.get(teamId).get(role.getId());
 		teamMate.setOnline(false);
 	}
+
 }

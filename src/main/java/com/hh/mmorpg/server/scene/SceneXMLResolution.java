@@ -35,11 +35,10 @@ public class SceneXMLResolution {
 
 		Element rootElm = document.getRootElement();
 		List<Element> sences = rootElm.elements("scene");
-		
 
 		// 生成怪物
 		Map<Integer, MonsterDomain> monsterDomainMap = resolutionMonster();
-		
+
 		for (Element element : sences) {
 			String name = element.attributeValue("name");
 
@@ -51,7 +50,9 @@ public class SceneXMLResolution {
 			boolean canBattle = Boolean.parseBoolean(element.attributeValue("isCanBattle"));
 			boolean copy = Boolean.parseBoolean(element.attributeValue("isCopy"));
 
-			SceneDomain scene = new SceneDomain(id, name, neighborScenes, canBattle, copy);
+			int entreNumLimit = Integer.parseInt(element.attributeValue("entreNumLimit"));
+
+			SceneDomain scene = new SceneDomain(id, name, neighborScenes, canBattle, copy, entreNumLimit);
 			map.put(scene.getId(), scene);
 
 			// 生成npc
@@ -70,10 +71,10 @@ public class SceneXMLResolution {
 
 			Element monstersEle = element.element("monsters");
 			String monsterStr[] = monstersEle.attributeValue("monster").split("\\$");
-			
+
 			int teamId = 0;
 			for (String monsterTeam : monsterStr) {
-				
+
 				String monsterIds[] = monsterTeam.split(",");
 
 				Map<Integer, Monster> monsterMap = new HashMap<>();

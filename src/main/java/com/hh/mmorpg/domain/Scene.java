@@ -19,6 +19,7 @@ import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.scene.SceneExtension;
+import com.hh.mmorpg.server.scene.SceneService;
 import com.hh.mmorpg.server.scene.SceneUserCache;
 import com.hh.mmorpg.server.skill.SkillService;
 import com.hh.mmorpg.service.user.UserService;
@@ -88,7 +89,6 @@ public class Scene {
 		if (userMap.containsKey(sceneUserCache.getUserId())) {
 			return ReplyDomain.FAILE;
 		}
-
 		userMap.put(sceneUserCache.getUserId(), sceneUserCache);
 		ReplyDomain domain = new ReplyDomain();
 		domain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_ENTER);
@@ -320,6 +320,13 @@ public class Scene {
 		return true;
 	}
 
+	public boolean isCopyFinish() {
+		return isAllDead() && (monsterSetMap.size() <= monsterRound.get());
+	}
+
+	/*
+	 * 停止当前副本的场景心跳
+	 */
 	public void shutdown() {
 		monsterMap.clear();
 		userMap.clear();
@@ -336,6 +343,9 @@ public class Scene {
 					// 完成所有轮数的怪物，副本结束
 					ReplyDomain replyDomain = new ReplyDomain();
 					replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
+
+					// 完成副本60分钟后解散副本
+					SceneService.INSTANCE.finishScene(id);
 					notifyAllUser(replyDomain);
 				}
 			}

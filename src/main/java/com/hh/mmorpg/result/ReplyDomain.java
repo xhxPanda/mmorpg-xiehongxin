@@ -42,7 +42,12 @@ public class ReplyDomain {
 	public static final ReplyDomain HAS_LEARNED_SKILL = new ReplyDomain(ResultCode.HAS_LEARNED_SKILL);
 	public static final ReplyDomain OCCUPATION_NOT_MATCH = new ReplyDomain(ResultCode.OCCUPATION_NOT_MATCH);
 	public static final ReplyDomain FRIEND_FULL = new ReplyDomain(ResultCode.FRIEND_FULL);
-
+	public static final ReplyDomain IS_TEAM_LEADER = new ReplyDomain(ResultCode.IS_TEAM_LEADER);
+	public static final ReplyDomain IS_NOT_TEAM_LEADER = new ReplyDomain(ResultCode.IS_NOT_TEAM_LEADER);
+	public static final ReplyDomain COPY_NUM_NOT_MATCH = new ReplyDomain(ResultCode.COPY_NUM_NOT_MATCH);
+	public static final ReplyDomain TEAM_NOT_ALL_ONLINE = new ReplyDomain(ResultCode.TEAM_NOT_ALL_ONLINE);
+	public static final ReplyDomain TEAM_NOT_ALL_IN_SAME_SCENE = new ReplyDomain(ResultCode.TEAM_NOT_ALL_IN_SAME_SCENE);
+	
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();
 	}

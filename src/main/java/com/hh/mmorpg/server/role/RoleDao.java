@@ -24,6 +24,8 @@ public class RoleDao {
 
 	private static final String UPDATE_USER_ROLE = "REPLACE INTO role%s('userId', 'id', `tribeId`, `occupationId`, `name`, `capacity`, `guildId`, `teamId`, `attribute`, `exp`, `Level`, `lastInSceneId`) values (?, ?, ?, ? , ?, ?, ?, ? ,?, ?, ?, ?)";
 
+	private static final String UPDATE_ROLE_TEAM_STATUS = "UPDATE role%s SET TeamId = ? WHERE roleId = ?";
+
 	@SuppressWarnings("unchecked")
 	public List<Role> selectUserRole(int userId) {
 		int dbIndex = userId / DB_INDEX;
@@ -71,6 +73,11 @@ public class RoleDao {
 	public int updateRoleSkill(RoleSkill roleSkill) {
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ROLE_SKILL,
 				new Object[] { roleSkill.getRoleId(), roleSkill.getSkillId(), roleSkill.getLastUsedTime() });
+	}
+
+	public int updateRoleTeam(int roleId, int teamId) {
+		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ROLE_TEAM_STATUS,
+				new Object[] { teamId, roleId });
 	}
 
 	@SuppressWarnings("unchecked")

@@ -135,6 +135,8 @@ public class RoleService {
 
 		roleToUser.put(roleId, userId);
 		ReplyDomain replyDomain = new ReplyDomain("使用角色" + ResultCode.SUCCESS);
+
+		SceneService.INSTANCE.userJoinLastCopy(role);
 		return replyDomain;
 	}
 

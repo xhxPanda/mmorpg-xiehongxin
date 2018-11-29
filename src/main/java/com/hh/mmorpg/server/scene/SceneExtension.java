@@ -18,6 +18,7 @@ public class SceneExtension {
 	private static final String ATTACK_ROLE = "attackRole";
 	private static final String GET_ROLE_KILL_MONSTER_BONUS_INFO = "getRoleKillMonsterBonusInfo";
 	private static final String GET_ROLE_KILL_MONSTER_BONUS = "getRoleKillMonsterBonus";
+	private static final String JOIN_COPY_SCENE = "joinCopyScene"; // 进入副本
 
 	private static final String TALK_TO_NPC = "takeToNpc"; // 与npc交谈
 
@@ -85,12 +86,21 @@ public class SceneExtension {
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = TALK_TO_NPC)
 	public void takeToNpc(User user, CMDdomain cmdDomain) {
 		int npcId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.taklToNpc(user, npcId);
+
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+
+	@CmdService(cmd = JOIN_COPY_SCENE)
+	public void joinCopyScene(User user, CMDdomain cmdDomain) {
+		int sceneTypeId = cmdDomain.getIntParam(2);
+		int sceneId = cmdDomain.getIntParam(3);
+		ReplyDomain replyDomain = service.joinCopyScene(user, sceneTypeId, sceneId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

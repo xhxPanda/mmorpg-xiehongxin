@@ -1,5 +1,6 @@
 package com.hh.mmorpg.server.scene;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.SceneDomain;
+import com.hh.mmorpg.domain.TeamMate;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.event.Event;
@@ -36,6 +38,7 @@ import com.hh.mmorpg.server.equiment.EquimentType;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.server.skill.SkillService;
+import com.hh.mmorpg.server.team.TeamService;
 import com.hh.mmorpg.service.user.UserService;
 
 public class SceneService {
@@ -81,30 +84,29 @@ public class SceneService {
 		// 初始进入场景
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
-		// 生成用户场景缓存
+		if (role == null) {
+			return ReplyDomain.FAILE;
+		}
+
+		// 正在交易不能离开场景
+		if (role.getTransactionPerson() != 0) {
+			return ReplyDomain.IN_TRANSACTION;
+		}
+
+		// 获取之前用户的场景
 		Integer oldSceneId = sceneUserMap.get(userId);
+
 		if (oldSceneId != null) {
 			if (oldSceneId == sceneTypeId) {
 				return ReplyDomain.SUCCESS;
 			}
 			Scene scene = sceneMap.get(oldSceneId);
-
 			if (!scene.isCanEnter(sceneTypeId)) {
 				return new ReplyDomain(ResultCode.CAN_NOT_ENTER);
 			}
-			sceneUserCache = scene.userLeaveScene(userId);
+			sceneUserCache = scene.getSceneUserCache(userId);
 			sceneUserCache.setLastSceneId(oldSceneId);
 		} else {
-
-			if (role == null) {
-				return ReplyDomain.FAILE;
-			}
-
-			// 正在交易不能离开场景
-			if (role.getTransactionPerson() != 0) {
-				return ReplyDomain.IN_TRANSACTION;
-			}
-
 			sceneUserCache = new SceneUserCache(userId, role);
 		}
 
@@ -113,23 +115,19 @@ public class SceneService {
 			return ReplyDomain.FAILE;
 		}
 
-		Scene newScene = null;
-		if (scenedomain.isCopy()) {
-			if (oldSceneId == null) {
-				return ReplyDomain.FAILE;
-			}
-			newScene = entreCopy(sceneUserCache, sceneTypeId);
-		} else {
-			// 进入新场景
-			newScene = sceneMap.get(sceneId);
-			if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
-				sceneUserMap.put(userId, sceneId);
-			}
-
+		// 进入新场景
+		Scene newScene = sceneMap.get(sceneId);
+		if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
+			sceneUserMap.put(userId, sceneId);
 		}
 
 		// 设置离开前的那个场景
 		role.setLastJoinScene(sceneId);
+
+		if (oldSceneId != null) {
+			Scene scene = sceneMap.get(oldSceneId);
+			scene.userLeaveScene(userId);
+		}
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("场景名称", newScene.getName());
@@ -140,7 +138,113 @@ public class SceneService {
 		return replyDomain;
 	}
 
-	private Scene entreCopy(SceneUserCache sceneUserCache, int sceneTypeId) {
+	/**
+	 * 断线重连
+	 * 
+	 * @param role
+	 */
+	public void userJoinLastCopy(Role role) {
+		int lastJoinSceneId = role.getLastJoinScene();
+
+		Scene scene = sceneMap.get(lastJoinSceneId);
+
+		User user = UserService.INSTANCE.getUser(role.getUserId());
+
+		// 不是副本就不需要强制进入
+		if (scene == null || !scene.isCopy() || scene.isCopyFinish()) {
+			role.setLastJoinScene(0);
+			return;
+		}
+
+		SceneUserCache sceneUserCache = new SceneUserCache(role.getUserId(), role);
+		scene.userEnterScene(sceneUserCache);
+
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		replyDomain.setStringDomain("场景名称", scene.getName());
+		replyDomain.setStringDomain("场景名称", scene.getName());
+		replyDomain.setListDomain("角色列表", scene.getUserMap().values());
+		replyDomain.setListDomain("npc角色列表", scene.getNpcRoleMap().values());
+		replyDomain.setListDomain("怪物列表", scene.getMonsterMap().values());
+		SceneExtension.notifyUser(user, replyDomain);
+	}
+
+	/**
+	 * 进入副本
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public ReplyDomain joinCopyScene(User user, int sceneTypeId, int sceneId) {
+		// TODO Auto-generated method stub
+
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		// 获取用户之前的scene
+		Integer oldSceneId = sceneUserMap.get(user.getUserId());
+		if (oldSceneId == null) {
+			return ReplyDomain.FAILE;
+		}
+		Scene oldScene = sceneMap.get(oldSceneId);
+
+		// 获取副本属性
+		SceneDomain scenedomain = sceneDomainMap.get(sceneTypeId);
+
+		Scene newScene = null;
+		// 单人进入
+
+		List<SceneUserCache> caches = new ArrayList<>();
+		if (role.getTeamId() == 0) {
+			if (scenedomain.getEntreNumLimit() != 1) {
+				return ReplyDomain.COPY_NUM_NOT_MATCH;
+			}
+
+			SceneUserCache sceneUserCache = oldScene.getSceneUserCache(user.getUserId());
+			caches.add(sceneUserCache);
+		} else {
+			// 组队进入
+			Map<Integer, TeamMate> team = TeamService.INSTANCE.getTeam(role.getTeamId());
+			TeamMate myTeamMate = team.get(role.getId());
+
+			// 如果不是队长，不能操作
+			if (!myTeamMate.isTeamLeader()) {
+				return ReplyDomain.IS_NOT_TEAM_LEADER;
+			}
+
+			for (TeamMate teamMate : team.values()) {
+				// 必须所有人员在线
+				if (!RoleService.INSTANCE.isOnline(teamMate.getRoleId())) {
+					return ReplyDomain.TEAM_NOT_ALL_ONLINE;
+				}
+
+				// 必须所有人员在同一场景
+				SceneUserCache sceneUserCache = oldScene
+						.getSceneUserCache(RoleService.INSTANCE.getUserId(teamMate.getRoleId()));
+				if (sceneUserCache == null) {
+					return ReplyDomain.TEAM_NOT_ALL_IN_SAME_SCENE;
+				}
+
+				if (sceneUserCache.getRole().getTransactionPerson() != 0) {
+					return ReplyDomain.IN_TRANSACTION;
+				}
+
+				caches.add(sceneUserCache);
+			}
+		}
+
+		newScene = entreCopy(oldScene, caches, sceneTypeId);
+		sceneMap.put(newScene.getId(), newScene);
+
+		return ReplyDomain.SUCCESS;
+	}
+
+	/**
+	 * 进入副本，统一逻辑
+	 * 
+	 * @param sceneUserCaches
+	 * @param sceneTypeId
+	 * @return
+	 */
+	private Scene entreCopy(Scene oldScene, List<SceneUserCache> sceneUserCaches, int sceneTypeId) {
 		SceneDomain sceneDomain = sceneDomainMap.get(sceneTypeId);
 
 		Scene scene = null;
@@ -151,12 +255,27 @@ public class SceneService {
 			scene = new Scene(sceneDomain, sceneId);
 		}
 
-		if (scene.userEnterScene(sceneUserCache).isSuccess()) {
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		replyDomain.setStringDomain("场景名称", scene.getName());
+		replyDomain.setStringDomain("场景名称", scene.getName());
+		replyDomain.setListDomain("角色列表", scene.getUserMap().values());
+		replyDomain.setListDomain("npc角色列表", scene.getNpcRoleMap().values());
+		replyDomain.setListDomain("怪物列表", scene.getMonsterMap().values());
+
+		for (SceneUserCache cache : sceneUserCaches) {
+			scene.userEnterScene(cache);
 			sceneMap.put(sceneId, scene);
-			sceneUserMap.put(sceneUserCache.getUserId(), sceneId);
+			sceneUserMap.put(cache.getUserId(), sceneId);
+
+			RoleService.INSTANCE.getUserUsingRole(cache.getUserId()).setLastJoinScene(sceneId);
+			// 离开旧场景
+			oldScene.userLeaveScene(cache.getUserId());
+			User user = UserService.INSTANCE.getUser(cache.getUserId());
+
+			// 通知前端
+			SceneExtension.notifyUser(user, replyDomain);
 		}
 
-		finishScene(sceneId);
 		return scene;
 	}
 
@@ -345,9 +464,29 @@ public class SceneService {
 			return ReplyDomain.IN_TRANSACTION;
 		}
 
-		ReplyDomain gainMaterialResult = MaterialService.INSTANCE.gainMasteral(user, role, bonus.getBonus());
-		if (!gainMaterialResult.isSuccess()) {
-			return ReplyDomain.FAILE;
+		if (role.getTeamId() != 0) {
+			// 组队中的人就随机分配
+			Map<Integer, TeamMate> team = TeamService.INSTANCE.getTeam(role.getTeamId());
+
+			List<Integer> roleIdList = new ArrayList<>();
+			for (TeamMate teamMate : team.values()) {
+				if (teamMate.isOnline()) {
+					roleIdList.add(teamMate.getRoleId());
+				}
+			}
+
+			Random random = new Random();
+			int getBonusRoleId = roleIdList.get(random.nextInt(roleIdList.size()));
+
+			User getBonusUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(getBonusRoleId));
+			Role getBonusRole = RoleService.INSTANCE.getUserUsingRole(getBonusUser.getUserId());
+			MaterialService.INSTANCE.gainMasteral(getBonusUser, getBonusRole, bonus.getBonus());
+			MaterialService.INSTANCE.gainMasteral(user, role, bonus.getBonus());
+		} else {
+			ReplyDomain gainMaterialResult = MaterialService.INSTANCE.gainMasteral(user, role, bonus.getBonus());
+			if (!gainMaterialResult.isSuccess()) {
+				return ReplyDomain.FAILE;
+			}
 		}
 
 		return ReplyDomain.SUCCESS;
@@ -503,4 +642,5 @@ public class SceneService {
 
 		return builder.toString();
 	}
+
 }

@@ -36,4 +36,9 @@ public class ResultCode {
 	public static final String HAS_LEARNED_SKILL = "技能已学";
 	public static final String OCCUPATION_NOT_MATCH = "职业不匹配";
 	public static final String FRIEND_FULL = "好友列表已满";
+	public static final String IS_TEAM_LEADER = "身份是队长不能退队";
+	public static final String IS_NOT_TEAM_LEADER = "没有队长权限";
+	public static final String COPY_NUM_NOT_MATCH = "副本人数不符合要求";
+	public static final String TEAM_NOT_ALL_ONLINE = "队伍中存在不在线的人";
+	public static final String TEAM_NOT_ALL_IN_SAME_SCENE = "队伍不是所有人在同一场景";
 }
