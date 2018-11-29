@@ -35,6 +35,22 @@ public class GuildExtension {
 	public static final String NOTIFY_USER_TICK_OUT = "踢出公会";
 	public static final String NOTIFY_PRESIDENT_CHANGE = "会长变更";
 
+	
+	@CmdService(cmd = SHOW_GUILD_INFO)
+	public void SHOW_GUILD_INFO(User user, CMDdomain cmdDomain) {
+
+		ReplyDomain replyDomain = serivice.showGuildInfo(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
+	@CmdService(cmd = SHOW_GUILD_MEMBER)
+	public void showGuildMember(User user, CMDdomain cmdDomain) {
+
+		ReplyDomain replyDomain = serivice.showGuildMember(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
+	
 	@CmdService(cmd = SHOW_GUILD_BANK)
 	public void showGuildBank(User user, CMDdomain cmdDomain) {
 

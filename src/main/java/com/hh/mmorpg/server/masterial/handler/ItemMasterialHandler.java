@@ -1,22 +1,19 @@
 package com.hh.mmorpg.server.masterial.handler;
 
-import java.util.Map;
 import java.util.Map.Entry;
 
+import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.ItemDomain;
+import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.result.ReplyDomain;
-import com.hh.mmorpg.server.masterial.MaterialDao;
-import com.hh.mmorpg.server.masterial.handler.xmlManager.ItemXmlResolutionManager;
+import com.hh.mmorpg.server.item.ItemService;
 import com.hh.mmorpg.server.skill.SkillService;
 
-public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
-
-	private Map<Integer, ItemDomain> itemDomainMap;
+public class ItemMasterialHandler extends AbstractMaterialHandler {
 
 	public ItemMasterialHandler() {
-		itemDomainMap = ItemXmlResolutionManager.INSTANCE.resolution();
 	}
 
 	@Override
@@ -26,12 +23,9 @@ public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 		int id = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
 
-		ItemDomain itemDomain = itemDomainMap.get(id);
-		UserItem userItem = new UserItem(role.getId(), itemDomain.getName(), id, needNum, System.currentTimeMillis(), 0,
-				itemDomain.getEffectAttribuate(), itemDomain.getBuffs(), itemDomain.getCd(), itemDomain.getSellPrice(),
-				-1);
-
-		return role.addMaterial(userItem);
+		ItemDomain itemDomain = ItemService.INSTANCE.getItemDomain(id);
+		return role.addMaterial(new BagMaterial(id, role.getId(), id, itemDomain.getName(),
+				MaterialType.ITEM_TYPE.getId(), needNum, 0, itemDomain.getSellPrice()));
 	}
 
 	@Override
@@ -41,34 +35,41 @@ public class ItemMasterialHandler extends AbstractMaterialHandler<UserItem> {
 		int needNum = Integer.parseInt(materialStr[2]);
 
 		role.decMaterial(Integer.parseInt(materialStr[0]), id, needNum);
-		
+
 		return ReplyDomain.SUCCESS;
 	}
 
-	public ReplyDomain useMaterial(Role role, UserItem userItem) {
+	public ReplyDomain useMaterial(Role role, int itemId) {
+		ItemDomain itemDomain = ItemService.INSTANCE.getItemDomain(itemId);
+		long cd = itemDomain.getCd();
 
-		for (Entry<Integer, Integer> entry : userItem.getEffectAttributeMap().entrySet()) {
+		UserItem userItem = ItemService.INSTANCE.getUserItem(role.getId(), itemId);
+		if (userItem != null && System.currentTimeMillis() - userItem.getLastUsedTime() < cd) {
+			return ReplyDomain.IN_CD;
+		}
+
+		for (Entry<Integer, Integer> entry : itemDomain.getEffectAttribuate().entrySet()) {
 			role.effectAttribute(entry.getKey(), entry.getValue(), "使用道具");
 		}
-		if (userItem.getBuffList().size() != 0) {
-			for (Integer buffId : userItem.getBuffList()) {
+		if (itemDomain.getBuffs().size() != 0) {
+			for (Integer buffId : itemDomain.getBuffs()) {
 				SkillService.INSTANCE.addBuff(role, buffId);
 			}
-
 		}
+
+		if (userItem == null) {
+			userItem = new UserItem(role.getId(), itemId, 0);
+		}
+		userItem.setLastUsedTime(System.currentTimeMillis());
+		ItemService.INSTANCE.addUserItem(userItem);
 		return ReplyDomain.SUCCESS;
 	}
 
 	@Override
-	public void persistence(UserItem userItem) {
+	public int getPileNum(int itemId) {
 		// TODO Auto-generated method stub
-		MaterialDao.INSTANCE.updateRoleItem(userItem);
-	}
-
-	@Override
-	public int getPileNum(int materialId) {
-		// TODO Auto-generated method stub
-		return itemDomainMap.get(materialId).getPileNum();
+		ItemDomain itemDomain = ItemService.INSTANCE.getItemDomain(itemId);
+		return itemDomain.getPileNum();
 	}
 
 }

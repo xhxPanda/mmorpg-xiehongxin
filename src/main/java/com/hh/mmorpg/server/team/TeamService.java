@@ -227,8 +227,5 @@ public class TeamService {
 
 		TeamMate teamMate = teamsMap.get(teamId).get(role.getId());
 		teamMate.setOnline(false);
-		
-		MaterialService.INSTANCE.persistenceRoleMatetrial(role);
-		System.out.println("删除用户缓存使用角色");
 	}
 }

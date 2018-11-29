@@ -6,10 +6,10 @@ import java.util.Map.Entry;
 
 import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.Goods;
-import com.hh.mmorpg.domain.Material;
 import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
@@ -34,7 +34,6 @@ public class MaterialService {
 
 	public static final MaterialService INSTANCE = new MaterialService();
 
-	@SuppressWarnings("rawtypes")
 	private Map<Integer, AbstractMaterialHandler> handlerMap;
 	private Map<Integer, Goods> goodsMap;
 
@@ -72,7 +71,9 @@ public class MaterialService {
 				bagMaterialStr.append("空");
 			} else {
 				bagMaterialStr.append("(").append("名称：").append(materialEntry.getValue().getName()).append(",")
-						.append("类型：").append(materialEntry.getValue().getTypeName()).append(")");
+						.append("类型：")
+						.append(MaterialType.getMaterialType(materialEntry.getValue().getTypeId()).getName())
+						.append(")");
 			}
 
 		}
@@ -84,7 +85,7 @@ public class MaterialService {
 				bagMaterialStr.append("|");
 			}
 			treasureMaterialStr.append("(").append("名称：").append(materialEntry.getValue().getName()).append(",")
-					.append("类型：").append(materialEntry.getValue().getTypeName()).append("数量：")
+					.append("类型：").append(MaterialType.TREASURE_TYPE.getName()).append("数量：")
 					.append(materialEntry.getValue().getQuantity()).append(")");
 		}
 		replyDomain.setStringDomain("物品列表", bagMaterialStr.toString());
@@ -198,13 +199,12 @@ public class MaterialService {
 	public ReplyDomain useMaterial(User user, int index) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
-		Material material = role.decMaterialIndex(index, 1);
+		BagMaterial material = role.decMaterialIndex(index, 1);
 		if (material == null) {
 			return ReplyDomain.FAILE;
 		}
 
-		return handlerMap.get(material.getType()).useMaterial(role, material);
-
+		return handlerMap.get(material.getTypeId()).useMaterial(role, material.getUniqueId());
 	}
 
 	public ReplyDomain sellGoods(User user, String materialStr) {
@@ -257,17 +257,19 @@ public class MaterialService {
 	@SuppressWarnings("unchecked")
 	public void persistenceRoleMatetrial(Role role) {
 		for (BagMaterial bagMaterial : role.getMaterialMap().values()) {
-			if (bagMaterial == null) {
-				continue;
-			}
-			handlerMap.get(bagMaterial.getType()).persistence(bagMaterial);
+			MaterialDao.INSTANCE.updateRoleMaterial(bagMaterial);
 		}
-
-		for (UserTreasure userTreasure : role.getTreasureMap().values()) {
-			handlerMap.get(MaterialType.TREASURE_TYPE.getId()).persistence(userTreasure);
+		for(UserEquipment userEquipment : role.getEquipmentMap().values()) {
+			
 		}
 	}
 
+	/**
+	 * 整理背包
+	 * 
+	 * @param user
+	 * @return
+	 */
 	public ReplyDomain arrangeBag(User user) {
 		// TODO Auto-generated method stub
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
@@ -275,6 +277,14 @@ public class MaterialService {
 		return showAllMaterial(user);
 	}
 
+	/**
+	 * 背包排序
+	 * 
+	 * @param user
+	 * @param fromIndex
+	 * @param toIndex
+	 * @return
+	 */
 	public ReplyDomain sortBag(User user, int fromIndex, int toIndex) {
 		// TODO Auto-generated method stub
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());

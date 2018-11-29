@@ -8,37 +8,31 @@ package com.hh.mmorpg.domain;
 public class Material {
 
 	private int roleId; // roleId
-	private String name; // 名称
 	private int id;    // id
-	private int type; // 类型Id
-	private String typeName;// 类型名称
+	private String name;
+	private int typeId; // 类型Id
 
-	public Material(int roleId, String name, int id, int type, String typeName) {
-		this.name = name;
+	public Material(int roleId, int id,String name,  int typeId) {
 		this.id = id;
-		this.type = type;
-		this.typeName = typeName;
 		this.roleId = roleId;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public int getType() {
-		return type;
+		this.name = name;
+		this.typeId = typeId;
 	}
 
 	public String getName() {
 		return name;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	public int getRoleId() {
 		return roleId;
 	}
 
-	public String getTypeName() {
-		return typeName;
+	public int getTypeId() {
+		return typeId;
 	}
 
 	public void setRoleId(int roleId) {

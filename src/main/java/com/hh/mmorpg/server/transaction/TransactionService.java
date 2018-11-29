@@ -175,9 +175,7 @@ public class TransactionService {
 			return ReplyDomain.NOT_ENOUGH;
 		}
 
-		BagMaterial transactionMaterial = new BagMaterial(bagMaterial, anotherRole.getId(), num);
-
-		transaction.addMaterial(role.getId(), transactionMaterial);
+		transaction.addMaterial(role.getId(), bagMaterial);
 
 		ReplyDomain notify = new ReplyDomain();
 		notify.setStringDomain("对方放入了", bagMaterial.getName() + "*" + bagMaterial.getQuantity());

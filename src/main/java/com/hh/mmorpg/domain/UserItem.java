@@ -2,52 +2,28 @@ package com.hh.mmorpg.domain;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
-public class UserItem extends BagMaterial {
+public class UserItem {
 
+	
+	private int roleId;
+	private int materialId;
 	private long lastUsedTime;
-	private Map<Integer, Integer> effectAttributeMap;
-	private List<Integer> buffList;
-	private long cd;
-	private long gainTime;
 
-	public UserItem(int roleId, String name, int id, int quantity, long gainTime, long lastUsedTime, String effect,
-			String buffs, long cd, String sellPrice, int index) {
-		// TODO Auto-generated constructor stub
-		super(roleId, name, id, MaterialType.ITEM_TYPE.getId(), MaterialType.ITEM_TYPE.getName(), quantity, index, sellPrice);
+	public UserItem(int roleId, int materialId, long lastUsedTime) {
+		this.roleId = roleId;
+		this.materialId = materialId;
 		this.lastUsedTime = lastUsedTime;
-
-		this.effectAttributeMap = new HashMap<>();
-		for (String str : effect.split(",")) {
-			String s[] = str.split(":");
-			effectAttributeMap.put(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
-		}
-
-		this.buffList = new ArrayList<>();
-		if (buffs != null && !buffs.isEmpty()) {
-			for (String str : buffs.split(",")) {
-
-				buffList.add(Integer.parseInt(str));
-			}
-		}
-		
-		this.cd = cd;
-		this.gainTime = gainTime;
 	}
 
-	public Map<Integer, Integer> getEffectAttributeMap() {
-		return effectAttributeMap;
+	public int getRoleId() {
+		return roleId;
 	}
 
-	public List<Integer> getBuffList() {
-		return buffList;
+	public int getMaterialId() {
+		return materialId;
 	}
 
 	public long getLastUsedTime() {
@@ -57,66 +33,17 @@ public class UserItem extends BagMaterial {
 	public void setLastUsedTime(long lastUsedTime) {
 		this.lastUsedTime = lastUsedTime;
 	}
-
-	public long getCd() {
-		return cd;
-	}
-
-	public boolean isPartCD() {
-		return (System.currentTimeMillis() - lastUsedTime) > cd;
-	}
-
-	public long getGainTime() {
-		return gainTime;
-	}
-
-	public String getAttributeStr() {
-		StringBuilder builder = new StringBuilder();
-
-		for (Entry<Integer, Integer> entry : effectAttributeMap.entrySet()) {
-			if (builder.length() > 0) {
-				builder.append(",");
-			}
-			builder.append(entry.getKey()).append(":").append(entry.getValue());
-		}
-
-		return builder.toString();
-	}
-
-	public String getBuffStr() {
-		StringBuilder builder = new StringBuilder();
-		for (Integer i : buffList) {
-			if (builder.length() > 0) {
-				builder.append(",");
-			}
-			builder.append(i);
-		}
-		return builder.toString();
-	}
-
-	@Override
-	public String toString() {
-		return "UserItem [ name=" + getName() + ", 数量=" + getQuantity() + "]";
-	}
-
+	
 	public static final ResultBuilder<UserItem> BUILDER = new ResultBuilder<UserItem>() {
-
+		
 		@Override
 		public UserItem build(ResultSet result) throws SQLException {
 			// TODO Auto-generated method stub
+			
 			int roleId = result.getInt("roleId");
-			int id = result.getInt("id");
-			String name = result.getString("name");
-			int quantity = result.getInt("quantity");
-			long gainTime = result.getLong("gainTime");
-			long lastUserdTime = result.getLong("lastUsedTime");
-			long cd = result.getLong("cd");
-			String effects = result.getString("effectAttribute");
-			String buffs = result.getString("buffs");
-			String sellPrice = result.getString("sellPrice");
-			int index = result.getInt("index");
-			return new UserItem(roleId, name, id, quantity, gainTime, lastUserdTime, effects, buffs, cd, sellPrice, index);
+			int materialId = result.getInt("materialId");
+			long lastUsedTime = result.getLong("lastUsedTime");
+			return new UserItem(roleId, materialId, lastUsedTime);
 		}
 	};
-
 }

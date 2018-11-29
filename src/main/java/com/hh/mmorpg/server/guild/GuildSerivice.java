@@ -18,10 +18,12 @@ import com.hh.mmorpg.domain.GuildMemberIdentity;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
+import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GuildJoinData;
+import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.MaterialService;
@@ -58,6 +60,30 @@ public class GuildSerivice {
 
 		this.guildLevelDomainMap = GuildLevelXmlResolutionMenager.INSTANCE.resolution();
 		this.lock = new ReentrantLock();
+	}
+
+	public ReplyDomain showGuildInfo(User user) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		int guildId = role.getGuildId();
+
+		Guild guild = guildCache.get(guildId);
+
+		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setStringDomain("公会信息", guild.toString());
+
+		return replyDomain;
+	}
+
+	public ReplyDomain showGuildMember(User user) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		int guildId = role.getGuildId();
+
+		Guild guild = guildCache.get(guildId);
+		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setListDomain("公会成员列表", guild.getGuildMemberMap().values());
+		return replyDomain;
 	}
 
 	/**
@@ -100,8 +126,11 @@ public class GuildSerivice {
 		Guild guild = new Guild(guildId, name, 0, declaration, 1, DEFAULT_WAREHOUSE_CAPACITY);
 		guildCache.put(guild.getId(), guild);
 
+		GuildDao.INSTANCE.creatGuild(guild);
+
+		// 会长是第一个会员
 		GuildMember guildMember = new GuildMember(role.getId(), user.getUserId(), role.getName(), role.getLevel(),
-				GuildMemberIdentity.PRESIDENT.getId(), GuildMemberIdentity.PRESIDENT.getName(), 0, true);
+				GuildMemberIdentity.PRESIDENT.getId(), GuildMemberIdentity.PRESIDENT.getName(), 0, true, guildId);
 		guild.addNewMember(guildMember);
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
@@ -176,7 +205,7 @@ public class GuildSerivice {
 			// 判断是否已经满人了
 			int guildLevel = guild.getLevel();
 			GuildLevelDomain guildLevelDomain = guildLevelDomainMap.get(guildLevel);
-			
+
 			// 判断是否满人
 			if (guild.getMemberNum() >= guildLevelDomain.getCanJoinMemberNum()) {
 				return ReplyDomain.GUILD_FULL;
@@ -197,7 +226,7 @@ public class GuildSerivice {
 				// 进入公会缓存
 				GuildMember guildMember = new GuildMember(applyRoleId, guildApply.getUserId(), guildApply.getName(),
 						role.getLevel(), GuildMemberIdentity.NORMAL_MEMBER.getId(),
-						GuildMemberIdentity.NORMAL_MEMBER.getName(), 0, true);
+						GuildMemberIdentity.NORMAL_MEMBER.getName(), 0, true, guild.getId());
 				guild.addNewMember(guildMember);
 
 				updateRoleGuildStatus(guild.getId(), applyRole.getId(), applyRole.getUserId());
@@ -381,9 +410,8 @@ public class GuildSerivice {
 			return ReplyDomain.NOT_ENOUGH;
 		}
 
-		role.decMaterialIndex(index, num);
+		BagMaterial guildMaterial = role.decMaterialIndex(index, num);
 
-		BagMaterial guildMaterial = new BagMaterial(bagMaterial, 0, num);
 		ReplyDomain domain = guild.accessMaterial(guildMaterial);
 		return domain;
 	}
@@ -591,13 +619,20 @@ public class GuildSerivice {
 		}
 	}
 
-	/**
-	 * 拼凑公会信息
-	 * 
-	 * @param guild
-	 */
-	private void assemblingGuild(Guild guild) {
+	// 用户下线，把他的缓存删除
+	@Event(eventType = EventType.USER_LOST)
+	public void handleUserLost(EventDealData<UserLostData> data) {
+		UserLostData userLostData = data.getData();
 
+		Role role = userLostData.getRole();
+
+		if (role.getGuildId() == 0) {
+			return;
+		}
+
+		Guild guild = guildCache.get(role.getGuildId());
+		guild.getGuildMember(role.getId()).setOnline(false);
+
+		System.out.println("删除用户缓存使用角色");
 	}
-
 }

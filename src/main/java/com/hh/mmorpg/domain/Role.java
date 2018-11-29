@@ -143,7 +143,7 @@ public class Role extends LivingThing {
 
 	public ReplyDomain addMaterial(BagMaterial material) {
 
-		int pileNum = MaterialService.INSTANCE.getMaterialPileNum(material.getType(), material.getId());
+		int pileNum = MaterialService.INSTANCE.getMaterialPileNum(material.getTypeId(), material.getId());
 
 		List<BagMaterial> materials = getMaterialById(material.getId());
 
@@ -174,13 +174,13 @@ public class Role extends LivingThing {
 				addNum += material.getQuantity();
 			} else {
 
-				ReplyDomain replyDomain = new ReplyDomain();
+				ReplyDomain replyDomain = new ReplyDomain(ResultCode.FAILE);
 				replyDomain.setStringDomain("不能成功添加的物品", material.getName());
 				replyDomain.setIntDomain("数量为", material.getQuantity());
 				return ReplyDomain.BOX_SPACE_NOT_ENOUGH;
 			}
 		}
-		ReplyDomain replyDomain = new ReplyDomain();
+		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setIntDomain("真实插入的数量", addNum);
 
 		// 抛出获得物品的事件
@@ -200,7 +200,7 @@ public class Role extends LivingThing {
 	public void setEquipment(UserEquipment equipment) {
 		int equipmentType = equipment.getEquimentType();
 		if (equipmentMap.size() != 0 && (equipmentMap.get(equipmentType) != null
-				&& equipmentMap.get(equipmentType).getId() == equipment.getId())) {
+				&& equipmentMap.get(equipmentType).getUniqueId() == equipment.getUniqueId())) {
 			return;
 		}
 
@@ -211,10 +211,13 @@ public class Role extends LivingThing {
 		for (Entry<Integer, Integer> entry : equipment.getAttributeMap().entrySet()) {
 			effectAttribute(entry.getKey(), entry.getValue(), "穿上装备");
 		}
-		equipment.setInUsed(true);
-		if (!equipment.isInUsed()) {
+		
+		if (equipment.getRoleId() == 0) {
+			equipment.setRoleId(id);
 			MaterialDao.INSTANCE.updateRoleEquiment(equipment);
 		}
+		
+		
 
 	}
 
@@ -231,8 +234,9 @@ public class Role extends LivingThing {
 			for (Entry<Integer, Integer> entry : userEquipment.getAttributeMap().entrySet()) {
 				effectAttribute(entry.getKey(), -entry.getValue(), "卸下装备");
 			}
-			userEquipment.setInUsed(false);
-			addMaterial(userEquipment);
+			userEquipment.setRoleId(0);
+			addMaterial(new BagMaterial(userEquipment.getUniqueId(), id, userEquipment.getMaterialId(),
+					userEquipment.getName(), MaterialType.EQUIPMENT_TYPE.getId(), 1, 0, userEquipment.getSellPrice()));
 		}
 	}
 
@@ -279,8 +283,9 @@ public class Role extends LivingThing {
 			if (m.getQuantity() == 0) {
 				materialMap.put(m.getIndex(), null);
 				// 从数据库中删除
-				MaterialDao.INSTANCE.deleteMaterial(m.getType(), m.getId(), m.getIndex());
+				MaterialDao.INSTANCE.deleteMaterial(m.getTypeId(), m.getId(), m.getIndex());
 			}
+			
 		}
 
 		return ReplyDomain.SUCCESS;
@@ -293,7 +298,7 @@ public class Role extends LivingThing {
 	 * @param num
 	 * @return
 	 */
-	public Material decMaterialIndex(int index, int num) {
+	public BagMaterial decMaterialIndex(int index, int num) {
 		BagMaterial material = materialMap.get(index);
 
 		if (material == null || material.getQuantity() == 0) {
@@ -366,10 +371,10 @@ public class Role extends LivingThing {
 
 		for (BagMaterial bagMaterial : materialMap.values()) {
 			if (bagMaterial != null) {
-				List<BagMaterial> materialList = sortMap.get(bagMaterial.getType());
+				List<BagMaterial> materialList = sortMap.get(bagMaterial.getTypeId());
 				if (materialList == null) {
 					materialList = new ArrayList<>();
-					sortMap.put(bagMaterial.getType(), materialList);
+					sortMap.put(bagMaterial.getTypeId(), materialList);
 				}
 
 				materialList.add(bagMaterial);
@@ -452,7 +457,7 @@ public class Role extends LivingThing {
 			List<BagMaterial> ownBagMaterials = getMaterialById(bagMaterial.getId());
 
 			// 查看堆叠个数
-			int pileNum = MaterialService.INSTANCE.getMaterialPileNum(bagMaterial.getType(), bagMaterial.getId());
+			int pileNum = MaterialService.INSTANCE.getMaterialPileNum(bagMaterial.getTypeId(), bagMaterial.getId());
 			for (BagMaterial material : ownBagMaterials) {
 				if (material.getQuantity() + bagMaterial.getQuantity() > pileNum) {
 					freeBoxNum--;

@@ -3,16 +3,15 @@ package com.hh.mmorpg.server.masterial.handler;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.result.ReplyDomain;
-import com.hh.mmorpg.server.masterial.MaterialDao;
 
-public class TreasureMaterialHandler extends AbstractMaterialHandler<UserTreasure> {
+public class TreasureMaterialHandler extends AbstractMaterialHandler {
 
 	@Override
 	public ReplyDomain gainMaterial(Role role, String[] materialStr) {
 		// TODO Auto-generated method stub
 		int id = Integer.parseInt(materialStr[1]);
 		int num = Integer.parseInt(materialStr[2]);
-		
+
 		UserTreasure treasure = role.getRoleTreasure(id);
 		treasure.changeQuantity(num);
 		return ReplyDomain.SUCCESS;
@@ -41,23 +40,25 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler<UserTreasur
 		int needNum = Integer.parseInt(materialStr[2]);
 
 		UserTreasure treasure = role.getRoleTreasure(materialId);
-		
-		treasure.changeQuantity(-needNum);
-		
-		return ReplyDomain.SUCCESS;
-	}
 
-	@Override
-	public void persistence(UserTreasure treasure) {
-		// TODO Auto-generated method stub
-		MaterialDao.INSTANCE.updateRoleTreasure(treasure);
-		
+		treasure.changeQuantity(-needNum);
+
+		return ReplyDomain.SUCCESS;
 	}
 
 	@Override
 	public int getPileNum(int materialId) {
 		// TODO Auto-generated method stub
 		return -1;
+	}
+
+	/**
+	 * 财富类不能单独使用
+	 */
+	@Override
+	public ReplyDomain useMaterial(Role role, int uniqueId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

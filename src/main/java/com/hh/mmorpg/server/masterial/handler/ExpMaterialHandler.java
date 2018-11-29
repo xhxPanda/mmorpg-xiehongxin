@@ -3,7 +3,6 @@ package com.hh.mmorpg.server.masterial.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hh.mmorpg.domain.Exp;
 import com.hh.mmorpg.domain.LevelLimitDomain;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.event.EventDealData;
@@ -14,9 +13,9 @@ import com.hh.mmorpg.result.ReplyDomain;
 
 /**
  * 
- * @author xhx 处理用户经验
+ * @author xhx 处理用户经验，以后可以拓展为用户保留经验但不升级嘿嘿嘿
  */
-public class ExpMaterialHandler extends AbstractMaterialHandler<Exp> {
+public class ExpMaterialHandler extends AbstractMaterialHandler {
 
 	private Map<Integer, LevelLimitDomain> levelLimitMap;
 
@@ -76,11 +75,12 @@ public class ExpMaterialHandler extends AbstractMaterialHandler<Exp> {
 
 	@Override
 	public int getPileNum(int level) {
-		// TODO Auto-generated method stub
-		if (level == levelLimitMap.size()) {
-			return levelLimitMap.get(level).getNeedExp();
-		}
-		return levelLimitMap.get(level + 1).getNeedExp();
+		return 0;
 	}
 
+	@Override
+	public ReplyDomain useMaterial(Role role, int uniqueId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -12,6 +12,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.hh.mmorpg.Increment.IncrementManager;
+import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.LevelLimitDomain;
 import com.hh.mmorpg.domain.OccupationEmun;
 import com.hh.mmorpg.domain.Role;
@@ -19,7 +20,6 @@ import com.hh.mmorpg.domain.RoleDomain;
 import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
-import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
@@ -29,6 +29,7 @@ import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
+import com.hh.mmorpg.server.equiment.UserEquimentService;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.scene.SceneService;
@@ -208,21 +209,17 @@ public class RoleService {
 		role.setSkillMap(roleSkillmap);
 
 		// 建立用户物品栏
-		List<UserEquipment> userEquipmentList = MaterialDao.INSTANCE.getAllUserEquiment(roleId);
-		List<UserItem> userItemList = MaterialDao.INSTANCE.getAllItem(roleId);
+		List<BagMaterial> bagMaterials = MaterialDao.INSTANCE.getallUserBagMaterial(roleId);
 		List<UserTreasure> userTreasureList = MaterialDao.INSTANCE.getAllTreasure(roleId);
+		List<UserEquipment> userEquiment = MaterialDao.INSTANCE.getRoleEquiment(roleId);
 
-		for (UserEquipment userEquipment : userEquipmentList) {
-			if (userEquipment.isInUsed()) {
-				role.setEquipment(userEquipment);
-			} else {
-				role.pushMaterial(userEquipment);
-			}
+		for (BagMaterial bagMaterial : bagMaterials) {
+			role.pushMaterial(bagMaterial);
 		}
 
-		for (UserItem userItem : userItemList) {
-
-			role.pushMaterial(userItem);
+		for (UserEquipment roleEquipment : userEquiment) {
+			UserEquipment userEquipment = UserEquimentService.INSTANCE.getUserEquiment(roleEquipment.getUniqueId());
+			role.setEquipment(userEquipment);
 		}
 
 		for (UserTreasure userTreasure : userTreasureList) {

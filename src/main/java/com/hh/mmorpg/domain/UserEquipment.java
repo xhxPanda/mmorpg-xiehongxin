@@ -2,64 +2,64 @@ package com.hh.mmorpg.domain;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 import com.hh.mmorpg.result.ReplyDomain;
 
-public class UserEquipment extends BagMaterial {
+public class UserEquipment {
 
+	private int roleId;
+	private int uniqueId;
+	private int materialId; // 模版id
+	private String name; // 名称
+	private String sellPrice; // 销售价格
 	private int equimentLevel; // 武器等级
 	private int equimentSource; // 武器评分
-	private boolean inUsed;
 	private int maxDurability;
 	private int durability;
 	private int equimentType;
 	private Map<Integer, Integer> attributeMap;
-	private long gainTime;
 
-	public UserEquipment(int roleId, String name, int id, int maxDurability, int durability, String attributes,
-			long gainTime, String sellPrice, int index, int equimentType) {
-		super(roleId, name, id, MaterialType.EQUIPMENT_TYPE.getId(), MaterialType.EQUIPMENT_TYPE.getName(), 1, index,
-				sellPrice);
-		this.inUsed = false;
+	public UserEquipment(int roleId, int uniqueId, int materialId, String name, String sellPrice, int equimentLevel,
+			int equimentSource, int maxDurability, int durability, int equimentType,
+			String attributes) {
+		this.roleId = roleId;
+		this.uniqueId = uniqueId;
+		this.materialId = materialId;
+		this.name = name;
+		this.sellPrice = sellPrice;
+		this.equimentLevel = equimentLevel;
+		this.equimentSource = equimentSource;
 		this.maxDurability = maxDurability;
 		this.durability = durability;
-		this.attributeMap = new HashMap<>();
+		this.equimentType = equimentType;
+
 		for (String str : attributes.split(",")) {
 			String s[] = str.split(":");
 			attributeMap.put(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
 		}
-
-		this.gainTime = gainTime;
-		this.equimentType = equimentType;
 	}
 
-	public UserEquipment(int roleId, String name, int id, boolean inUsed, int maxDurability, int durability,
-			String attributes, long gainTime, String sellPrice, int index, int equimentType) {
-		super(roleId, name, id, MaterialType.EQUIPMENT_TYPE.getId(), MaterialType.EQUIPMENT_TYPE.getName(), 1, index,
-				sellPrice);
-		this.inUsed = inUsed;
-		this.maxDurability = maxDurability;
-		this.durability = durability;
-		this.attributeMap = new HashMap<>();
-		for (String str : attributes.split(",")) {
-			String s[] = str.split(":");
-			attributeMap.put(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
-		}
-
-		this.gainTime = gainTime;
-		this.equimentType = equimentType;
+	public void setRoleId(int roleId) {
+		this.roleId = roleId;
 	}
 
-	public boolean isInUsed() {
-		return inUsed;
+	public int getRoleId() {
+		return roleId;
 	}
 
-	public void setInUsed(boolean inUsed) {
-		this.inUsed = inUsed;
+	public int getMaterialId() {
+		return materialId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getSellPrice() {
+		return sellPrice;
 	}
 
 	public int getMaxDurability() {
@@ -88,10 +88,6 @@ public class UserEquipment extends BagMaterial {
 
 	}
 
-	public long getGainTime() {
-		return gainTime;
-	}
-
 	public String getAttributeStr() {
 		StringBuilder builder = new StringBuilder();
 
@@ -104,7 +100,7 @@ public class UserEquipment extends BagMaterial {
 
 		return builder.toString();
 	}
-	
+
 	public int getEquimentLevel() {
 		return equimentLevel;
 	}
@@ -113,10 +109,8 @@ public class UserEquipment extends BagMaterial {
 		return equimentSource;
 	}
 
-	@Override
-	public String toString() {
-		return "UserEquiment [name=" + getName() + ", id=" + getId() + ", 最大耐久度=" + maxDurability + ", 耐久度="
-				+ durability + "]";
+	public int getUniqueId() {
+		return uniqueId;
 	}
 
 	public static final ResultBuilder<UserEquipment> BUILDER = new ResultBuilder<UserEquipment>() {
@@ -124,19 +118,21 @@ public class UserEquipment extends BagMaterial {
 		@Override
 		public UserEquipment build(ResultSet result) throws SQLException {
 			// TODO Auto-generated method stub
-			int roleId = result.getInt(1);
-			int id = result.getInt(2);
-			String name = result.getString(3);
-			long gainTime = result.getLong(4);
-			String attributeStr = result.getString(5);
-			int maxDurability = result.getInt(6);
-			int durability = result.getInt(7);
+
+			int roleId = result.getInt("roleId");
+			int materialId = result.getInt("materialId");
+			int uniqueId = result.getInt("uniqueId");
+			String name = result.getString("name");
 			String sellPrice = result.getString("sellPrice");
-			boolean inUsed = result.getBoolean("isInUsed");
-			int index = result.getInt("index");
-			int type = result.getInt("type");
-			return new UserEquipment(roleId, name, id, inUsed, maxDurability, durability, attributeStr, gainTime,
-					sellPrice, index, type);
+			int equimentLevel = result.getInt("equimentLevel");
+			int equimentSource = result.getInt("equimentSource");
+			String attributes = result.getString("attributes");
+			int maxDurability = result.getInt("maxDurability");
+			int durability = result.getInt("durability");
+			int equimentType = result.getInt("equimentType");
+
+			return new UserEquipment(roleId, uniqueId, materialId, name, sellPrice, equimentLevel, equimentSource,
+					maxDurability, durability, equimentType, attributes);
 		}
 	};
 }

@@ -136,22 +136,40 @@ public class Guild {
 			return ReplyDomain.BOX_SPACE_NOT_ENOUGH;
 		}
 
+		bagMaterial.setRoleId(0); // 抹去所属角色
 		bagMaterial.setIndex(index);
 		guildBank.put(index, bagMaterial);
 
 		return ReplyDomain.SUCCESS;
 	}
-	
+
+	/**
+	 * 减少公会仓库中的物品数量
+	 * 
+	 * @param index
+	 * @param num
+	 */
 	public void decBankMaterial(int index, int num) {
-		if(guildBank.get(index).changeQuantity(-num) == 0) {
+		if (guildBank.get(index).changeQuantity(-num) == 0) {
 			guildBank.put(index, null);
 		}
 	}
-	
+
+	/**
+	 * 获取公会仓库中某一个格子的物品
+	 * 
+	 * @param index
+	 * @return
+	 */
 	public BagMaterial getIndexMaterial(int index) {
 		return guildBank.get(index);
 	}
 
+	/**
+	 * 找出公会仓库中第一个空闲的格子
+	 * 
+	 * @return
+	 */
 	public int findFirstFreeIndex() {
 		for (Entry<Integer, BagMaterial> entry : guildBank.entrySet()) {
 			if (entry.getValue() == null) {
@@ -186,8 +204,15 @@ public class Guild {
 		return guildMemberMap;
 	}
 
+	/**
+	 * 新增会员
+	 * 
+	 * @param guildMember
+	 */
 	public void addNewMember(GuildMember guildMember) {
 		guildMemberMap.put(guildMember.getRoleId(), guildMember);
+		GuildDao.INSTANCE.insertGuildMember(guildMember);
+
 	}
 
 	public ConcurrentHashMap<Integer, GuildApply> getGuildApplyMap() {
@@ -231,4 +256,10 @@ public class Guild {
 			return new Guild(id, name, guildDonatePoint, guildDeclaration, level, guildWarehouseCapasity);
 		}
 	};
+
+	@Override
+	public String toString() {
+		return "Guild [名称=" + name + ", 等级=" + level + ", 公会贡献点=" + guildDonatePoint + "]";
+	}
+
 }

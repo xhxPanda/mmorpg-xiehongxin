@@ -9,7 +9,7 @@ package com.hh.mmorpg.domain;
 public class EquimentDomain {
 
 	private int id;
-	private int clothesType;
+	private int equimentType;
 	private String attributes;
 	private String name;
 	private int maxDurability;
@@ -18,10 +18,10 @@ public class EquimentDomain {
 	private int equimentLevel; // 武器等级
 	private int equimentSource; // 武器评分
 
-	public EquimentDomain(int id, int clothesType, String attributes, String name, int maxDurability, String sellPrice,
+	public EquimentDomain(int id, int equimentType, String attributes, String name, int maxDurability, String sellPrice,
 			int equimentLevel, int equimentSource) {
 		this.id = id;
-		this.clothesType = clothesType;
+		this.equimentType = equimentType;
 		this.attributes = attributes;
 		this.name = name;
 		this.maxDurability = maxDurability;
@@ -30,12 +30,12 @@ public class EquimentDomain {
 		this.equimentSource = equimentSource;
 	}
 
-	public int getId() {
-		return id;
+	public int getEquimentType() {
+		return equimentType;
 	}
 
-	public int getClothesType() {
-		return clothesType;
+	public int getId() {
+		return id;
 	}
 
 	public String getAttributes() {
