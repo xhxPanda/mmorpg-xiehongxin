@@ -18,6 +18,7 @@ import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.handler.AbstractMaterialHandler;
 import com.hh.mmorpg.server.masterial.handler.EquipmentMaterialHandle;
+import com.hh.mmorpg.server.masterial.handler.ExpMaterialHandler;
 import com.hh.mmorpg.server.masterial.handler.ItemMasterialHandler;
 import com.hh.mmorpg.server.masterial.handler.TreasureMaterialHandler;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.GoodsXmlResolutionManager;
@@ -42,7 +43,7 @@ public class MaterialService {
 		this.handlerMap.put(MaterialType.EQUIPMENT_TYPE.getId(), new EquipmentMaterialHandle());
 		this.handlerMap.put(MaterialType.ITEM_TYPE.getId(), new ItemMasterialHandler());
 		this.handlerMap.put(MaterialType.TREASURE_TYPE.getId(), new TreasureMaterialHandler());
-		this.handlerMap.put(MaterialType.TREASURE_TYPE.getId(), new TreasureMaterialHandler());
+		this.handlerMap.put(MaterialType.EXP_TYPE.getId(), new ExpMaterialHandler());
 
 		goodsMap = GoodsXmlResolutionManager.INSTANCE.resolution();
 	}

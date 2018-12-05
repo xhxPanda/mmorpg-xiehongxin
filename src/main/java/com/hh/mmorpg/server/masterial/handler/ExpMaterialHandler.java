@@ -1,5 +1,6 @@
 package com.hh.mmorpg.server.masterial.handler;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,9 +52,10 @@ public class ExpMaterialHandler extends AbstractMaterialHandler {
 		int newExp = oldExp + num;
 
 		int nextLevel = -1;
-		for (Entry<Integer, Integer> entry : levelLimitMap.entrySet()) {
-			if (newExp < entry.getValue()) {
-				nextLevel = entry.getKey();
+		for (int i =1;i<=levelLimitMap.size();i++) {
+			if (newExp <= levelLimitMap.get(i)) {
+				nextLevel = i;
+				break;
 			}
 		}
 

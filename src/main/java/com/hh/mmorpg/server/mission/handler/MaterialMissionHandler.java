@@ -22,7 +22,9 @@ public class MaterialMissionHandler extends AbstractMissionHandler<GetMaterialDa
 
 		BagMaterial bagMaterial = eventData.getBagMaterial();
 		int num = eventData.getNum();
-
+		if(role.getRoleMissionCache() == null) {
+			return;
+		}
 		Map<Integer, RoleMission> missionMap = role.getRoleMissionCache().get(MissionType.MATERIAL_MISSION);
 		if (missionMap == null || missionMap.size() == 0) {
 			return;

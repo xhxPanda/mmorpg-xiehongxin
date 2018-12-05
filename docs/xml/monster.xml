@@ -2,11 +2,11 @@
 <monsters>
 	<monster id="1" name="遗忘者的士兵" freshTime="2000"
 		attribute="1:30,2:30,3:1000,4:1000,5:1000,6:1000" skills="4,3"
-		fallPossibility="1:100002:1$100,2:200002:1$100,4:1:200$100">
+		fallPossibility="1:100002:1$100,2:200001:1$100,4:1:200$100">
 	</monster>
 	<monster id="2" name="遗忘者的将军" freshTime="2000"
 		attribute="1:30,2:30,3:1000,4:1000,5:1000,6:1000" skills="4"
-		fallPossibility="2:1:1$100,2:200002:1$100,4:1:200$100">
+		fallPossibility="2:200002:1$100,2:200001:1$100,4:1:200$100">
 	</monster>
 	<monster id="3" name="火龙" freshTime="-1"
 		attribute="1:30,2:30,3:1000,4:1000,5:1000,6:1000" skills="4,3"

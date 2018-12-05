@@ -161,7 +161,7 @@ public class RoleService {
 	}
 
 	public ReplyDomain getUserUsingRole(User user) {
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		ReplyDomain replyDomain = new ReplyDomain();
 		Role role = getUserUsingRole(user.getUserId());
 		if (role != null) {
 			replyDomain.setStringDomain("当前角色", role.toString());

@@ -96,6 +96,8 @@ public class Role extends LivingThing {
 			attributeMap.put(attribute.getId(), attribute);
 		}
 		setAttributeMap(attributeMap);
+
+		this.roleMissionCache = new HashMap<>();
 	}
 
 	public int getUserId() {
@@ -144,7 +146,7 @@ public class Role extends LivingThing {
 		return "[userId=" + userId + ", 角色id=" + id + ", 名称=" + getName() + ", 职业="
 				+ OccupationEmun.getOccupationEmun(occupationId).getName() + ", hp=" + getAttribute(3).getValue()
 				+ ", mp=" + getAttribute(4).getValue() + ", 攻击力=" + getAttribute(1).getValue() + ", 防御力="
-				+ getAttribute(2).getValue() + "]";
+				+ getAttribute(2).getValue() + ", 等级=" + level + "]";
 	}
 
 	@Override

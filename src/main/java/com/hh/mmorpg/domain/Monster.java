@@ -21,7 +21,7 @@ public class Monster extends LivingThing {
 
 	public Monster(int uniqueId, int sceneId, MonsterDomain domain, boolean isNeedAi) {
 		super(domain.getId(), uniqueId, domain.getName());
-		
+
 		this.freshTime = domain.getFreshTime();
 		this.killFallItemMap = domain.getKillFallItemMap();
 		this.isNeedAi = isNeedAi;
@@ -45,6 +45,8 @@ public class Monster extends LivingThing {
 		// TODO Auto-generated method stub
 		setStatus(false);
 		setBeKilledTime(System.currentTimeMillis());
+
+		// 掉落物品
 
 		// 抛出最后一击的人
 		MonsterDeadData data = new MonsterDeadData(getUniqueId(), getAttackObject().getId(), getSceneId());
