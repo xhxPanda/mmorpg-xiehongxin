@@ -2,6 +2,7 @@ package com.hh.mmorpg.domain;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -20,11 +21,12 @@ public class UserEquipment {
 	private int maxDurability;
 	private int durability;
 	private int equimentType;
+	private boolean inUsed;
 	private Map<Integer, Integer> attributeMap;
 
 	public UserEquipment(int roleId, int uniqueId, int materialId, String name, String sellPrice, int equimentLevel,
 			int equimentSource, int maxDurability, int durability, int equimentType,
-			String attributes) {
+			String attributes, boolean inUsed) {
 		this.roleId = roleId;
 		this.uniqueId = uniqueId;
 		this.materialId = materialId;
@@ -36,10 +38,12 @@ public class UserEquipment {
 		this.durability = durability;
 		this.equimentType = equimentType;
 
+		this.attributeMap = new HashMap<>();
 		for (String str : attributes.split(",")) {
 			String s[] = str.split(":");
 			attributeMap.put(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
 		}
+		this.inUsed = inUsed;
 	}
 
 	public void setRoleId(int roleId) {
@@ -60,6 +64,14 @@ public class UserEquipment {
 
 	public String getSellPrice() {
 		return sellPrice;
+	}
+
+	public boolean isInUsed() {
+		return inUsed;
+	}
+
+	public void setInUsed(boolean inUsed) {
+		this.inUsed = inUsed;
 	}
 
 	public int getMaxDurability() {
@@ -120,19 +132,20 @@ public class UserEquipment {
 			// TODO Auto-generated method stub
 
 			int roleId = result.getInt("roleId");
-			int materialId = result.getInt("materialId");
+			int equimentId = result.getInt("equimentId");
 			int uniqueId = result.getInt("uniqueId");
 			String name = result.getString("name");
 			String sellPrice = result.getString("sellPrice");
 			int equimentLevel = result.getInt("equimentLevel");
 			int equimentSource = result.getInt("equimentSource");
-			String attributes = result.getString("attributes");
+			String attributes = result.getString("effectAttribute");
 			int maxDurability = result.getInt("maxDurability");
 			int durability = result.getInt("durability");
 			int equimentType = result.getInt("equimentType");
+			boolean inUsed = result.getBoolean("isInUsed");
 
-			return new UserEquipment(roleId, uniqueId, materialId, name, sellPrice, equimentLevel, equimentSource,
-					maxDurability, durability, equimentType, attributes);
+			return new UserEquipment(roleId, uniqueId, equimentId, name, sellPrice, equimentLevel, equimentSource,
+					maxDurability, durability, equimentType, attributes, inUsed);
 		}
 	};
 }

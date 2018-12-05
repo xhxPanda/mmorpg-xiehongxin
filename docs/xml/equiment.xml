@@ -6,7 +6,10 @@
 	<equipment id="100002" equimentType="2" name="坚强布甲"
 		maxDurability="100" attribute="1:20,2:200" sellPrice="3:1:900"
 		equimentSource="100" equimentLevel="1"></equipment>
-	<equipment id="100003" equimentType="2" name="坚强腿甲"
+	<equipment id="100003" equimentType="3" name="坚强腿甲"
+		maxDurability="100" attribute="2:200" sellPrice="3:1:900"
+		equimentSource="100" equimentLevel="1"></equipment>
+	<equipment id="100004" equimentType="4" name="绚丽耳环"
 		maxDurability="100" attribute="2:200" sellPrice="3:1:900"
 		equimentSource="100" equimentLevel="1"></equipment>
 </equipments>

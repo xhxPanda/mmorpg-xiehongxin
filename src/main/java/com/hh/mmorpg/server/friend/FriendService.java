@@ -277,22 +277,22 @@ public class FriendService {
 	@Event(eventType = EventType.ROLE_CHANGE)
 	public void handleRoleChange(EventDealData<RoleChangeData> data) {
 
-		int oldRoleId = data.getData().getOldRoleId();
-		if (oldRoleId != 0) {
-			friendApplyMap.remove(oldRoleId);
-			cache.remove(oldRoleId);
+		Role oldRole = data.getData().getOldRole();
+		if (oldRole != null) {
+			friendApplyMap.remove(oldRole.getId());
+			cache.remove(oldRole.getId());
 		}
 
-		int roleId = data.getData().getNewRoleId();
+		Role role = data.getData().getNewRole();
 
 		// 新角色的申请列表加入缓存
-		List<FriendApply> applies = FriendDao.INSTANCE.getRoleFriendsApply(roleId);
+		List<FriendApply> applies = FriendDao.INSTANCE.getRoleFriendsApply(role.getId());
 		Map<Integer, FriendApply> appliesMap = applies.stream()
 				.collect(Collectors.toMap(FriendApply::getApplyRoleId, a -> a));
-		friendApplyMap.put(roleId, appliesMap);
+		friendApplyMap.put(role.getId(), appliesMap);
 
 		// 好友缓存
-		cache.put(roleId, getUserAllFriend(roleId));
+		cache.put(role.getId(), getUserAllFriend(role.getId()));
 	}
 
 }

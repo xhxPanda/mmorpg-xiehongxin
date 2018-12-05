@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hh.mmorpg.Increment.IncrementManager;
+import com.hh.mmorpg.domain.LivingThing;
 import com.hh.mmorpg.domain.Monster;
 import com.hh.mmorpg.domain.MonsterBeKillBonus;
 import com.hh.mmorpg.domain.MonsterDomain;
@@ -21,6 +21,7 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.SceneDomain;
+import com.hh.mmorpg.domain.SummonMonster;
 import com.hh.mmorpg.domain.TeamMate;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
@@ -49,14 +50,12 @@ public class SceneService {
 	private Map<Integer, MonsterDomain> monsterDomainmap;
 
 	private Map<Integer, Scene> sceneMap;
-	private ConcurrentHashMap<Integer, Integer> sceneUserMap;
 
 	private AtomicInteger copyIncrease;
 
 	private ScheduledExecutorService executorService;
 
 	private SceneService() {
-		sceneUserMap = new ConcurrentHashMap<Integer, Integer>();
 		sceneDomainMap = SceneXMLResolution.INSTANCE.resolution();
 
 		monsterDomainmap = SceneXMLResolution.INSTANCE.resolutionMonster();
@@ -94,9 +93,9 @@ public class SceneService {
 		}
 
 		// 获取之前用户的场景
-		Integer oldSceneId = sceneUserMap.get(userId);
+		int oldSceneId = role.getSceneId();
 
-		if (oldSceneId != null) {
+		if (oldSceneId != 0) {
 			if (oldSceneId == sceneTypeId) {
 				return ReplyDomain.SUCCESS;
 			}
@@ -118,13 +117,13 @@ public class SceneService {
 		// 进入新场景
 		Scene newScene = sceneMap.get(sceneId);
 		if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
-			sceneUserMap.put(userId, sceneId);
+			role.setSceneId(sceneId);
 		}
 
 		// 设置离开前的那个场景
 		role.setLastJoinScene(sceneId);
 
-		if (oldSceneId != null) {
+		if (oldSceneId != 0) {
 			Scene scene = sceneMap.get(oldSceneId);
 			scene.userLeaveScene(userId);
 		}
@@ -139,7 +138,7 @@ public class SceneService {
 	}
 
 	/**
-	 * 断线重连
+	 * 断线重连，强制进入副本
 	 * 
 	 * @param role
 	 */
@@ -180,8 +179,8 @@ public class SceneService {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		// 获取用户之前的scene
-		Integer oldSceneId = sceneUserMap.get(user.getUserId());
-		if (oldSceneId == null) {
+		int oldSceneId = role.getSceneId();
+		if (oldSceneId == 0) {
 			return ReplyDomain.FAILE;
 		}
 		Scene oldScene = sceneMap.get(oldSceneId);
@@ -265,7 +264,7 @@ public class SceneService {
 		for (SceneUserCache cache : sceneUserCaches) {
 			scene.userEnterScene(cache);
 			sceneMap.put(sceneId, scene);
-			sceneUserMap.put(cache.getUserId(), sceneId);
+			cache.getRole().setSceneId(sceneId);
 
 			RoleService.INSTANCE.getUserUsingRole(cache.getUserId()).setLastJoinScene(sceneId);
 			// 离开旧场景
@@ -295,10 +294,12 @@ public class SceneService {
 		// TODO Auto-generated method stub
 		int userId = user.getUserId();
 
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
 		ReplyDomain domain = new ReplyDomain();
 
-		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) {
+		int sceneId = role.getSceneId();
+		if (sceneId == 0) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -315,8 +316,10 @@ public class SceneService {
 	public ReplyDomain attackMonster(User user, int skillId, int monsterId) {
 		// TODO Auto-generated method stub
 		int userId = user.getUserId();
-		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
+		int sceneId = role.getSceneId();
+		if (sceneId == 0) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -334,7 +337,6 @@ public class SceneService {
 			return ReplyDomain.HAS_DEAD;
 		}
 
-		Role role = scene.getUserRole(userId);
 		RoleSkill roleSkill = role.getRoleSkill(skillId);
 		if (roleSkill == null) {
 			return ReplyDomain.FAILE;
@@ -343,15 +345,14 @@ public class SceneService {
 		UserEquipment userEquipment = role.getEquipmentMap().get(EquimentType.ARMS);
 		if (userEquipment == null || !userEquipment.dropDurability().isSuccess()) {
 			return ReplyDomain.EQUIMENT_DURABILITY_HARM;
-		}
-
+		} 
+		
 		long now = System.currentTimeMillis();
 
-		if (monster.getAttackRoleId() == 0) {
-			monster.setAttackRole(role.getId());
-		}
+		setAttackObject(scene, role, monster);
 
-		ReplyDomain replyDomain = SkillService.INSTANCE.dealSkillEffect(roleSkill, role, monster, now);
+		ReplyDomain replyDomain = SkillService.INSTANCE.dealSkillEffect(roleSkill, role,
+				new ArrayList<>(scene.getMonsterMap().values()), now);
 		if (!replyDomain.isSuccess()) {
 			return replyDomain;
 		}
@@ -360,14 +361,19 @@ public class SceneService {
 		notifyReplyDomain.setStringDomain("m", monster.toString());
 		notifyReplyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BE_ATTACK);
 		scene.notifyAllUser(notifyReplyDomain);
+		
 		ReplyDomain domain = new ReplyDomain("攻击怪物" + ResultCode.SUCCESS);
 		return domain;
 	}
 
+	// 修改pk规则，只能在pk场
 	public ReplyDomain attackOtherRole(User user, int skillId, int otherUserId) {
 		int userId = user.getUserId();
-		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) {
+
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
+		int sceneId = role.getSceneId();
+		if (sceneId == 0) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -376,11 +382,10 @@ public class SceneService {
 			return ReplyDomain.FAILE;
 		}
 
-		if (!scene.isCanBattle()) {
+		if (!scene.isCanBattle() || role.getAttackObject() == null) {
 			return ReplyDomain.CAN_NOT_BATTLE;
 		}
 
-		Role role = scene.getUserRole(userId);
 		RoleSkill roleSkill = role.getRoleSkill(skillId);
 		if (roleSkill == null) {
 			return ReplyDomain.FAILE;
@@ -390,19 +395,72 @@ public class SceneService {
 		if (otherRole == null) {
 			return ReplyDomain.FAILE;
 		}
-		long now = System.currentTimeMillis();
-		ReplyDomain replyDomain = SkillService.INSTANCE.dealSkillEffect(roleSkill, role, otherRole, now);
-		if (!replyDomain.isSuccess()) {
+
+		// 正在pk中的人只能打pk对象
+		if (role.getPkRoleId() != 0 && role.getPkRoleId() != otherRole.getId()) {
 			return ReplyDomain.FAILE;
 		}
+
+		setAttackObject(scene, role, otherRole);
+
+		long now = System.currentTimeMillis();
+
+		List<LivingThing> livingThings = new ArrayList<>();
+		if (role.getPkRoleId() != 0) {
+			// 在pk当中只能打pk对象，就算是发群体技能
+			livingThings.add(otherRole);
+			SkillService.INSTANCE.dealSkillEffect(roleSkill, role, livingThings, now);
+		} else {
+
+			// 群体攻击避开队友
+			if (role.getTeamId() != 0) {
+				Map<Integer, TeamMate> map = TeamService.INSTANCE.getTeam(role.getTeamId());
+
+				for (Role r : scene.getAllRole()) {
+					if (map.containsKey(r.getId())) {
+						livingThings.add(r);
+					}
+				}
+			} else {
+				livingThings.addAll(scene.getAllRole());
+			}
+
+			SkillService.INSTANCE.dealSkillEffect(roleSkill, role, livingThings, now);
+		}
+
 		ReplyDomain domain = new ReplyDomain(ResultCode.SUCCESS);
 		return domain;
 	}
 
+	/**
+	 * 设置打击对象，如果有召唤兽的话，改变其行为模式
+	 * 
+	 * @param scene
+	 * @param role
+	 * @param target
+	 */
+	private void setAttackObject(Scene scene, LivingThing attackObject, LivingThing target) {
+		attackObject.setAttackObject(target);
+
+		Map<Integer, SummonMonster> summonMonsterMap = scene.getSummonMonstermap().get(attackObject.getId());
+		if (summonMonsterMap == null) {
+			return;
+		}
+
+		for (SummonMonster summonMonster : summonMonsterMap.values()) {
+			summonMonster.setAttackObject(target);
+		}
+	}
+
 	// 获取用户所在的场景
 	public Scene getUserScene(int userId) {
-		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) {
+
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+		if (role == null)
+			return null;
+
+		int sceneId = role.getSceneId();
+		if (sceneId == 0) {
 			return null;
 		}
 		return sceneMap.get(sceneId);
@@ -414,21 +472,16 @@ public class SceneService {
 
 	public ReplyDomain getRoleKillMonsterBonusInfo(User user) {
 		int userId = user.getUserId();
-		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
+		int sceneId = role.getSceneId();
+		if (sceneId == 0) {
 			return ReplyDomain.FAILE;
 		}
 
 		Scene scene = sceneMap.get(sceneId);
 		if (scene == null) {
 			return ReplyDomain.FAILE;
-		}
-
-		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
-
-		// 正在交易，不能捡取物品
-		if (role.getTransactionPerson() != 0) {
-			return ReplyDomain.IN_TRANSACTION;
 		}
 
 		List<MonsterBeKillBonus> monsterBeKillBonus = scene.getRoleKillMonsterBonusInfo(role.getId());
@@ -443,8 +496,10 @@ public class SceneService {
 
 	public ReplyDomain getRoleKillMonsterBonus(User user, int bonusId) {
 		int userId = user.getUserId();
-		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
+		int sceneId = role.getSceneId();
+		if (sceneId == 0) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -453,8 +508,7 @@ public class SceneService {
 			return ReplyDomain.FAILE;
 		}
 
-		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
-		MonsterBeKillBonus bonus = scene.getRoleKillMonsterBonus(role.getId(), bonusId);
+		MonsterBeKillBonus bonus = scene.getRoleKillMonsterBonus(bonusId);
 		if (bonus == null) {
 			return ReplyDomain.BONS_NOT_EXIT;
 		}
@@ -468,8 +522,23 @@ public class SceneService {
 			// 组队中的人就随机分配
 			Map<Integer, TeamMate> team = TeamService.INSTANCE.getTeam(role.getTeamId());
 
+			int i = 0;
+			for (TeamMate teamMate : team.values()) {
+				if (bonus.getRoleId() != teamMate.getRoleId()) {
+					i++;
+				} else {
+					continue;
+				}
+			}
+
+			// 不是队伍中的人打出来的
+			if (i == team.size()) {
+				return ReplyDomain.FAILE;
+			}
+
 			List<Integer> roleIdList = new ArrayList<>();
 			for (TeamMate teamMate : team.values()) {
+				// 下线没有分配的资格
 				if (teamMate.isOnline()) {
 					roleIdList.add(teamMate.getRoleId());
 				}
@@ -483,6 +552,10 @@ public class SceneService {
 			MaterialService.INSTANCE.gainMasteral(getBonusUser, getBonusRole, bonus.getBonus());
 			MaterialService.INSTANCE.gainMasteral(user, role, bonus.getBonus());
 		} else {
+
+			if (bonus.getRoleId() != role.getId()) {
+				return ReplyDomain.FAILE;
+			}
 			ReplyDomain gainMaterialResult = MaterialService.INSTANCE.gainMasteral(user, role, bonus.getBonus());
 			if (!gainMaterialResult.isSuccess()) {
 				return ReplyDomain.FAILE;
@@ -493,9 +566,10 @@ public class SceneService {
 	}
 
 	public ReplyDomain putMonsterIntoScene(int userId, int MonsterId) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
-		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) {
+		int sceneId = role.getSceneId();
+		if (sceneId == 0) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -507,7 +581,7 @@ public class SceneService {
 		MonsterDomain monsterDomain = monsterDomainmap.get(MonsterId);
 
 		int uniqueId = IncrementManager.INSTANCE.increase("monster");
-		Monster monster = new Monster(uniqueId, scene.getId(), monsterDomain);
+		Monster monster = new Monster(uniqueId, scene.getId(), monsterDomain, false);
 
 		scene.putMonster(monster);
 		return ReplyDomain.SUCCESS;
@@ -515,13 +589,14 @@ public class SceneService {
 
 	public ReplyDomain taklToNpc(User user, int npcId) {
 		int userId = user.getUserId();
-		Integer sceneId = sceneUserMap.get(userId);
-		if (sceneId == null) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
+		int sceneId = role.getSceneId();
+		if (sceneId == 0) {
 			return ReplyDomain.FAILE;
 		}
 
 		Scene scene = sceneMap.get(sceneId);
-		Role role = scene.getUserRole(userId);
 
 		NpcRole npcRole = scene.getNpcRole(npcId);
 		if (npcRole == null) {
@@ -538,12 +613,15 @@ public class SceneService {
 	@Event(eventType = EventType.USER_LOST)
 	public void handleUserLost(EventDealData<UserLostData> data) {
 		UserLostData userLostData = data.getData();
-		Integer sceneId = sceneUserMap.remove(userLostData.getUser().getUserId());
-		if (sceneId == null) {
+		Role role = userLostData.getRole();
+
+		int sceneId = role.getSceneId();
+		if (sceneId == 0) {
 			return;
 		}
 		Scene scene = sceneMap.get(sceneId);
 
+		role.setSceneId(0);
 		scene.userLeaveScene(userLostData.getUser().getUserId());
 		judgeScene(scene);
 		System.out.println("用户下线了");
@@ -554,18 +632,12 @@ public class SceneService {
 	public void handleRoleChange(EventDealData<RoleChangeData> data) {
 		int userId = data.getData().getUserId();
 
-		Integer sceneId = sceneUserMap.remove(userId);
-		if (sceneId == null) {
+		Role oldRole = data.getData().getOldRole();
+		if(oldRole == null)
 			return;
-		}
 
-		Scene scene = sceneMap.get(sceneId);
-
-		Role sceneRole = scene.getSceneUserCache(userId).getRole();
-		if (sceneRole.getId() != data.getData().getOldRoleId()) {
-			return;
-		}
-
+		Scene scene = sceneMap.get(oldRole.getSceneId());
+		
 		scene.userLeaveScene(userId);
 		judgeScene(scene);
 	}
@@ -585,7 +657,7 @@ public class SceneService {
 			int id = IncrementManager.INSTANCE.increase("monsterBeKillBonus");
 			MonsterBeKillBonus monsterBeKillBonus = new MonsterBeKillBonus(id, monsterDeadData.getKillRoleId(),
 					monsterDeadData.getMonsterId(), System.currentTimeMillis(), bonus);
-			scene.addRoleKillMonsterBonus(monsterDeadData.getKillRoleId(), monsterBeKillBonus);
+			scene.addRoleKillMonsterBonus(monsterBeKillBonus);
 
 			ReplyDomain replyDomain = new ReplyDomain();
 			replyDomain.setStringDomain("bonus", monsterBeKillBonus.toString());
@@ -609,6 +681,11 @@ public class SceneService {
 		scene.shutdown();
 	}
 
+	/**
+	 * 强制用户退出
+	 * 
+	 * @param sceneId
+	 */
 	private void userForceLeaveCopy(int sceneId) {
 		Scene scene = sceneMap.get(sceneId);
 
@@ -619,12 +696,18 @@ public class SceneService {
 		removeScene(scene);
 		// 执行移除操作，用户回到上一次所在的地图
 		for (SceneUserCache sceneUserCache : scene.getUserMap().values()) {
-			sceneUserMap.remove(sceneUserCache.getUserId());
+
 			User user = UserService.INSTANCE.getUser(sceneUserCache.getUserId());
 			userJoinScene(user, scene.getSceneTypeId(), sceneUserCache.getLastSceneId());
 		}
 	}
 
+	/**
+	 * 组合死亡后的bonus
+	 * 
+	 * @param killFallItemMap
+	 * @return
+	 */
 	private String monsterDeadBonus(Map<String, Integer> killFallItemMap) {
 		Random random = new Random();
 		int randomNum = random.nextInt(100);

@@ -9,7 +9,7 @@ public enum UserTreasureType {
 
 	UserTreasureType(int id, String name) {
 		this.id = id;
-		this.name = name();
+		this.name = name;
 	}
 
 	public static UserTreasureType getUserTreasureType(int userTreasureId) {

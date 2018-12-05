@@ -9,7 +9,6 @@ import com.hh.mmorpg.domain.Goods;
 import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
-import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
@@ -73,7 +72,7 @@ public class MaterialService {
 				bagMaterialStr.append("(").append("名称：").append(materialEntry.getValue().getName()).append(",")
 						.append("类型：")
 						.append(MaterialType.getMaterialType(materialEntry.getValue().getTypeId()).getName())
-						.append(")");
+						.append("数量：").append(materialEntry.getValue().getQuantity()).append(")");
 			}
 
 		}
@@ -88,7 +87,6 @@ public class MaterialService {
 					.append("类型：").append(MaterialType.TREASURE_TYPE.getName()).append("数量：")
 					.append(materialEntry.getValue().getQuantity()).append(")");
 		}
-		replyDomain.setStringDomain("物品列表", bagMaterialStr.toString());
 		replyDomain.setStringDomain("钱币列表", treasureMaterialStr.toString());
 		return replyDomain;
 	}
@@ -195,7 +193,6 @@ public class MaterialService {
 		return ReplyDomain.SUCCESS;
 	}
 
-	@SuppressWarnings("unchecked")
 	public ReplyDomain useMaterial(User user, int index) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
@@ -241,11 +238,8 @@ public class MaterialService {
 	// 用户切换角色后将角色物品持久化
 	@Event(eventType = EventType.ROLE_CHANGE)
 	public void handleRoleChange(EventDealData<RoleChangeData> data) {
-		int userId = data.getData().getUserId();
 
-		int oldRoleId = data.getData().getOldRoleId();
-
-		Role role = RoleService.INSTANCE.getUserRole(userId, oldRoleId);
+		Role role = data.getData().getOldRole();
 		persistenceRoleMatetrial(role);
 	}
 
@@ -254,13 +248,19 @@ public class MaterialService {
 	 * 
 	 * @param role
 	 */
-	@SuppressWarnings("unchecked")
 	public void persistenceRoleMatetrial(Role role) {
 		for (BagMaterial bagMaterial : role.getMaterialMap().values()) {
+			if (bagMaterial == null) {
+				continue;
+			}
 			MaterialDao.INSTANCE.updateRoleMaterial(bagMaterial);
 		}
-		for(UserEquipment userEquipment : role.getEquipmentMap().values()) {
-			
+
+		for (UserTreasure treasure : role.getTreasureMap().values()) {
+			if (treasure == null) {
+				continue;
+			}
+			MaterialDao.INSTANCE.updateRoleTreasure(treasure);
 		}
 	}
 

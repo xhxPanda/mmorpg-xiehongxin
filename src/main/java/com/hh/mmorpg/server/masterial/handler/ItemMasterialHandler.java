@@ -49,7 +49,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 		}
 
 		for (Entry<Integer, Integer> entry : itemDomain.getEffectAttribuate().entrySet()) {
-			role.effectAttribute(entry.getKey(), entry.getValue(), "使用道具");
+			role.effectAttribute(0, entry.getKey(), entry.getValue(), "使用道具");
 		}
 		if (itemDomain.getBuffs().size() != 0) {
 			for (Integer buffId : itemDomain.getBuffs()) {

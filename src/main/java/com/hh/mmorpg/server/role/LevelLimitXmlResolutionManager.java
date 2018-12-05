@@ -33,9 +33,8 @@ public class LevelLimitXmlResolutionManager {
 		for (Element element : roles) {
 			int level = Integer.parseInt(element.attributeValue("level"));
 			int needExp = Integer.parseInt(element.attributeValue("needExp"));
-			String resoreHpAndMp = element.attributeValue("resoreHpAndMp");
 
-			LevelLimitDomain levelLimitDomain = new LevelLimitDomain(level, needExp, resoreHpAndMp);
+			LevelLimitDomain levelLimitDomain = new LevelLimitDomain(level, needExp);
 			map.put(levelLimitDomain.getLevel(), levelLimitDomain);
 		}
 

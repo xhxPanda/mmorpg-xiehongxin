@@ -14,8 +14,8 @@ public class SceneExtension {
 
 	private static final String JOIN_SCENE = "joinScene";
 	private static final String GET_SCENE_USER = "getSceneUser";
-	private static final String ATTACK_MONSTER = "attackMonster";
-	private static final String ATTACK_ROLE = "attackRole";
+	private static final String ATTACK_MONSTER = "attackMonster"; // 攻击怪物
+	private static final String ATTACK_ROLE = "attackRole"; // 攻击角色
 	private static final String GET_ROLE_KILL_MONSTER_BONUS_INFO = "getRoleKillMonsterBonusInfo";
 	private static final String GET_ROLE_KILL_MONSTER_BONUS = "getRoleKillMonsterBonus";
 	private static final String JOIN_COPY_SCENE = "joinCopyScene"; // 进入副本

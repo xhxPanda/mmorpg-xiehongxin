@@ -4,6 +4,7 @@ import java.util.Map;
 
 public class RoleBuff {
 
+	private int objectId;
 	private String name;
 	private long effectTime; // 生效时间
 	private long lastUsedTime; // 上一次使用时间
@@ -14,8 +15,9 @@ public class RoleBuff {
 	private long heartbeatTime; // 每多少时间作用一次
 	private Map<Integer, Integer> effectValue;
 
-	public RoleBuff(String name, int buffId, long effectTime, Map<Integer, Integer> effectValue, boolean buff,
-			boolean resore, long lastTime, long heartbeatTime) {
+	public RoleBuff(int objectId, String name, int buffId, long effectTime, Map<Integer, Integer> effectValue,
+			boolean buff, boolean resore, long lastTime, long heartbeatTime) {
+		this.objectId = objectId;
 		this.name = name;
 		this.lastUsedTime = 0;
 		this.buffId = buffId;
@@ -25,6 +27,10 @@ public class RoleBuff {
 		this.resore = resore;
 		this.lastTime = lastTime;
 		this.heartbeatTime = heartbeatTime;
+	}
+
+	public int getObjectId() {
+		return objectId;
 	}
 
 	public long getLastUsedTime() {

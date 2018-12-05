@@ -1,9 +1,0 @@
-<guilds>
-	<guildLevel level="1" canJoinMemberNum = "20" needDonatePoint="0"></guildLevel>
-	<guildLevel level="2" canJoinMemberNum = "30" needDonatePoint="900"></guildLevel>
-	<guildLevel level="3" canJoinMemberNum = "40" needDonatePoint="1000"></guildLevel>
-	<guildLevel level="4" canJoinMemberNum = "50" needDonatePoint="2000"></guildLevel>
-	<guildLevel level="5" canJoinMemberNum = "60" needDonatePoint="3000"></guildLevel>
-	<guildLevel level="6" canJoinMemberNum = "70" needDonatePoint="4000"></guildLevel>
-	<guildLevel level="7" canJoinMemberNum = "80" needDonatePoint="5000"></guildLevel>
-</guilds>

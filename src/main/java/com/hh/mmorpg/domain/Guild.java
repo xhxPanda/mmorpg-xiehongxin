@@ -239,10 +239,6 @@ public class Guild {
 		this.authorityMap = authorityMap;
 	}
 
-	public static ResultBuilder<Guild> getBuilder() {
-		return BUILDER;
-	}
-
 	public static final ResultBuilder<Guild> BUILDER = new ResultBuilder<Guild>() {
 		@Override
 		public Guild build(ResultSet result) throws SQLException {

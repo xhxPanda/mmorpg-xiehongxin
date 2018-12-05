@@ -10,6 +10,7 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.equiment.UserEquimentService;
+import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.EquimentXmlResolutionManager;
 
 public class EquipmentMaterialHandle extends AbstractMaterialHandler {
@@ -34,11 +35,14 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 		int uniqueId = IncrementManager.INSTANCE.increase("uniqueMaterial");
 
 		// 在装备列表中新增一个新装备
-		UserEquipment userEquipment = new UserEquipment(0, uniqueId, equimentDomain.getId(),
+		UserEquipment userEquipment = new UserEquipment(role.getId(), uniqueId, equimentDomain.getId(),
 				equimentDomain.getName(), equimentDomain.getSellPrice(), equimentDomain.getEquimentLevel(),
 				equimentDomain.getEquimentSource(), equimentDomain.getMaxDurability(),
-				equimentDomain.getMaxDurability(), equimentDomain.getEquimentType(), equimentDomain.getAttributes());
-
+				equimentDomain.getMaxDurability(), equimentDomain.getEquimentType(), equimentDomain.getAttributes(), false);
+		
+		// 持久化
+		MaterialDao.INSTANCE.updateRoleEquiment(userEquipment);
+		
 		ReplyDomain replyDomain = role.addMaterial(new BagMaterial(uniqueId, roleId, equimentDomain.getId(),
 				equimentDomain.getName(), MaterialType.EQUIPMENT_TYPE.getId(), 1, 0, equimentDomain.getSellPrice()));
 

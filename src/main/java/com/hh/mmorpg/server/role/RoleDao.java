@@ -15,16 +15,16 @@ public class RoleDao {
 
 	private static final String SELECT_USER_ROLE = "SELECT * FROM role%s where userId = ?";
 	private static final String SELECT_ROLE = "SELECT * FROM role0 where roleId = ?";
-	private static final String INSERT_USER_ROLE = "INSERT INTO role%s('userId', 'id', `tribeId`, `occupationId`, `name`, `capacity`, `guildId`, `teamId`, `attribute`, `exp`, `Level`, `lastInSceneId`) values (?, ?, ?, ? , ?, ?, ?, ? ,?, ?, ?, ?) ";
+	private static final String INSERT_USER_ROLE = "INSERT INTO `role0` (`userId`, `id`, `occupationId`, `name`, `capacity`, `TeamId`, `exp`, `Level`, `lastJoinScene`, `attribute`, `guildId`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-	private static final String UPDATE_ROLE_SKILL = "REPLACE INTO RoleSkill('roleId', 'SkillId', `LastUsedTime`) values (?, ?, ?) ";
+	private static final String UPDATE_ROLE_SKILL = "REPLACE INTO `RoleSkill` (`roleId`, `SkillId`, `level`, `LastUsedTime`) values (?, ?, ?, ?)";
 	private static final String SELECT_ROLE_SKILL = "SELECT * FROM RoleSkill where roleId = ?";
 
 	private static final String UPDATE_USER_GUILD = "UPDATE role%s SET guildId = ? WHERE roleId = ? AND UserId = ?";
 
-	private static final String UPDATE_USER_ROLE = "REPLACE INTO role%s('userId', 'id', `tribeId`, `occupationId`, `name`, `capacity`, `guildId`, `teamId`, `attribute`, `exp`, `Level`, `lastInSceneId`) values (?, ?, ?, ? , ?, ?, ?, ? ,?, ?, ?, ?)";
+	private static final String UPDATE_USER_ROLE = "REPLACE INTO `role0` (`userId`, `id`, `occupationId`, `name`, `capacity`, `TeamId`, `exp`, `Level`, `lastJoinScene`, `attribute`, `guildId`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-	private static final String UPDATE_ROLE_TEAM_STATUS = "UPDATE role%s SET TeamId = ? WHERE roleId = ?";
+	private static final String UPDATE_ROLE_TEAM_STATUS = "UPDATE role0 SET TeamId = ? WHERE roleId = ?";
 
 	@SuppressWarnings("unchecked")
 	public List<Role> selectUserRole(int userId) {
@@ -55,11 +55,10 @@ public class RoleDao {
 	}
 
 	public int insertRole(Role role) {
-		int dbIndex = role.getUserId() / DB_INDEX;
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(String.format(INSERT_USER_ROLE, dbIndex),
-				new Object[] { role.getUserId(), role.getId(), role.getTribeId(), role.getTribeId(), role.getName(),
-						role.getCapacity(), role.getGuildId(), role.getTeamId(), role.getAttributeMap(), role.getExp(),
-						role.getLevel(), role.getLastJoinScene() });
+		return JDBCManager.INSTANCE.getConn("part0").excuteObject(INSERT_USER_ROLE,
+				new Object[] { role.getUserId(), role.getId(), role.getOccupationId(), role.getName(),
+						role.getCapacity(), role.getTeamId(), role.getExp(), role.getLevel(), role.getLastJoinScene(),
+						role.getAttributeStr(), role.getGuildId() });
 
 	}
 
@@ -71,8 +70,8 @@ public class RoleDao {
 	}
 
 	public int updateRoleSkill(RoleSkill roleSkill) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ROLE_SKILL,
-				new Object[] { roleSkill.getRoleId(), roleSkill.getSkillId(), roleSkill.getLastUsedTime() });
+		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ROLE_SKILL, new Object[] {
+				roleSkill.getRoleId(), roleSkill.getSkillId(), roleSkill.getLevel(), roleSkill.getLastUsedTime() });
 	}
 
 	public int updateRoleTeam(int roleId, int teamId) {
@@ -95,10 +94,9 @@ public class RoleDao {
 	}
 
 	public int updateRole(Role role) {
-		int dbIndex = role.getUserId() / DB_INDEX;
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(String.format(UPDATE_USER_ROLE, dbIndex),
-				new Object[] { role.getUserId(), role.getId(), role.getTribeId(), role.getTribeId(), role.getName(),
-						role.getCapacity(), role.getGuildId(), role.getTeamId(), role.getAttributeMap(), role.getExp(),
-						role.getLevel(), role.getLastJoinScene() });
+		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_USER_ROLE,
+				new Object[] { role.getUserId(), role.getId(), role.getOccupationId(), role.getName(),
+						role.getCapacity(), role.getTeamId(), role.getExp(), role.getLevel(), role.getLastJoinScene(),
+						role.getAttributeStr(), role.getGuildId() });
 	}
 }

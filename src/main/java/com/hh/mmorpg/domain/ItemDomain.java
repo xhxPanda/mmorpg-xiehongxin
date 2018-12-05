@@ -32,9 +32,12 @@ public class ItemDomain {
 		}
 
 		this.buffs = new ArrayList<Integer>();
-		for (String buff : buffs.split(",")) {
-			this.buffs.add(Integer.parseInt(buff));
+		if (!buffs.isEmpty()) {
+			for (String buff : buffs.split(",")) {
+				this.buffs.add(Integer.parseInt(buff));
+			}
 		}
+
 	}
 
 	public int getId() {

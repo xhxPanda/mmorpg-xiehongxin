@@ -45,7 +45,7 @@ public class MonsterDomain {
 		this.roleSkillMap = new HashMap<>();
 		for (String strList : skillsStr.split(",")) {
 			int skillId = Integer.parseInt(strList);
-			this.roleSkillMap.put(skillId, new RoleSkill(id, skillId));
+			this.roleSkillMap.put(skillId, new RoleSkill(id, skillId, 1));
 		}
 	}
 

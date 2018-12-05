@@ -14,11 +14,13 @@ import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GetMaterialData;
+import com.hh.mmorpg.event.data.PKData;
 import com.hh.mmorpg.jdbc.ResultBuilder;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.MaterialService;
+import com.hh.mmorpg.server.role.RoleDao;
 import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.scene.SceneService;
 
@@ -32,9 +34,7 @@ public class Role extends LivingThing {
 
 	private int userId;
 	private int id;
-	private String name;
 
-	private int tribeId; // 种族id
 	private int occupationId; // 职业id
 
 	private int capacity; // 背包容量
@@ -47,6 +47,8 @@ public class Role extends LivingThing {
 
 	private int transactionPerson; // 交易状态
 
+	private int pkRoleId;
+
 	private Map<Integer, Map<Integer, RoleMission>> roleMissionCache;
 
 	// 背包
@@ -56,12 +58,11 @@ public class Role extends LivingThing {
 	// 装备栏
 	private Map<Integer, UserEquipment> equipmentMap;
 
-	public Role(int userId, int id, String name, int tribeId, int occupationId, int capacity, int level, int exp,
-			int lastJoinScene, int teamId) {
-		super(tribeId, id);
+	public Role(int userId, int id, String name, int occupationId, int capacity, int level, int exp, int lastJoinScene,
+			int teamId, String attributeStr, int guildId) {
+		super(userId, id, name);
 		this.userId = userId;
 		this.id = id;
-		this.name = name;
 		this.occupationId = occupationId;
 		this.capacity = capacity;
 		this.materialMap = new HashMap<>();
@@ -82,6 +83,19 @@ public class Role extends LivingThing {
 
 		this.transactionPerson = 0;
 		this.teamId = teamId;
+		this.guildId = guildId;
+
+		Map<Integer, Attribute> attributeMap = new HashMap<>();
+		for (String attributeDomain : attributeStr.split(",")) {
+			String str[] = attributeDomain.split(":");
+			int attributeId = Integer.parseInt(str[0]);
+			int attributeValue = Integer.parseInt(str[1]);
+			AttributeEnum attributeEnum = AttributeEnum.getUserTreasureType(attributeId);
+
+			Attribute attribute = new Attribute(attributeId, attributeValue, attributeEnum.getName());
+			attributeMap.put(attribute.getId(), attribute);
+		}
+		setAttributeMap(attributeMap);
 	}
 
 	public int getUserId() {
@@ -92,12 +106,16 @@ public class Role extends LivingThing {
 		return id;
 	}
 
-	public String getName() {
-		return name;
-	}
-
 	public int getCapacity() {
 		return capacity;
+	}
+
+	public int getPkRoleId() {
+		return pkRoleId;
+	}
+
+	public void setPkRoleId(int pkRoleId) {
+		this.pkRoleId = pkRoleId;
 	}
 
 	public static final ResultBuilder<Role> BUILDER = new ResultBuilder<Role>() {
@@ -105,30 +123,41 @@ public class Role extends LivingThing {
 		@Override
 		public Role build(ResultSet result) throws SQLException {
 			// TODO Auto-generated method stub
-			int userId = result.getInt(1);
-			int id = result.getInt(2);
+			int userId = result.getInt("userId");
+			int id = result.getInt("id");
 			String name = result.getString("name");
 			int capacity = result.getInt("capacity");
 			int level = result.getInt("level");
 			int exp = result.getInt("exp");
-			int tribeId = result.getInt("tribeId");
 			int occupationId = result.getInt("occupationId");
 			int lastJoinScene = result.getInt("lastJoinScene");
 			int teamId = result.getInt("teamId");
-			return new Role(userId, id, name, tribeId, occupationId, capacity, level, exp, lastJoinScene, teamId);
+			String attribute = result.getString("attribute");
+			int guildId = result.getInt("guildId");
+			return new Role(userId, id, name, occupationId, capacity, level, exp, lastJoinScene, teamId, attribute,
+					guildId);
 		}
 	};
 
 	@Override
 	public String toString() {
-		return "Role [userId=" + userId + ", id=" + id + ", name=" + name + ", 职业=" + occupationId + ", hp="
-				+ getAttribute(3).getValue() + ", mp=" + getAttribute(4).getValue() + ", 攻击力="
-				+ getAttribute(1).getValue() + ", 防御力=" + getAttribute(2).getValue() + "]";
+		return "[userId=" + userId + ", 角色id=" + id + ", 名称=" + getName() + ", 职业="
+				+ OccupationEmun.getOccupationEmun(occupationId).getName() + ", hp=" + getAttribute(3).getValue()
+				+ ", mp=" + getAttribute(4).getValue() + ", 攻击力=" + getAttribute(1).getValue() + ", 防御力="
+				+ getAttribute(2).getValue() + "]";
 	}
 
 	@Override
 	public void afterDead() {
 		// TODO Auto-generated method stub
+
+		// 是pk致死的，原地复活，抛出pk事件
+		if (pkRoleId != 0) {
+
+			PKData data = new PKData(pkRoleId, id);
+			EventHandlerManager.INSATNCE.methodInvoke(EventType.MONSTER_DEAD, new EventDealData<PKData>(data));
+			resurrection();
+		}
 
 	}
 
@@ -151,21 +180,34 @@ public class Role extends LivingThing {
 		// 旧格子(可堆叠的情况下
 		if (materials.size() > 0) {
 			for (BagMaterial m : materials) {
-				if (m.getQuantity() + material.getQuantity() > pileNum) {
+				if (m.getQuantity() <= 0) {
+					break;
+				}
+				// 格子完全可以承受堆叠数量
+				if (m.getQuantity() + material.getQuantity() < pileNum) {
+
+					// 增加格子中的物品数量
+					m.changeQuantity(material.getQuantity());
+					addNum += material.getQuantity();
+					// 减少需要增加的物品的数量
+					material.setQuantity(0);
+
+				} else {
+					// 不能堆叠那么多，看看最多能承受多少
 					int realAddNum = pileNum - m.getQuantity();
 					if (realAddNum <= 0) {
 						continue;
 					}
 
+					material.changeQuantity(-realAddNum);
 					m.changeQuantity(realAddNum);
-					m.setQuantity(m.getQuantity() - realAddNum);
-					addNum += realAddNum;
 				}
 			}
 		}
 
+		// 如果经过了上一步都没有吧数量归零证明超过了堆叠的个数，剩下的就需要寻找新的格子
 		while (material.getQuantity() > 0) {
-			// 寻找新的格子
+
 			int index = findFreeBox();
 			if (index != -1) {
 				materialMap.put(index, material);
@@ -179,6 +221,9 @@ public class Role extends LivingThing {
 				replyDomain.setIntDomain("数量为", material.getQuantity());
 				return ReplyDomain.BOX_SPACE_NOT_ENOUGH;
 			}
+			if (addNum >= material.getQuantity()) {
+				break;
+			}
 		}
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setIntDomain("真实插入的数量", addNum);
@@ -186,7 +231,7 @@ public class Role extends LivingThing {
 		// 抛出获得物品的事件
 		if (addNum > 0) {
 			GetMaterialData data = new GetMaterialData(this, material, addNum);
-			EventHandlerManager.INSATNCE.methodInvoke(EventType.TALK_TO_NPC, new EventDealData<GetMaterialData>(data));
+			EventHandlerManager.INSATNCE.methodInvoke(EventType.GET_MATERIAL, new EventDealData<GetMaterialData>(data));
 		}
 
 		return replyDomain;
@@ -209,16 +254,10 @@ public class Role extends LivingThing {
 		// 装备服装
 		equipmentMap.put(equipment.getEquimentType(), equipment);
 		for (Entry<Integer, Integer> entry : equipment.getAttributeMap().entrySet()) {
-			effectAttribute(entry.getKey(), entry.getValue(), "穿上装备");
+			effectAttribute(0, entry.getKey(), entry.getValue(), "穿上装备");
 		}
-		
-		if (equipment.getRoleId() == 0) {
-			equipment.setRoleId(id);
-			MaterialDao.INSTANCE.updateRoleEquiment(equipment);
-		}
-		
-		
-
+		equipment.setInUsed(true);
+		MaterialDao.INSTANCE.updateRoleEquiment(equipment);
 	}
 
 	/**
@@ -232,7 +271,7 @@ public class Role extends LivingThing {
 
 			// 卸下服装
 			for (Entry<Integer, Integer> entry : userEquipment.getAttributeMap().entrySet()) {
-				effectAttribute(entry.getKey(), -entry.getValue(), "卸下装备");
+				effectAttribute(0, entry.getKey(), -entry.getValue(), "卸下装备");
 			}
 			userEquipment.setRoleId(0);
 			addMaterial(new BagMaterial(userEquipment.getUniqueId(), id, userEquipment.getMaterialId(),
@@ -285,7 +324,7 @@ public class Role extends LivingThing {
 				// 从数据库中删除
 				MaterialDao.INSTANCE.deleteMaterial(m.getTypeId(), m.getId(), m.getIndex());
 			}
-			
+
 		}
 
 		return ReplyDomain.SUCCESS;
@@ -305,7 +344,7 @@ public class Role extends LivingThing {
 			return null;
 		}
 
-		material.changeQuantity(num);
+		material.changeQuantity(-num);
 		if (material.getQuantity() == 0) {
 			materialMap.put(material.getIndex(), null);
 		}
@@ -525,6 +564,7 @@ public class Role extends LivingThing {
 	 */
 	public void learnNewSkill(RoleSkill roleSkill) {
 		getSkillMap().put(roleSkill.getSkillId(), roleSkill);
+		RoleDao.INSTANCE.updateRoleSkill(roleSkill);
 	}
 
 	@Override
@@ -536,9 +576,9 @@ public class Role extends LivingThing {
 		}
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFT_USER_ATTRIBUATE_CHANGE);
-		replyDomain.setStringDomain("属性名称", attribute.getName());
-		replyDomain.setIntDomain("value", attribute.getValue());
-		replyDomain.setIntDomain("角色id", id);
+		replyDomain.setStringDomain("由来", reason);
+		replyDomain.setIntDomain(attribute.getName(), attribute.getValue());
+		replyDomain.setStringDomain("名称", getName());
 		scene.notifyAllUser(replyDomain);
 	}
 
@@ -621,10 +661,6 @@ public class Role extends LivingThing {
 
 	public void setOccupationId(int occupationId) {
 		this.occupationId = occupationId;
-	}
-
-	public int getTribeId() {
-		return tribeId;
 	}
 
 	public int getLastJoinScene() {

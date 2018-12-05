@@ -1,4 +1,4 @@
-package com.hh.mmorpg.server.skill.xmlResolution;
+package com.hh.mmorpg.server.skill;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.dom4j.io.SAXReader;
 
 import com.hh.mmorpg.domain.BuffDomain;
 import com.hh.mmorpg.domain.SkillDomain;
+import com.hh.mmorpg.domain.SummonDomain;
 
 public class SkillXmlResolution {
 
@@ -41,6 +42,8 @@ public class SkillXmlResolution {
 			int needLevel = Integer.parseInt(skillTopEle.attributeValue("needLevel"));
 			int occupationId = Integer.parseInt(skillTopEle.attributeValue("occupationId"));
 			boolean magicSkill = Boolean.parseBoolean(skillTopEle.attributeValue("isMagicSkill"));
+			int skillType = Integer.parseInt(skillTopEle.attributeValue("skillType"));
+			String summon = skillTopEle.attributeValue("summon");
 			Map<Integer, Integer> buffprobabilityMap = new HashMap<>();
 
 			List<Element> buffs = skillTopEle.elements("buff");
@@ -70,7 +73,7 @@ public class SkillXmlResolution {
 			}
 
 			SkillDomain skillDomain = new SkillDomain(id, name, cd, magicSkill, needLevel, occupationId,
-					effectAttributeMap, selfEffectAttributeMap, buffprobabilityMap, needMp);
+					effectAttributeMap, selfEffectAttributeMap, buffprobabilityMap, needMp, skillType, summon);
 			map.put(skillDomain.getId(), skillDomain);
 		}
 		return map;
@@ -107,4 +110,36 @@ public class SkillXmlResolution {
 		return map;
 	}
 
+	@SuppressWarnings("unchecked")
+	public Map<Integer, SummonDomain> getSummonMonsterMap(){
+		
+		Document document = null;
+		SAXReader saxReader = new SAXReader();
+		try {
+			document = saxReader.read("..\\mmorpg\\docs\\xml\\summon.xml");
+
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Element rootElm = document.getRootElement();
+		List<Element> summon = rootElm.elements("summon");
+		
+		Map<Integer, SummonDomain> map = new HashMap<>();
+		for (Element element : summon) {
+			int id = Integer.parseInt(element.attributeValue("id"));
+			String name = element.attributeValue("name");
+			int terminalTime = Integer.parseInt(element.attributeValue("terminalTime"));
+			String attributeStr = element.attributeValue("attribute");
+			String skillsStr = element.attributeValue("skills");
+			SummonDomain summonMonster = new SummonDomain(id, name, terminalTime, skillsStr, attributeStr);
+			map.put(id, summonMonster);
+		}
+		
+		return map;
+	}
+
+	public static final void main(String args[]) {
+		SkillXmlResolution.INSATNCE.skillResolution();
+	}
 }

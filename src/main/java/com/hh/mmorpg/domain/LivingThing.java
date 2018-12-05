@@ -6,26 +6,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class LivingThing {
 
 	private int id;
 	private int uniqueId;
+	private String name;
 	private long beKilledTime;
 	private boolean status;
 	private Map<Integer, RoleSkill> skillMap; // 技能库
 	private Map<Integer, Attribute> attributeMap;
+	private int sceneId;
+
+	/**
+	 * 对于怪物来说，这个参数代表拉动它愤怒值最高的人，主要攻击那个人 
+	 * 对于人物来说，这个参数代表他现在需要主攻的对象是谁
+	 */
+	private LivingThing attackObject;
 
 	private ConcurrentHashMap<Integer, RoleBuff> buffsMap;
 
-	public LivingThing(int id, int uniqueId) {
+	private ReentrantLock lock;
+
+	public LivingThing(int id, int uniqueId, String name) {
 		this.id = id;
 		this.uniqueId = uniqueId;
+		this.name = name;
 		this.skillMap = new HashMap<>();
 		this.attributeMap = new HashMap<>();
 		this.buffsMap = new ConcurrentHashMap<>();
 		this.status = true;
 		this.beKilledTime = 0;
+
+		this.lock = new ReentrantLock();
 	}
 
 	public void addBuff(RoleBuff buff) {
@@ -45,12 +59,12 @@ public abstract class LivingThing {
 		this.skillMap = skillMap;
 	}
 
-	public RoleSkill getRoleSkill(int roleSkillId) {
-		return skillMap.get(roleSkillId);
+	public void addRoleSkill(RoleSkill roleSkill) {
+		skillMap.put(roleSkill.getSkillId(), roleSkill);
 	}
 
-	public boolean isHasSkill(int skillId) {
-		return skillMap.containsKey(skillId);
+	public RoleSkill getRoleSkill(int roleSkillId) {
+		return skillMap.get(roleSkillId);
 	}
 
 	public void setAttributeMap(Map<Integer, Attribute> attributeMap) {
@@ -59,6 +73,19 @@ public abstract class LivingThing {
 
 	public Map<Integer, Attribute> getAttributeMap() {
 		return attributeMap;
+	}
+
+	public String getAttributeStr() {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (Attribute attribute : attributeMap.values()) {
+			stringBuilder.append(attribute.getId()).append(":").append(attribute.getValue());
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(",");
+			}
+		}
+
+		return stringBuilder.toString();
 	}
 
 	public long getBeKilledTime() {
@@ -85,6 +112,26 @@ public abstract class LivingThing {
 		return uniqueId;
 	}
 
+	public int getSceneId() {
+		return sceneId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setSceneId(int sceneId) {
+		this.sceneId = sceneId;
+	}
+
+	public LivingThing getAttackObject() {
+		return attackObject;
+	}
+
+	public void setAttackObject(LivingThing attackObject) {
+		this.attackObject = attackObject;
+	}
+
 	public void takeEffect() {
 		List<RoleBuff> needRemoveBuff = new ArrayList<RoleBuff>();
 		long now = System.currentTimeMillis();
@@ -101,24 +148,27 @@ public abstract class LivingThing {
 			buff.setLastUsedTime(System.currentTimeMillis());
 			for (Entry<Integer, Integer> entry : buff.getEffectValue().entrySet()) {
 				if (buff.isBuff()) {
-					effectAttribute(entry.getKey(), entry.getValue(), buff.getName() + buff.getName() + "buff作用");
+					effectAttribute(buff.getObjectId(), entry.getKey(), entry.getValue(),
+							buff.getName() +"buff作用");
 				} else {
-					effectAttribute(entry.getKey(), -entry.getValue(), buff.getName() + buff.getName() + "buff作用");
+					effectAttribute(buff.getObjectId(), entry.getKey(), -entry.getValue(),
+							buff.getName() + "buff作用");
 				}
 
 				buff.setLastUsedTime(now);
 			}
 		}
 
+		// buff需要移除的时候，判断是否需要回复buff之前的状态
 		for (RoleBuff roleBuff : needRemoveBuff) {
 			if (roleBuff.isResore()) {
 				for (Entry<Integer, Integer> entry : roleBuff.getEffectValue().entrySet()) {
 					if (!roleBuff.isBuff()) {
-						effectAttribute(entry.getKey(), -entry.getValue(),
-								roleBuff.getName() + roleBuff.getName() + "buff移除");
+						effectAttribute(0, entry.getKey(), -entry.getValue(),
+								roleBuff.getName() + "buff移除");
 					} else {
-						effectAttribute(entry.getKey(), entry.getValue(),
-								roleBuff.getName() + roleBuff.getName() + "buff作用");
+						effectAttribute(0, entry.getKey(), entry.getValue(),
+								roleBuff.getName() + "buff作用");
 					}
 				}
 			}
@@ -138,42 +188,60 @@ public abstract class LivingThing {
 		return attributeMap.get(4).getValue();
 	}
 
-	public int effectAttribute(int key, int value, String reason) {
+	/**
+	 * 第一个参数确定伤害来源
+	 * 
+	 * @param attackId
+	 * @param key
+	 * @param value
+	 * @param reason
+	 * @return
+	 */
+	public int effectAttribute(int attackId, int key, int value, String reason) {
 		Attribute attribute = attributeMap.get(key);
 
-		// 加血限制
+		// 加血加蓝限制
 		if (value > 0) {
 			if (attribute.getId() == AttributeEnum.HP.getId()) {
-				if (attribute.getValue() == attributeMap.get(AttributeEnum.MAX_HP.getId()).getValue()) {
-					return attribute.getValue();
+				if (attribute.getValue() + value >= attributeMap.get(AttributeEnum.MAX_HP.getId()).getValue()) {
+					value = attributeMap.get(AttributeEnum.MAX_HP.getId()).getValue() - attribute.getValue();
 				}
 			}
 			if (attribute.getId() == AttributeEnum.MP.getId()) {
-				if (attribute.getValue() == attributeMap.get(AttributeEnum.MAX_MP.getId()).getValue()) {
-					return attribute.getValue();
+				if (attribute.getValue() + value >= attributeMap.get(AttributeEnum.MAX_MP.getId()).getValue()) {
+					value = attributeMap.get(AttributeEnum.MAX_MP.getId()).getValue() - attribute.getValue();
 				}
 			}
 		}
 
-		int oldValue = attribute.getValue();
+		// 在改变属性这里上锁，确定
+		lock.lock();
+		int newValue = 0;
+		try {
+			int oldValue = attribute.getValue();
 
-		int newValue = attribute.changeValue(value);
-		if (isDead()) {
-			afterDead();
+			newValue = attribute.changeValue(value);
+			if (isDead()) {
+				// 如果死了，定义最后一击的人
+				afterDead();
+			}
+
+			if (oldValue != newValue) {
+				notifyAttributeChange(attribute, reason);
+			}
+
+		} finally {
+			lock.unlock();
 		}
 
 		if (attribute.getId() == AttributeEnum.MAX_MP.getId()
 				&& attributeMap.get(AttributeEnum.MP.getId()).getValue() == attribute.getValue()) {
-			effectAttribute(AttributeEnum.MP.getId(), newValue, "最大mp改变");
+			effectAttribute(attackId, AttributeEnum.MP.getId(), newValue, "最大mp改变");
 		}
 
 		if (attribute.getId() == AttributeEnum.MAX_HP.getId()
 				&& attributeMap.get(AttributeEnum.HP.getId()).getValue() == attribute.getValue()) {
-			effectAttribute(AttributeEnum.HP.getId(), newValue, "最大mp改变");
-		}
-
-		if (oldValue != newValue) {
-			notifyAttributeChange(attribute, reason);
+			effectAttribute(attackId, AttributeEnum.HP.getId(), newValue, "最大mp改变");
 		}
 
 		return newValue;

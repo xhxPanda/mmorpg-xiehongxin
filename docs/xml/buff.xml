@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buffs>
 	<buff id="1" name="缓慢回血" isBuff="true" attribute="3:30"
-		defindAttribute="2:10" lastTime="-1" heartbeatTime="50000"
-		isCanResore="false" />
-	<buff id="2" name="缓慢回蓝" isBuff="true" attribute="3:30"
-		defindAttribute="2:10" lastTime="-1" heartbeatTime="50000"
-		isCanResore="false" />
+		lastTime="-1" heartbeatTime="5000" isCanResore="true" />
+	<buff id="2" name="缓慢回蓝" isBuff="true" attribute="4:30"
+		lastTime="-1" heartbeatTime="5000" isCanResore="false" />
 	<buff id="3" name="护甲" isBuff="true" attribute="2:30"
-		defindAttribute="2:10" lastTime="200000" heartbeatTime="0"
-		isCanResore="true" />
+		lastTime="200000" heartbeatTime="0" isCanResore="true" />
 	<buff id="4" name="中毒" isBuff="false" attribute="3:10"
-		defindAttribute="2:10" lastTime="200000" heartbeatTime="0"
-		isCanResore="false" />
+		lastTime="200000" heartbeatTime="0" isCanResore="false" />
 	<buff id="5" name="打晕" isBuff="false" attribute=""
-		defindAttribute="" lastTime="50000" heartbeatTime="0"
-		isCanResore="false" />
+		lastTime="50000" heartbeatTime="0" isCanResore="false" />
 	<buff id="6" name="沉默" isBuff="false" attribute=""
-		defindAttribute="" lastTime="80000" heartbeatTime="0"
-		isCanResore="false" />
+		lastTime="80000" heartbeatTime="0" isCanResore="false" />
 </buffs>

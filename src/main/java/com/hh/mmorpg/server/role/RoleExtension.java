@@ -28,10 +28,10 @@ public class RoleExtension {
 
 	@CmdService(cmd = CREATE_ROLE)
 	public void creatRole(User user, CMDdomain cmdDomain) {
-		int roleDomainId = cmdDomain.getIntParam(2);
+		int occupationId = cmdDomain.getIntParam(2);
 		String name = cmdDomain.getStringParam(3);
 
-		ReplyDomain replyDomain = service.creatRole(user, roleDomainId, name);
+		ReplyDomain replyDomain = service.creatRole(user, occupationId, name);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
@@ -47,11 +47,11 @@ public class RoleExtension {
 		ReplyDomain reply = service.getUserUsingRole(user);
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
-	
+
 	@CmdService(cmd = TRANSFER_OCCUPATION)
 	public void transferOccupation(User user, CMDdomain cmdDomain) {
 		int occupationId = cmdDomain.getIntParam(2);
-		
+
 		ReplyDomain reply = service.transferOccupation(user, occupationId);
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}

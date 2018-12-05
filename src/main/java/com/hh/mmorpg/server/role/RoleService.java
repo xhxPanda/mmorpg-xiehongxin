@@ -13,7 +13,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.BagMaterial;
-import com.hh.mmorpg.domain.LevelLimitDomain;
 import com.hh.mmorpg.domain.OccupationEmun;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleDomain;
@@ -42,8 +41,6 @@ public class RoleService {
 	private Map<Integer, RoleDomain> roleDomainMap;
 	// 默认格子数量
 	private static final int DEFAULT_CAPACITY = 20;
-
-	private Map<Integer, LevelLimitDomain> levelLimitMap;
 
 	private ConcurrentHashMap<Integer, Integer> roleToUser;
 
@@ -76,7 +73,7 @@ public class RoleService {
 
 		Map<Integer, Role> map = getUserAllRole(userId);
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
-		replyDomain.setListDomain("rs", map.values());
+		replyDomain.setListDomain("角色列表", map.values());
 		return replyDomain;
 	}
 
@@ -90,7 +87,7 @@ public class RoleService {
 	public ReplyDomain transferOccupation(User user, int occupationId) {
 		// TODO Auto-generated method stub
 		OccupationEmun occupationEmun = OccupationEmun.getOccupationEmun(occupationId);
-		if (occupationEmun == null) {
+		if (occupationEmun == null || occupationEmun.getId() == OccupationEmun.NONE.getId()) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -130,7 +127,7 @@ public class RoleService {
 		}
 
 		// 抛出替换角色的事件
-		RoleChangeData data = new RoleChangeData(userId, oldRole == null ? 0 : oldRole.getId(), roleId);
+		RoleChangeData data = new RoleChangeData(userId, oldRole, role);
 		EventHandlerManager.INSATNCE.methodInvoke(EventType.ROLE_CHANGE, new EventDealData<RoleChangeData>(data));
 
 		roleToUser.put(roleId, userId);
@@ -167,9 +164,9 @@ public class RoleService {
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		Role role = getUserUsingRole(user.getUserId());
 		if (role != null) {
-			replyDomain.setStringDomain("role", role.toString());
+			replyDomain.setStringDomain("当前角色", role.toString());
 		} else {
-			replyDomain.setStringDomain("role", "");
+			replyDomain.setStringDomain("当前角色", "");
 		}
 		return replyDomain;
 	}
@@ -179,10 +176,22 @@ public class RoleService {
 		return role;
 	}
 
-	public ReplyDomain creatRole(User user, int tribeId, String name) {
+	/**
+	 * 创建角色
+	 * 
+	 * @param user
+	 * @param tribeId
+	 * @param name
+	 * @return
+	 */
+	public ReplyDomain creatRole(User user, int occupationId, String name) {
 		// TODO Auto-generated method stub
 		int id = IncrementManager.INSTANCE.increase("role");
-		Role role = new Role(user.getUserId(), id, name, tribeId, 0, DEFAULT_CAPACITY, 1, 0, -1, 0);
+
+		RoleDomain domain = roleDomainMap.get(occupationId);
+
+		Role role = new Role(user.getUserId(), id, name, occupationId, DEFAULT_CAPACITY, 1, 0, 0, 0,
+				domain.getAttributeStr(), 0);
 		int i = RoleDao.INSTANCE.insertRole(role);
 		if (i < 0) {
 			return ReplyDomain.FAILE;
@@ -192,13 +201,19 @@ public class RoleService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 获取初始的角色信息
+	 * 
+	 * @param roleId
+	 * @return
+	 */
 	public RoleDomain getRoleDomain(int roleId) {
 		return roleDomainMap.get(roleId);
 	}
 
 	private void assemblingRole(Role role) {
 		int roleId = role.getId();
-		RoleDomain roleDomain = getRoleDomain(role.getTribeId());
+		RoleDomain roleDomain = getRoleDomain(role.getOccupationId());
 		role.setAttributeMap(roleDomain.getAttributeMap());
 
 		List<RoleSkill> roleSkills = RoleDao.INSTANCE.getRoleSkill(roleId);
@@ -247,6 +262,13 @@ public class RoleService {
 		return getUserUsingRole(userId).getId() == roleId;
 	}
 
+	/**
+	 * 获取用户的其中一个角色
+	 * 
+	 * @param userId
+	 * @param roleId
+	 * @return
+	 */
 	public Role getUserRole(int userId, int roleId) {
 		try {
 			Role role = cache.get(userId).get(roleId);
@@ -258,6 +280,12 @@ public class RoleService {
 		return null;
 	}
 
+	/**
+	 * 获取用户所有的角色
+	 * 
+	 * @param userId
+	 * @return
+	 */
 	private Map<Integer, Role> getUserAllRole(int userId) {
 
 		List<Role> roles = RoleDao.INSTANCE.selectUserRole(userId);
@@ -284,4 +312,5 @@ public class RoleService {
 		MaterialService.INSTANCE.persistenceRoleMatetrial(role);
 		System.out.println("删除用户缓存使用角色");
 	}
+
 }

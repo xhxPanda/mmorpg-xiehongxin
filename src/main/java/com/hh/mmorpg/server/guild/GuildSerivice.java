@@ -1,7 +1,6 @@
 package com.hh.mmorpg.server.guild;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,7 +10,6 @@ import com.hh.mmorpg.counter.CounterService;
 import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.Guild;
 import com.hh.mmorpg.domain.GuildApply;
-import com.hh.mmorpg.domain.GuildLevelDomain;
 import com.hh.mmorpg.domain.GuildMember;
 import com.hh.mmorpg.domain.GuildMemberAuthority;
 import com.hh.mmorpg.domain.GuildMemberIdentity;
@@ -46,7 +44,9 @@ public class GuildSerivice {
 	public static final String DEC_CREAT_GUILD_MATERIAL = "3:2:1000";
 	// 公会仓库默认容量
 	public static final int DEFAULT_WAREHOUSE_CAPACITY = 20;
-	private Map<Integer, GuildLevelDomain> guildLevelDomainMap; // 公会等级限制
+	
+	// 公会满人指标
+	private static final int GUILD_FULL_NUM = 500;
 
 	private ReentrantLock lock;
 
@@ -57,8 +57,6 @@ public class GuildSerivice {
 		for (Guild guild : guildList) {
 			guildCache.put(guild.getId(), guild);
 		}
-
-		this.guildLevelDomainMap = GuildLevelXmlResolutionMenager.INSTANCE.resolution();
 		this.lock = new ReentrantLock();
 	}
 
@@ -162,9 +160,7 @@ public class GuildSerivice {
 		if (guild.getApply(role.getId()) != null) {
 			return ReplyDomain.HAS_SENT_APPLY;
 		}
-
-		GuildLevelDomain guildLevelDomain = guildLevelDomainMap.get(guild.getLevel());
-		if (guildLevelDomain.getCanJoinMemberNum() <= guild.getMemberNum()) {
+		if (guild.getMemberNum() >= GUILD_FULL_NUM) {
 			return ReplyDomain.GUILD_FULL;
 		}
 
@@ -202,12 +198,8 @@ public class GuildSerivice {
 		lock.tryLock();
 		try {
 
-			// 判断是否已经满人了
-			int guildLevel = guild.getLevel();
-			GuildLevelDomain guildLevelDomain = guildLevelDomainMap.get(guildLevel);
-
 			// 判断是否满人
-			if (guild.getMemberNum() >= guildLevelDomain.getCanJoinMemberNum()) {
+			if (guild.getMemberNum() >= GUILD_FULL_NUM) {
 				return ReplyDomain.GUILD_FULL;
 			}
 

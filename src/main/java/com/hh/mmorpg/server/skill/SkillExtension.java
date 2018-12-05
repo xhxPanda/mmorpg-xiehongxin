@@ -12,8 +12,16 @@ public class SkillExtension {
 
 	private SkillService service = SkillService.INSTANCE;
 
-	public static final String LEANRN_SKILL = "learnSkill";
-
+	private static final String LEANRN_SKILL = "learnSkill";
+	private static final String GET_CAN_LEARN_SKILL = "getCanLearnSkill"; // 查看可以学习的技能
+	
+	@CmdService(cmd = GET_CAN_LEARN_SKILL)
+	public void getCanLearnSkill(User user, CMDdomain cmdDomain) {
+		
+		ReplyDomain replyDomain = service.getCanLearnSkill(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
 	@CmdService(cmd = LEANRN_SKILL)
 	public void learnSkill(User user, CMDdomain cmdDomain) {
 		int skillId = cmdDomain.getIntParam(2);

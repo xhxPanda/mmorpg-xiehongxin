@@ -40,11 +40,15 @@ public class Scene {
 	private long buildTime; // 生成场景的时间
 	private Map<Integer, Map<Integer, Monster>> monsterSetMap;// monster初始配置的怪物生成序列
 
-	private Map<Integer, Map<Integer, MonsterBeKillBonus>> monsterBeKillBonusmap; // 每个角色的掉落的monster道具
+	private Map<Integer, MonsterBeKillBonus> monsterBeKillBonusmap; // 每个角色的掉落的monster道具
 
 	private ConcurrentHashMap<Integer, SceneUserCache> userMap = new ConcurrentHashMap<>();
+	// 怪物列表
 	private ConcurrentHashMap<Integer, Monster> monsterMap;
+	// NPC列表
 	private Map<Integer, NpcRole> npcRoleMap;
+	// 召唤兽列表
+	private Map<Integer, Map<Integer, SummonMonster>> summonMonstermap;
 
 	private ScheduledExecutorService executorService;
 
@@ -76,6 +80,8 @@ public class Scene {
 
 		this.monsterBeKillBonusmap = new HashMap<>();
 		this.npcRoleMap = domain.getNpcRoleMap();
+
+		this.summonMonstermap = new HashMap<>();
 
 		// 监听怪物死亡事件
 		EventHandlerManager.INSATNCE.register(this);
@@ -175,6 +181,10 @@ public class Scene {
 		return isCanBattle;
 	}
 
+	public Map<Integer, Map<Integer, SummonMonster>> getSummonMonstermap() {
+		return summonMonstermap;
+	}
+
 	public void putMonster(Monster monster) {
 		monsterMap.put(monster.getUniqueId(), monster);
 		ReplyDomain replyDomain = new ReplyDomain();
@@ -184,27 +194,36 @@ public class Scene {
 		notifyAllUser(replyDomain);
 	}
 
-	public void addRoleKillMonsterBonus(int roleId, MonsterBeKillBonus beKillBonus) {
+	/**
+	 * 新增掉落奖励
+	 * 
+	 * @param beKillBonus
+	 */
+	public void addRoleKillMonsterBonus(MonsterBeKillBonus beKillBonus) {
 
-		Map<Integer, MonsterBeKillBonus> killBonusMap = monsterBeKillBonusmap.get(roleId);
-		if (killBonusMap == null) {
-			killBonusMap = new HashMap<>();
-			monsterBeKillBonusmap.put(roleId, killBonusMap);
-		}
-		killBonusMap.put(beKillBonus.getId(), beKillBonus);
+		monsterBeKillBonusmap.put(beKillBonus.getId(), beKillBonus);
 	}
 
-	public MonsterBeKillBonus getRoleKillMonsterBonus(int roleId, int bonusId) {
-		Map<Integer, MonsterBeKillBonus> roleBonusMap = monsterBeKillBonusmap.get(roleId);
-		if (roleBonusMap == null || roleBonusMap.size() == 0) {
-			return null;
-		}
-		return roleBonusMap.get(bonusId);
+	/**
+	 * 获取掉落物品
+	 * 
+	 * @param bonusId
+	 * @return
+	 */
+	public MonsterBeKillBonus getRoleKillMonsterBonus(int bonusId) {
+		MonsterBeKillBonus roleBonus = monsterBeKillBonusmap.get(bonusId);
+		return roleBonus;
 	}
 
+	/**
+	 * 获取场景中的掉落物品
+	 * 
+	 * @param roleId
+	 * @return
+	 */
 	public List<MonsterBeKillBonus> getRoleKillMonsterBonusInfo(int roleId) {
 		if (monsterBeKillBonusmap.get(roleId) != null) {
-			return new ArrayList<MonsterBeKillBonus>(monsterBeKillBonusmap.get(roleId).values());
+			return new ArrayList<MonsterBeKillBonus>(monsterBeKillBonusmap.values());
 		} else {
 			return null;
 		}
@@ -244,16 +263,32 @@ public class Scene {
 				}
 			} else {
 				monster.takeEffect();
-
-				// 如果是副本，怪物有自己的技能ai
-				if (isCopy) {
-					monsterAIAttack(monster);
+				// 如果是副本，或者在非副本地区被攻击了的怪物（被动怪），怪物有自己的技能ai
+				if (isCopy || monster.getAttackObject() != null) {
+					monsterAIAttack(monster, getAllRole());
 				}
 			}
 		}
 
 		for (SceneUserCache cache : userMap.values()) {
+			if (cache.getRole().isDead()) {
+				continue;
+			}
 			cache.getRole().takeEffect();
+		}
+
+		List<SummonMonster> needRemoveSummonMonster = new ArrayList<>();
+		// 召唤兽ai
+		for (Map<Integer, SummonMonster> map : summonMonstermap.values()) {
+			for (SummonMonster summonMonster : map.values()) {
+				long now = System.currentTimeMillis();
+				if (summonMonster.getTerminalTime() >= now) {
+					needRemoveSummonMonster.add(summonMonster);
+					continue;
+				}
+
+				monsterAIAttack(summonMonster, summonMonster.getTargetAttackObject());
+			}
 		}
 	}
 
@@ -289,16 +324,24 @@ public class Scene {
 		return npcRoleMap.get(npcId);
 	}
 
-	private void monsterAIAttack(Monster monster) {
+	private void monsterAIAttack(LivingThing monster, List<? extends LivingThing> attackDistance) {
 		List<RoleSkill> monsterSkillList = new ArrayList<>(monster.getSkillMap().values());
 
-		Random random = new Random();
-		int randomSkillIndex = random.nextInt(monsterSkillList.size());
+		Random skillRandom = new Random();
+		int randomSkillIndex = skillRandom.nextInt(monsterSkillList.size());
 
-		List<SceneUserCache> caches = new ArrayList<>(userMap.values());
-
-		SkillService.INSTANCE.dealSkillEffect(monsterSkillList.get(randomSkillIndex), monster, caches.get(0).getRole(),
+		SkillService.INSTANCE.dealSkillEffect(monsterSkillList.get(randomSkillIndex), monster, attackDistance,
 				System.currentTimeMillis());
+	}
+
+	public List<Role> getAllRole() {
+		List<Role> roles = new ArrayList<>();
+
+		for (SceneUserCache cache : userMap.values()) {
+			roles.add(cache.getRole());
+		}
+
+		return roles;
 	}
 
 	private boolean refreshMonster() {
@@ -320,8 +363,38 @@ public class Scene {
 		return true;
 	}
 
+	/**
+	 * 副本场景是否已经完结了
+	 * 
+	 * @return
+	 */
 	public boolean isCopyFinish() {
 		return isAllDead() && (monsterSetMap.size() <= monsterRound.get());
+	}
+
+	/**
+	 * 新增召唤物
+	 * 
+	 * @param roleId
+	 * @param summonMonster
+	 */
+	public void addSummon(int roleId, SummonMonster summonMonster) {
+		Map<Integer, SummonMonster> map = summonMonstermap.get(roleId);
+		if (map == null) {
+			map = new HashMap<>();
+			summonMonstermap.put(roleId, map);
+		}
+
+		map.put(summonMonster.getUniqueId(), summonMonster);
+	}
+
+	/**
+	 * 是不是竞技场
+	 * 
+	 * @return
+	 */
+	public boolean isPKScene() {
+		return isCanBattle;
 	}
 
 	/*

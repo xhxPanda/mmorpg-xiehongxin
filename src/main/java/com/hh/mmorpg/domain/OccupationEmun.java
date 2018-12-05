@@ -1,8 +1,8 @@
 package com.hh.mmorpg.domain;
 
 public enum OccupationEmun {
-	
-	NONE(-1, "无职业"), 
+	MONSTER(-2, "怪物技能"), 
+	NONE(-1, "通用技能"), 
 	MASTER(1, "法师"), 
 	SUMMONER(2, "召唤师"), 
 	WARRIOR(3, "战士");

@@ -1,12 +1,9 @@
 package com.hh.mmorpg.server.masterial;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.hh.mmorpg.domain.BagMaterial;
-import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.domain.UserTreasure;
@@ -16,27 +13,21 @@ public class MaterialDao {
 
 	public static final MaterialDao INSTANCE = new MaterialDao();
 
-	private static final String UPDATE_BAGMATERIAL = "REPLACE INTO `rolematerial` (`roleId`, `uniqueId`, `index`, `quantity`, `SellPrice`, `name`, `typeId`, `materialId`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String UPDATE_BAGMATERIAL = "REPLACE INTO `rolematerial` (`roleId`, `uniqueId`, `index`, `id`, `quantity`, `SellPrice`, `name`, `typeId`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String UPDATE_TREASURE = "REPLACE INTO roleTreasure0 (roleId, id, name, quantity) VALUES (?, ?, ?, ?)";
 	private static final String UPDATE_ITEM = "INSERT INTO `roleitem0` (`roleId`, `itemId`, `lastUsedTime`) VALUES (?, ?, ?)";
-	private static final String UPDATE_EQUIMENT = "REPLACE INTO `equiment0` (`uniqueId`, `roleId`, `equimentId`, `name`,  `effectAttribute`, `maxDurability`, `durability`,  `type`, `index`, `SellPrice`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+	private static final String UPDATE_EQUIMENT = "REPLACE INTO `equiment0` (`uniqueId`, `roleId`, `equimentId`, `name`, `effectAttribute`, `equimentType`, `maxDurability`, `durability`, `SellPrice`, `equimentLevel`, `equimentSource`, `isInUsed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private static final String SELECT_ROLE_ITEM = "SELECT * FROM roleItem0 WHERE roleId = ?";
 	private static final String SELECT_ROLE_TREASURE = "SELECT * FROM roletreasure0 WHERE roleId = ?";
 
-	private static final String SELECT_ROLE_EQUIMENT = "SELECT * FROM roleequiment WHERE roleId = ?";
-
+	private static final String SELECT_ROLE_EQUIMENT = "SELECT * FROM equiment0 WHERE roleId = ? AND isInUsed = 1";
 	private static final String SELECT_EQUIMENT = "SELECT * FROM equiment0";
 
 	private static final String SELECT_USER_MATERIAL = "SELECT * FROM roleMaterial WHERE roleId = ?";
 	private static final String DELETE_MATERIAL = "DELETE FROM %s WHERE WHERE roleId = ? AND index = ?";
 
-	private static Map<Integer, String> BAG_MATERIAL_TABLE_NAME_MAP = new HashMap<>();
-
 	private MaterialDao() {
-		BAG_MATERIAL_TABLE_NAME_MAP = new HashMap<>();
-		BAG_MATERIAL_TABLE_NAME_MAP.put(MaterialType.EQUIPMENT_TYPE.getId(), "roleEquiment0");
-		BAG_MATERIAL_TABLE_NAME_MAP.put(MaterialType.ITEM_TYPE.getId(), "roleItem0");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -91,9 +82,9 @@ public class MaterialDao {
 	public int updateRoleEquiment(UserEquipment equipment) {
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_EQUIMENT,
 				new Object[] { equipment.getUniqueId(), equipment.getRoleId(), equipment.getMaterialId(),
-						equipment.getName(), equipment.getAttributeStr(), equipment.getMaxDurability(),
-						equipment.getDurability(), equipment.getEquimentType(),
-						equipment.getSellPrice() });
+						equipment.getName(), equipment.getAttributeStr(), equipment.getEquimentType(),
+						equipment.getMaxDurability(), equipment.getDurability(), equipment.getSellPrice(),
+						equipment.getEquimentLevel(), equipment.getEquimentSource(), equipment.isInUsed() });
 	}
 
 	public int deleteMaterial(int typeId, int roleId, int index) {
@@ -106,7 +97,7 @@ public class MaterialDao {
 		List<BagMaterial> list = null;
 		try {
 			list = (List<BagMaterial>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_USER_MATERIAL,
-					new Object[] {}, BagMaterial.BUILDER);
+					new Object[] { roleId }, BagMaterial.BUILDER);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,7 +110,7 @@ public class MaterialDao {
 		List<UserEquipment> list = null;
 		try {
 			list = (List<UserEquipment>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_EQUIMENT,
-					new Object[] {}, UserEquipment.BUILDER);
+					new Object[] { roleId }, UserEquipment.BUILDER);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -130,7 +121,7 @@ public class MaterialDao {
 	public int updateRoleMaterial(BagMaterial bagMaterial) {
 		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_BAGMATERIAL,
 				new Object[] { bagMaterial.getRoleId(), bagMaterial.getUniqueId(), bagMaterial.getIndex(),
-						bagMaterial.getQuantity(), bagMaterial.getQuantity(), bagMaterial.getSellPrice(),
-						bagMaterial.getName(), bagMaterial.getTypeId(), bagMaterial.getId() });
+						bagMaterial.getId(), bagMaterial.getQuantity(),
+						bagMaterial.getSellPrice(), bagMaterial.getName(), bagMaterial.getTypeId() });
 	}
 }

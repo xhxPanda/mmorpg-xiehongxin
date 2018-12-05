@@ -26,6 +26,10 @@ public class Attribute {
 		return name;
 	}
 
+	public void setValue(AtomicInteger value) {
+		this.value = value;
+	}
+
 	public int changeValue(int decValue) {
 		int newValue = value.addAndGet(decValue);
 		if (newValue <= 0) {

@@ -1,25 +1,30 @@
 package com.hh.mmorpg.event.data;
 
+import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.event.EventData;
 
 public class RoleChangeData extends EventData {
 
 	private int userId;
-	private int oldRoleId;
-	private int newRoleId;
-	public RoleChangeData(int userId, int oldRoleId, int newRoleId) {
+	private Role oldRole;
+	private Role newRole;
+
+	public RoleChangeData(int userId, Role oldRole, Role newRole) {
 		this.userId = userId;
-		this.oldRoleId = oldRoleId;
-		this.newRoleId = newRoleId;
+		this.oldRole = oldRole;
+		this.newRole = newRole;
 	}
+
 	public int getUserId() {
 		return userId;
 	}
-	public int getOldRoleId() {
-		return oldRoleId;
+
+	public Role getOldRole() {
+		return oldRole;
 	}
-	public int getNewRoleId() {
-		return newRoleId;
+
+	public Role getNewRole() {
+		return newRole;
 	}
 
 }

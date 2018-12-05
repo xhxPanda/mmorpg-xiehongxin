@@ -87,7 +87,12 @@ public class SceneXMLResolution {
 						MonsterDomain monsterDomain = monsterDomainMap.get(monsterId);
 
 						int uniqueId = IncrementManager.INSTANCE.increase("monster");
-						Monster monster = new Monster(uniqueId, id, monsterDomain);
+
+						boolean isNeedAi = false;
+						if (copy) {
+							isNeedAi = true;
+						}
+						Monster monster = new Monster(uniqueId, id, monsterDomain, isNeedAi);
 						monsterMap.put(monster.getUniqueId(), monster);
 					}
 
@@ -133,5 +138,9 @@ public class SceneXMLResolution {
 		}
 
 		return map;
+	}
+	
+	public static final void main(String args[]) {
+		SceneXMLResolution.INSTANCE.resolution();
 	}
 }

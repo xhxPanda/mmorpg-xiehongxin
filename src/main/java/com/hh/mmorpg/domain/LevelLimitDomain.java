@@ -10,19 +10,12 @@ public class LevelLimitDomain {
 
 	private int level;
 	private int needExp;
-	private String resoreHpAndMp;
 
-	public LevelLimitDomain(int level, int needExp, String resoreHpAndMp) {
-		super();
+	public LevelLimitDomain(int level, int needExp) {
 		this.level = level;
 		this.needExp = needExp;
-		this.resoreHpAndMp = resoreHpAndMp;
 	}
 
-	public String getResoreHpAndMp() {
-		return resoreHpAndMp;
-	}
-	
 	public int getLevel() {
 		return level;
 	}

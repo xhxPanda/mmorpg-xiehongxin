@@ -8,10 +8,13 @@ public class RoleDomain {
 	private int id;
 	private String name;
 	private Map<Integer, Attribute> attributeMap;
+	private String attributeStr;
 
 	public RoleDomain(int id, String name, String attributeStr) {
 		this.id = id;
 		this.name = name;
+		this.attributeStr = attributeStr;
+
 		this.attributeMap = new HashMap<>();
 
 		// 组建角色初始属性
@@ -38,5 +41,9 @@ public class RoleDomain {
 
 	public Map<Integer, Attribute> getAttributeMap() {
 		return attributeMap;
+	}
+
+	public String getAttributeStr() {
+		return attributeStr;
 	}
 }

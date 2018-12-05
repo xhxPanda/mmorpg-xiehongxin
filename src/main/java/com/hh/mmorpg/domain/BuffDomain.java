@@ -23,11 +23,14 @@ public class BuffDomain {
 		this.isCanResore = isCanResore;
 
 		this.attributeEffect = new HashMap<>();
-		for (String str : attributeStr.split(",")) {
-			String[] strList = str.split(":");
+		if(!attributeStr.isEmpty()) {
+			for (String str : attributeStr.split(",")) {
+				String[] strList = str.split(":");
 
-			attributeEffect.put(Integer.parseInt(strList[0]), Integer.parseInt(strList[1]));
+				attributeEffect.put(Integer.parseInt(strList[0]), Integer.parseInt(strList[1]));
+			}
 		}
+		
 	}
 
 	public int getId() {
