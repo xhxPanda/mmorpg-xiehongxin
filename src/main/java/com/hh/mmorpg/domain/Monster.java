@@ -46,7 +46,7 @@ public class Monster extends LivingThing {
 		setStatus(false);
 		setBeKilledTime(System.currentTimeMillis());
 
-		// 掉落物品
+		setAttackObject(null);
 
 		// 抛出最后一击的人
 		MonsterDeadData data = new MonsterDeadData(getUniqueId(), getAttackObject().getId(), getSceneId());

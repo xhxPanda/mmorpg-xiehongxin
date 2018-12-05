@@ -47,7 +47,8 @@ public class ReplyDomain {
 	public static final ReplyDomain COPY_NUM_NOT_MATCH = new ReplyDomain(ResultCode.COPY_NUM_NOT_MATCH);
 	public static final ReplyDomain TEAM_NOT_ALL_ONLINE = new ReplyDomain(ResultCode.TEAM_NOT_ALL_ONLINE);
 	public static final ReplyDomain TEAM_NOT_ALL_IN_SAME_SCENE = new ReplyDomain(ResultCode.TEAM_NOT_ALL_IN_SAME_SCENE);
-	
+	public static final ReplyDomain NOT_IN_TEAM = new ReplyDomain(ResultCode.NOT_IN_TEAM);
+
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();
 	}

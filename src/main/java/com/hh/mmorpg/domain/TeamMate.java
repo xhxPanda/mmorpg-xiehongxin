@@ -3,13 +3,15 @@ package com.hh.mmorpg.domain;
 public class TeamMate {
 
 	private int roleId;
+	private int userId;
 	private String name;
 	private OccupationEmun occupation;
 	private boolean online;
 	private boolean isTeamLeader;
 
-	public TeamMate(int roleId, String name, OccupationEmun occupation, boolean online, boolean isTeamLeader) {
+	public TeamMate(int roleId, int userId, String name, OccupationEmun occupation, boolean online, boolean isTeamLeader) {
 		this.roleId = roleId;
+		this.userId = userId;
 		this.name = name;
 		this.occupation = occupation;
 		this.online = online;
@@ -42,6 +44,10 @@ public class TeamMate {
 
 	public void setTeamLeader(boolean isTeamLeader) {
 		this.isTeamLeader = isTeamLeader;
+	}
+
+	public int getUserId() {
+		return userId;
 	}
 
 	@Override

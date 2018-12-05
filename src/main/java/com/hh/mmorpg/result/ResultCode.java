@@ -41,4 +41,5 @@ public class ResultCode {
 	public static final String COPY_NUM_NOT_MATCH = "副本人数不符合要求";
 	public static final String TEAM_NOT_ALL_ONLINE = "队伍中存在不在线的人";
 	public static final String TEAM_NOT_ALL_IN_SAME_SCENE = "队伍不是所有人在同一场景";
+	public static final String NOT_IN_TEAM = "不在队伍中";
 }

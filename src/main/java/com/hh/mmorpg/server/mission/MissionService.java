@@ -173,7 +173,7 @@ public class MissionService {
 		handlerMap.get(MissionType.GUILD_MISSION).dealMission(guildJoinData);
 	}
 
-	// 处理用户加入公会的事件
+	// 处理用户加入队伍的事件
 	@SuppressWarnings("unchecked")
 	@Event(eventType = EventType.JOIN_TEAM)
 	public void handleUserJoinTeam(EventDealData<JoinTeamData> data) {
