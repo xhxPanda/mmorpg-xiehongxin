@@ -3,6 +3,7 @@ package com.hh.mmorpg.domain;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,6 +48,9 @@ public class Guild {
 		this.guildWarehouseCapasity = guildWarehouseCapasity;
 
 		this.guildBank = new HashMap<>();
+		for (int i = 0; i < guildWarehouseCapasity; i++) {
+			guildBank.put(i, null);
+		}
 		this.treasureMap = new HashMap<>();
 	}
 
@@ -61,6 +65,12 @@ public class Guild {
 	 */
 	public int getMemberNum() {
 		return guildMemberMap.size();
+	}
+
+	public void setGuildMember(List<GuildMember> guildMembers) {
+		for (GuildMember guildMember : guildMembers) {
+			guildMemberMap.put(guildMember.getRoleId(), guildMember);
+		}
 	}
 
 	/**
@@ -118,9 +128,10 @@ public class Guild {
 	 * @param id
 	 * @param value
 	 */
-	public void accessTreasure(int id, int value) {
+	public void accessTreasure(int id, long value) {
 		long num = treasureMap.get(id);
 		treasureMap.put(id, num + value);
+		GuildDao.INSTANCE.updateGuildTreasure(getId(), id, num + value);
 	}
 
 	/**
@@ -140,6 +151,7 @@ public class Guild {
 		bagMaterial.setIndex(index);
 		guildBank.put(index, bagMaterial);
 
+		GuildDao.INSTANCE.insertGuildMaterial(id, index, bagMaterial);
 		return ReplyDomain.SUCCESS;
 	}
 
@@ -152,7 +164,11 @@ public class Guild {
 	public void decBankMaterial(int index, int num) {
 		if (guildBank.get(index).changeQuantity(-num) == 0) {
 			guildBank.put(index, null);
+			GuildDao.INSTANCE.deleteGuildMaterialIndex(getId(), index);
+		} else {
+			GuildDao.INSTANCE.insertGuildMaterial(getId(), index, guildBank.get(index));
 		}
+
 	}
 
 	/**
@@ -215,6 +231,12 @@ public class Guild {
 
 	}
 
+	public void setguildApply(List<GuildApply> guildApplies) {
+		for (GuildApply guildApply : guildApplies) {
+			guildApplyMap.put(guildApply.getRoleId(), guildApply);
+		}
+	}
+
 	public ConcurrentHashMap<Integer, GuildApply> getGuildApplyMap() {
 		return guildApplyMap;
 	}
@@ -239,6 +261,49 @@ public class Guild {
 		this.authorityMap = authorityMap;
 	}
 
+	public Map<Integer, BagMaterial> getGuildBank() {
+		return guildBank;
+	}
+
+	/**
+	 * 組建公会仓库
+	 * 
+	 * @param bagMaterial
+	 */
+	public void putMaterial(BagMaterial bagMaterial) {
+		guildBank.put(bagMaterial.getIndex(), bagMaterial);
+	}
+
+	/**
+	 * 组件公会财富系统
+	 * 
+	 * @param id
+	 * @param quantity
+	 */
+	public void putGuildTreasure(int id, long quantity) {
+		treasureMap.put(id, quantity);
+	}
+
+	public String getGuildBankStr() {
+		StringBuilder builder = new StringBuilder();
+		for (Entry<Integer, BagMaterial> entry : guildBank.entrySet()) {
+
+			if (entry.getValue() == null) {
+				continue;
+			}
+			if (builder.length() > 0) {
+				builder.append(",");
+			}
+			builder.append(entry.getKey()).append(":").append("名称：").append(entry.getValue().getName()).append(" 数量")
+					.append(":").append(entry.getValue().getQuantity());
+		}
+		return builder.toString();
+	}
+
+	public Map<Integer, Long> getTreasureMap() {
+		return treasureMap;
+	}
+
 	public static final ResultBuilder<Guild> BUILDER = new ResultBuilder<Guild>() {
 		@Override
 		public Guild build(ResultSet result) throws SQLException {
@@ -257,5 +322,4 @@ public class Guild {
 	public String toString() {
 		return "Guild [名称=" + name + ", 等级=" + level + ", 公会贡献点=" + guildDonatePoint + "]";
 	}
-
 }

@@ -42,4 +42,5 @@ public class ResultCode {
 	public static final String TEAM_NOT_ALL_ONLINE = "队伍中存在不在线的人";
 	public static final String TEAM_NOT_ALL_IN_SAME_SCENE = "队伍不是所有人在同一场景";
 	public static final String NOT_IN_TEAM = "不在队伍中";
+	public static final String NOT_IN_GUILD = "不在公会中";
 }

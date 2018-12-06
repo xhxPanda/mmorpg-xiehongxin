@@ -20,7 +20,7 @@ public class RoleDao {
 	private static final String UPDATE_ROLE_SKILL = "REPLACE INTO `RoleSkill` (`roleId`, `SkillId`, `level`, `LastUsedTime`) values (?, ?, ?, ?)";
 	private static final String SELECT_ROLE_SKILL = "SELECT * FROM RoleSkill where roleId = ?";
 
-	private static final String UPDATE_USER_GUILD = "UPDATE role%s SET guildId = ? WHERE roleId = ? AND UserId = ?";
+	private static final String UPDATE_USER_GUILD = "UPDATE role0 SET guildId = ? WHERE id = ? AND UserId = ?";
 
 	private static final String UPDATE_USER_ROLE = "REPLACE INTO `role0` (`userId`, `id`, `occupationId`, `name`, `capacity`, `TeamId`, `exp`, `Level`, `lastJoinScene`, `attribute`, `guildId`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -63,8 +63,7 @@ public class RoleDao {
 	}
 
 	public int updateRoleGuild(int roleId, int userId, int guildId) {
-		int dbIndex = userId / DB_INDEX;
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(String.format(UPDATE_USER_GUILD, dbIndex),
+		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_USER_GUILD,
 				new Object[] { guildId, roleId, userId });
 
 	}

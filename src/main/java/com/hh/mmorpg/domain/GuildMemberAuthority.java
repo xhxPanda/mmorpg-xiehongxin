@@ -14,7 +14,7 @@ import com.hh.mmorpg.jdbc.ResultBuilder;
 public class GuildMemberAuthority {
 
 	private int guildId;
-	private GuildMemberIdentity guildMemberIdentity;
+	private int guildMemberIdentityId;
 	private boolean canTickMember; // 是否能踢人
 	private boolean canSeeBank; // 是否可以浏览银行
 	private int takeBankMaterialNum; // 成员每天可以获取多少物品在每一层银行里面
@@ -24,7 +24,7 @@ public class GuildMemberAuthority {
 	public GuildMemberAuthority(int guildId, int guildMemberIdentityId, boolean canTickMember, boolean canSeeBank,
 			int takeBankMaterialNum, boolean canSendPublicMessage, int canUseGold) {
 		this.guildId = guildId;
-		this.guildMemberIdentity = GuildMemberIdentity.getGuildMemberIdentity(guildMemberIdentityId);
+		this.guildMemberIdentityId = guildMemberIdentityId;
 		this.canTickMember = canTickMember;
 		this.canSeeBank = canSeeBank;
 		this.takeBankMaterialNum = takeBankMaterialNum;
@@ -32,12 +32,12 @@ public class GuildMemberAuthority {
 		this.canUseGold = canUseGold;
 	}
 
-	public GuildMemberAuthority(int guildId, GuildMemberIdentity guildMemberIdentity) {
+	public GuildMemberAuthority(int guildId, int guildMemberIdentityId) {
 		this.guildId = guildId;
-		this.guildMemberIdentity = guildMemberIdentity;
+		this.guildMemberIdentityId = guildMemberIdentityId;
 
 		// 会长拥有所有权限
-		if (guildMemberIdentity.getId() == GuildMemberIdentity.PRESIDENT.getId()) {
+		if (guildMemberIdentityId == GuildMemberIdentity.PRESIDENT.getId()) {
 			this.canTickMember = true;
 			this.canSendPublicMessage = true;
 			this.canSeeBank = true;
@@ -78,12 +78,13 @@ public class GuildMemberAuthority {
 		return takeBankMaterialNum;
 	}
 
-	public GuildMemberIdentity getGuildMemberIdentity() {
-		return guildMemberIdentity;
+	
+	public int getGuildMemberIdentityId() {
+		return guildMemberIdentityId;
 	}
 
-	public void setGuildMemberIdentity(GuildMemberIdentity guildMemberIdentity) {
-		this.guildMemberIdentity = guildMemberIdentity;
+	public void setGuildMemberIdentityId(int guildMemberIdentityId) {
+		this.guildMemberIdentityId = guildMemberIdentityId;
 	}
 
 	public int getCanUseGold() {

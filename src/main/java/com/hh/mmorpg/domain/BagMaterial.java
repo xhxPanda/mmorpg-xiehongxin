@@ -62,6 +62,7 @@ public class BagMaterial extends Material {
 	public int getUniqueId() {
 		return uniqueId;
 	}
+	
 	public static final ResultBuilder<BagMaterial> BUILDER = new ResultBuilder<BagMaterial>() {
 
 		@Override

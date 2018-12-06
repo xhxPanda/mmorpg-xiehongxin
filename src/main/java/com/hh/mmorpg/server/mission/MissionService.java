@@ -21,6 +21,7 @@ import com.hh.mmorpg.event.data.UpdateLevelData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.mission.handler.AbstractMissionHandler;
 import com.hh.mmorpg.server.mission.handler.EquimentMissionHandler;
+import com.hh.mmorpg.server.mission.handler.GuildJoinMissionHandler;
 import com.hh.mmorpg.server.mission.handler.LevelUpMissionHandler;
 import com.hh.mmorpg.server.mission.handler.MaterialMissionHandler;
 import com.hh.mmorpg.server.mission.handler.NpcTalkMissionHandler;
@@ -43,6 +44,7 @@ public class MissionService {
 		handlerMap.put(MissionType.TLAK_NPC, new NpcTalkMissionHandler());
 		handlerMap.put(MissionType.MATERIAL_MISSION, new MaterialMissionHandler());
 		handlerMap.put(MissionType.EQUIMENT_MISSION, new EquimentMissionHandler());
+		handlerMap.put(MissionType.GUILD_MISSION, new GuildJoinMissionHandler());
 
 		EventHandlerManager.INSATNCE.register(this);
 	}

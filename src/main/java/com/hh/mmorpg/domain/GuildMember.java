@@ -1,5 +1,10 @@
 package com.hh.mmorpg.domain;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.hh.mmorpg.jdbc.ResultBuilder;
+
 public class GuildMember {
 
 	private int guildId;
@@ -72,8 +77,25 @@ public class GuildMember {
 
 	@Override
 	public String toString() {
-		return "GuildMember [角色id=" + roleId + ", 名称=" + roleName + ", 等级=" + level + ", 身份=" + memberIdentityName
-				+ ", 贡献点=" + contributionPoint + ", 是否在线=" + isOnline + "]";
+		return "成员 [角色id=" + roleId + ", 名称=" + roleName + ", 等级=" + level + ", 身份=" + memberIdentityName + ", 贡献点="
+				+ contributionPoint + ", 是否在线=" + isOnline + "]";
 	}
 
+	public static final ResultBuilder<GuildMember> BUILDER = new ResultBuilder<GuildMember>() {
+
+		@Override
+		public GuildMember build(ResultSet result) throws SQLException {
+			// TODO Auto-generated method stub
+			int roleId = result.getInt("RoleId");
+			int level = result.getInt("level");
+			int userId = result.getInt("UserId");
+			int guildId = result.getInt("GuildId");
+			int memberIdentityId = result.getInt("memberIdentityId");
+			int contributionPoint = result.getInt("contributionPoint");
+			String roleName = result.getString("roleName");
+			return new GuildMember(roleId, userId, roleName, level, memberIdentityId,
+					GuildMemberIdentity.getGuildMemberIdentity(memberIdentityId).getName(), contributionPoint, false,
+					guildId);
+		}
+	};
 }

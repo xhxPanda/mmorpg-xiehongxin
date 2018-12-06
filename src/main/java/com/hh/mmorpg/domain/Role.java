@@ -351,7 +351,7 @@ public class Role extends LivingThing {
 			materialMap.put(material.getIndex(), null);
 		}
 
-		return material;
+		return new BagMaterial(material, 0, num);
 	}
 
 	public int findFreeBox() {

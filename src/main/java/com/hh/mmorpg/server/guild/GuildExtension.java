@@ -20,6 +20,7 @@ public class GuildExtension {
 	private static final String SHOW_GUILD_INFO = "showGuildInfo";// 展示公会信息
 	private static final String SHOW_GUILD_BANK = "showGuildBank"; // 展示公会仓库
 	private static final String SHOW_GUILD_MEMBER = "showGuildMember"; // 展示公会会员
+	private static final String SHOW_GUILD_APPLY = "showGuildApply"; // 展示公会申请
 
 	private static final String CREAT_GUILD = "creatGuild"; // 创建公会
 	private static final String SEND_GUILD_APPLY = "sendGuildApply"; // 发送公会申请
@@ -30,32 +31,36 @@ public class GuildExtension {
 	private static final String LEAVE_GUILD = "leaveGuild"; // 退出公会
 	private static final String TRANSFER_GUILD = "transferGuild"; // 转让公会
 	private static final String EXTRACT_MATERIAL = "extractMaterial"; // 提取物品
+	private static final String EXTRACT_TREASURE = "extractTreasure"; // 提取财富
 
 	public static final String NOTIFY_USER_JOIN_GUILD = "公会申请通过";
 	public static final String NOTIFY_USER_TICK_OUT = "踢出公会";
 	public static final String NOTIFY_PRESIDENT_CHANGE = "会长变更";
 
-	
 	@CmdService(cmd = SHOW_GUILD_INFO)
 	public void SHOW_GUILD_INFO(User user, CMDdomain cmdDomain) {
 
 		ReplyDomain replyDomain = serivice.showGuildInfo(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = SHOW_GUILD_MEMBER)
 	public void showGuildMember(User user, CMDdomain cmdDomain) {
 
 		ReplyDomain replyDomain = serivice.showGuildMember(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
-	
+
 	@CmdService(cmd = SHOW_GUILD_BANK)
 	public void showGuildBank(User user, CMDdomain cmdDomain) {
 
 		ReplyDomain replyDomain = serivice.showGuildBank(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
 
+	@CmdService(cmd = SHOW_GUILD_APPLY)
+	public void showGuildApply(User user, CMDdomain cmdDomain) {
+		ReplyDomain replyDomain = serivice.showGuildApply(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
@@ -115,16 +120,24 @@ public class GuildExtension {
 		ReplyDomain replyDomain = serivice.donateTreasure(user, id, num);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = EXTRACT_MATERIAL)
 	public void extractMaterial(User user, CMDdomain cmdDomain) {
 		int index = cmdDomain.getIntParam(2);
 		int num = cmdDomain.getIntParam(3);
-		
+
 		ReplyDomain replyDomain = serivice.extractMaterial(user, index, num);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
+	@CmdService(cmd = EXTRACT_TREASURE)
+	public void extractTreasure(User user, CMDdomain cmdDomain) {
+		int id = cmdDomain.getIntParam(2);
+		int num = cmdDomain.getIntParam(3);
+
+		ReplyDomain replyDomain = serivice.guildReimbursement(user, id, num);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
 
 	@CmdService(cmd = LEAVE_GUILD)
 	public void leaveGuild(User user, CMDdomain cmdDomain) {

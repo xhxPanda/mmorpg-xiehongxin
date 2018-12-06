@@ -1,18 +1,19 @@
 package com.hh.mmorpg.server.guild;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import com.hh.mmorpg.Increment.IncrementManager;
-import com.hh.mmorpg.counter.CounterKey;
-import com.hh.mmorpg.counter.CounterService;
 import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.Guild;
 import com.hh.mmorpg.domain.GuildApply;
 import com.hh.mmorpg.domain.GuildMember;
 import com.hh.mmorpg.domain.GuildMemberAuthority;
 import com.hh.mmorpg.domain.GuildMemberIdentity;
+import com.hh.mmorpg.domain.GuildTreasure;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
@@ -21,6 +22,7 @@ import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GuildJoinData;
+import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
@@ -44,7 +46,7 @@ public class GuildSerivice {
 	public static final String DEC_CREAT_GUILD_MATERIAL = "3:2:1000";
 	// 公会仓库默认容量
 	public static final int DEFAULT_WAREHOUSE_CAPACITY = 20;
-	
+
 	// 公会满人指标
 	private static final int GUILD_FULL_NUM = 500;
 
@@ -56,27 +58,70 @@ public class GuildSerivice {
 		List<Guild> guildList = GuildDao.INSTANCE.getAllGuild();
 		for (Guild guild : guildList) {
 			guildCache.put(guild.getId(), guild);
+			assemblingGuild(guild);
 		}
 		this.lock = new ReentrantLock();
+
+		EventHandlerManager.INSATNCE.register(this);
 	}
 
+	/**
+	 * 展示公会基本资料
+	 * 
+	 * @param user
+	 * @return
+	 */
 	public ReplyDomain showGuildInfo(User user) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		int guildId = role.getGuildId();
+		if (guildId == 0) {
+			return ReplyDomain.NOT_IN_GUILD;
+		}
 
 		Guild guild = guildCache.get(guildId);
 
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("公会信息", guild.toString());
+		replyDomain.setIntDomain("人数", guild.getMemberNum());
 
 		return replyDomain;
 	}
 
+	/**
+	 * 展示所有的公会申请
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public ReplyDomain showGuildApply(User user) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		int guildId = role.getGuildId();
+		if (guildId == 0) {
+			return ReplyDomain.NOT_IN_GUILD;
+		}
+		Guild guild = guildCache.get(guildId);
+
+		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setListDomain("公会申请列表", guild.getGuildApplyMap().values());
+		return replyDomain;
+	}
+
+	/**
+	 * 展示公会所有的成员
+	 * 
+	 * @param user
+	 * @return
+	 */
 	public ReplyDomain showGuildMember(User user) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		int guildId = role.getGuildId();
+
+		if (guildId == 0) {
+			return ReplyDomain.NOT_IN_GUILD;
+		}
 
 		Guild guild = guildCache.get(guildId);
 		ReplyDomain replyDomain = new ReplyDomain();
@@ -131,6 +176,9 @@ public class GuildSerivice {
 				GuildMemberIdentity.PRESIDENT.getId(), GuildMemberIdentity.PRESIDENT.getName(), 0, true, guildId);
 		guild.addNewMember(guildMember);
 
+		// 给自己设置公会id
+		role.setGuildId(guildId);
+
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 
 		return replyDomain;
@@ -166,6 +214,7 @@ public class GuildSerivice {
 
 		GuildApply guildApply = new GuildApply(role.getId(), user.getUserId(), role.getName(), guildId, content);
 		guild.addApply(guildApply);
+		GuildDao.INSTANCE.insertApply(guildApply);
 		return ReplyDomain.SUCCESS;
 	}
 
@@ -208,7 +257,7 @@ public class GuildSerivice {
 				return ReplyDomain.FAILE;
 			}
 
-			int applyRoleId = guildApply.getGuildId();
+			int applyRoleId = guildApply.getRoleId();
 			if (isAggre) {
 				Role applyRole = RoleService.INSTANCE.getUserRole(guildApply.getUserId(), applyRoleId);
 				if (applyRole.getGuildId() != 0) {
@@ -223,7 +272,7 @@ public class GuildSerivice {
 
 				updateRoleGuildStatus(guild.getId(), applyRole.getId(), applyRole.getUserId());
 				// 用户在线时notify
-				if (UserService.INSTANCE.getUser(guildApply.getUserId()) == null) {
+				if (RoleService.INSTANCE.isOnline(applyRoleId)) {
 					ReplyDomain notify = new ReplyDomain();
 					notify.setStringDomain("公会名称", guild.getName());
 					notify.setStringDomain("cmd", GuildExtension.NOTIFY_USER_JOIN_GUILD);
@@ -254,21 +303,22 @@ public class GuildSerivice {
 	 * @return
 	 */
 	public ReplyDomain tickOutRole(User user, int roleId) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		if (role.getGuildId() == 0) {
+			return ReplyDomain.FAILE;
+		}
+
+		Guild guild = guildCache.get(role.getGuildId());
+
+		// 副会长以上的权限才能够踢人
+		GuildMember guildMember = guild.getGuildMember(role.getId());
+		if (guildMember.getMemberIdentityId() < GuildMemberIdentity.VICE_PRESIDENT.getId()) {
+			return ReplyDomain.LACK_OF_GUILD_JURISDICTION;
+		}
+
 		lock.tryLock();
 		try {
-			Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
-
-			if (role.getGuildId() == 0) {
-				return ReplyDomain.FAILE;
-			}
-
-			Guild guild = guildCache.get(role.getGuildId());
-
-			// 副会长以上的权限才能够踢人
-			GuildMember guildMember = guild.getGuildMember(role.getId());
-			if (guildMember.getMemberIdentityId() < GuildMemberIdentity.VICE_PRESIDENT.getId()) {
-				return ReplyDomain.LACK_OF_GUILD_JURISDICTION;
-			}
 
 			GuildMember tickOutGuildMember = guild.getGuildMember(roleId);
 			if (tickOutGuildMember == null) {
@@ -276,7 +326,7 @@ public class GuildSerivice {
 			}
 
 			// 平权跟权限不高的不能踢
-			if (tickOutGuildMember.getMemberIdentityId() <= guildMember.getMemberIdentityId()) {
+			if (tickOutGuildMember.getMemberIdentityId() >= guildMember.getMemberIdentityId()) {
 				return ReplyDomain.LACK_OF_GUILD_JURISDICTION;
 			}
 
@@ -284,7 +334,7 @@ public class GuildSerivice {
 
 			updateRoleGuildStatus(0, roleId, tickOutGuildMember.getUserId());
 			// 用户在线时notify
-			if (UserService.INSTANCE.getUser(tickOutGuildMember.getUserId()) == null) {
+			if (RoleService.INSTANCE.isOnline(roleId)) {
 				ReplyDomain notify = new ReplyDomain();
 				notify.setStringDomain("公会名称", guild.getName());
 				notify.setStringDomain("cmd", GuildExtension.NOTIFY_USER_TICK_OUT);
@@ -391,20 +441,23 @@ public class GuildSerivice {
 		}
 
 		Guild guild = guildCache.get(role.getGuildId());
-		GuildMember guildMember = guild.getGuildMember(role.getId());
-		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
-		if (!authority.isCanSeeBank()) {
-			return ReplyDomain.GUILD_AUTHORITY;
-		}
+//		GuildMember guildMember = guild.getGuildMember(role.getId());
+//		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
+//		if (!authority.isCanSeeBank()) {
+//			return ReplyDomain.GUILD_AUTHORITY;
+//		}
 
 		BagMaterial bagMaterial = role.getBagMaterialIndex(index);
+		if (bagMaterial == null) {
+			return ReplyDomain.FAILE;
+		}
 		if (bagMaterial.getQuantity() < num) {
 			return ReplyDomain.NOT_ENOUGH;
 		}
 
 		BagMaterial guildMaterial = role.decMaterialIndex(index, num);
-
 		ReplyDomain domain = guild.accessMaterial(guildMaterial);
+
 		return domain;
 	}
 
@@ -424,11 +477,12 @@ public class GuildSerivice {
 		}
 
 		Guild guild = guildCache.get(role.getGuildId());
-		GuildMember guildMember = guild.getGuildMember(role.getId());
-		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
-		if (!authority.isCanSeeBank()) {
-			return ReplyDomain.GUILD_AUTHORITY;
-		}
+//		GuildMember guildMember = guild.getGuildMember(role.getId());
+
+//		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
+//		if (!authority.isCanSeeBank()) {
+//			return ReplyDomain.GUILD_AUTHORITY;
+//		}
 
 		UserTreasure userTreasure = role.getRoleTreasure(id);
 		if (userTreasure.getQuantity() < num) {
@@ -469,18 +523,23 @@ public class GuildSerivice {
 		}
 
 		Guild guild = guildCache.get(role.getGuildId());
+
+		// 副会长以上的职位才能领取
 		GuildMember guildMember = guild.getGuildMember(role.getId());
-
-		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
-		if (!authority.isCanSeeBank()) {
-			return ReplyDomain.GUILD_AUTHORITY;
+		if (guildMember.getMemberIdentityId() <= GuildMemberIdentity.VICE_PRESIDENT.getId()) {
+			return ReplyDomain.LACK_OF_GUILD_JURISDICTION;
 		}
 
-		int dayCanGet = authority.getTakeBankMaterialNum();
-		int count = CounterService.INSTANCE.getRoleCounterRecord(role.getId(), CounterKey.GET_GUILD_TREASURE);
-		if (count >= dayCanGet) {
-			return ReplyDomain.NOT_ENOUGH;
-		}
+//		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
+//		if (!authority.isCanSeeBank()) {
+//			return ReplyDomain.GUILD_AUTHORITY;
+//		}
+
+//		int dayCanGet = authority.getTakeBankMaterialNum();
+//		int count = CounterService.INSTANCE.getRoleCounterRecord(role.getId(), CounterKey.GET_GUILD_TREASURE);
+//		if (count >= dayCanGet) {
+//			return ReplyDomain.NOT_ENOUGH;
+//		}
 
 		lock.lock();
 		try {
@@ -501,14 +560,16 @@ public class GuildSerivice {
 	}
 
 	/**
-	 * 公会报销（公会财富不能提取，只能报销），用户在买物品、修理装备时可以使用公会财富进行抵扣
+	 * 公会财富提取
 	 * 
 	 * @param role
 	 * @param id
 	 * @param num
 	 * @return
 	 */
-	public ReplyDomain guildReimbursement(Role role, int id, int num) {
+	public ReplyDomain guildReimbursement(User user, int id, int num) {
+
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		if (role.getGuildId() == 0) {
 			return ReplyDomain.FAILE;
@@ -517,29 +578,32 @@ public class GuildSerivice {
 		Guild guild = guildCache.get(role.getGuildId());
 		lock.lock();
 
-		// 验证有无超过权限与一天的领取限制
-
+		// 副会长以上的职位才能领取
 		GuildMember guildMember = guild.getGuildMember(role.getId());
-
-		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
-		if (!authority.isCanSeeBank()) {
-			return ReplyDomain.GUILD_AUTHORITY;
+		if (guildMember.getMemberIdentityId() <= GuildMemberIdentity.VICE_PRESIDENT.getId()) {
+			return ReplyDomain.LACK_OF_GUILD_JURISDICTION;
 		}
 
-		int dayCanUseGold = authority.getCanUseGold();
-		int count = CounterService.INSTANCE.getRoleCounterRecord(role.getId(), CounterKey.GET_GUILD_TREASURE);
-		if (count + num > dayCanUseGold) {
-			return ReplyDomain.NOT_ENOUGH;
-		}
+//		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
+//		if (!authority.isCanSeeBank()) {
+//			return ReplyDomain.GUILD_AUTHORITY;
+//		}
+//
+//		int dayCanUseGold = authority.getCanUseGold();
+//		int count = CounterService.INSTANCE.getRoleCounterRecord(role.getId(), CounterKey.GET_GUILD_TREASURE);
+//		if (count + num > dayCanUseGold) {
+//			return ReplyDomain.NOT_ENOUGH;
+//		}
 
 		try {
 			long guildNum = guild.getTreasureNum(id);
 			if (guildNum < num) {
-				return ReplyDomain.FAILE;
+				return ReplyDomain.NOT_ENOUGH;
 			}
 
 			guild.accessTreasure(id, -num);
-			CounterService.INSTANCE.updateRoleCounter(role.getId(), CounterKey.GET_GUILD_TREASURE, count + num);
+			MaterialService.INSTANCE.gainMasteral(user, role, "3:" + id + ":" + num);
+//			CounterService.INSTANCE.updateRoleCounter(role.getId(), CounterKey.GET_GUILD_TREASURE, count + num);
 		} finally {
 			lock.unlock();
 		}
@@ -559,7 +623,7 @@ public class GuildSerivice {
 		role.setGuildId(guildId);
 
 		// 更新角色信息
-		RoleDao.INSTANCE.updateRoleGuild(guildId, roleId, userId);
+		RoleDao.INSTANCE.updateRoleGuild(roleId, userId, guildId);
 	}
 
 	/**
@@ -577,16 +641,47 @@ public class GuildSerivice {
 		}
 
 		Guild guild = guildCache.get(role.getGuildId());
-		GuildMember guildMember = guild.getGuildMember(role.getId());
+//		GuildMember guildMember = guild.getGuildMember(role.getId());
 
-		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
-		if (!authority.isCanSeeBank()) {
-			return ReplyDomain.GUILD_AUTHORITY;
-		}
+//		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
+//		if (!authority.isCanSeeBank()) {
+//			return ReplyDomain.GUILD_AUTHORITY;
+//		}
 
 		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setStringDomain("公会物品", guild.getGuildBankStr());
 
 		return replyDomain;
+	}
+
+	/**
+	 * 把有关公会的信息都缓存
+	 * 
+	 * @param guild
+	 */
+	private void assemblingGuild(Guild guild) {
+		int guildId = guild.getId();
+		List<GuildApply> guildApplies = GuildDao.INSTANCE.getAllGuildApply(guildId);
+		List<GuildMember> guildMembers = GuildDao.INSTANCE.getGuildMembers(guildId);
+		List<BagMaterial> guildMaterial = GuildDao.INSTANCE.selectGuildMaterial(guildId);
+
+		List<GuildMemberAuthority> guildMemberAuthorities = GuildDao.INSTANCE.selectGuildMemberAuthority(guildId);
+		Map<Integer, GuildMemberAuthority> authorityMap = guildMemberAuthorities.stream()
+				.collect(Collectors.toMap(GuildMemberAuthority::getGuildMemberIdentityId, a -> a));
+
+		List<GuildTreasure> treasures = GuildDao.INSTANCE.selectGuildTreasure(guildId);
+
+		guild.setguildApply(guildApplies);
+		guild.setGuildMember(guildMembers);
+		guild.setAuthorityMap(authorityMap);
+
+		for (BagMaterial bagMaterial : guildMaterial) {
+			guild.putMaterial(bagMaterial);
+		}
+
+		for(GuildTreasure guildTreasure : treasures) {
+			guild.putGuildTreasure(guildTreasure.getId(), guildTreasure.getQuantity());
+		}
 	}
 
 	/**
@@ -609,6 +704,29 @@ public class GuildSerivice {
 
 			GuildExtension.notifyUser(user, domain);
 		}
+	}
+
+	/**
+	 * 改变公会成员的在线状态
+	 * 
+	 * @param data
+	 */
+	@Event(eventType = EventType.ROLE_CHANGE)
+	public void handleChangeRole(EventDealData<RoleChangeData> data) {
+		RoleChangeData roleChangeData = data.getData();
+
+		Role oldRole = roleChangeData.getOldRole();
+		if (oldRole != null && oldRole.getGuildId() != 0) {
+			Guild guild = guildCache.get(oldRole.getGuildId());
+			guild.getGuildMember(oldRole.getId()).setOnline(false);
+		}
+
+		Role newRole = roleChangeData.getNewRole();
+		if (newRole.getGuildId() != 0) {
+			Guild newGuild = guildCache.get(newRole.getGuildId());
+			newGuild.getGuildMember(newRole.getId()).setOnline(true);
+		}
+
 	}
 
 	// 用户下线，把他的缓存删除
