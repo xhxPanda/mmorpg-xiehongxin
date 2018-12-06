@@ -49,6 +49,7 @@ public class ReplyDomain {
 	public static final ReplyDomain TEAM_NOT_ALL_IN_SAME_SCENE = new ReplyDomain(ResultCode.TEAM_NOT_ALL_IN_SAME_SCENE);
 	public static final ReplyDomain NOT_IN_TEAM = new ReplyDomain(ResultCode.NOT_IN_TEAM);
 	public static final ReplyDomain NOT_IN_GUILD = new ReplyDomain(ResultCode.NOT_IN_GUILD);
+	public static final ReplyDomain HAS_COMFIRM = new ReplyDomain(ResultCode.HAS_COMFIRM);
 	
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

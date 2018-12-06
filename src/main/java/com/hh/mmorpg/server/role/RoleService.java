@@ -105,6 +105,11 @@ public class RoleService {
 	 * @return
 	 */
 	public ReplyDomain userUseRole(User user, int roleId) {
+
+		if (user == null) {
+			return ReplyDomain.FAILE;
+		}
+
 		int userId = user.getUserId();
 		Role oldRole = userRoleMap.get(userId);
 

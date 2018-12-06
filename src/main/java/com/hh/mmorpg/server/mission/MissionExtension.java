@@ -7,7 +7,7 @@ import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 9)
+@Extension(id = 12)
 public class MissionExtension {
 
 	private MissionService service = MissionService.INSTANCE;

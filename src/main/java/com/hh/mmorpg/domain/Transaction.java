@@ -74,6 +74,10 @@ public class Transaction {
 		roleConfirm.put(roleId, true);
 	}
 
+	public Boolean getConfirmInfo(int roleId) {
+		return roleConfirm.get(roleId);
+	}
+
 	/**
 	 * 判断双方是否已经确认
 	 * 
@@ -119,20 +123,39 @@ public class Transaction {
 			oneRole.decMaterialIndex(material.getIndex(), material.getQuantity());
 			oneReplyDomain.setStringDomain("扣减物品", material.getName() + "*" + material.getQuantity());
 		}
-		for (Entry<Integer, Integer> entry : oneTreasure.entrySet()) {
-			UserTreasure treasure = oneRole.getRoleTreasure(entry.getKey());
-			treasure.changeQuantity(-entry.getValue());
-			oneReplyDomain.setStringDomain("扣减物品",
-					UserTreasureType.getUserTreasureType(entry.getValue()) + "*" + entry.getValue());
+		if (oneTreasure != null) {
+			for (Entry<Integer, Integer> entry : oneTreasure.entrySet()) {
+				UserTreasure treasure = oneRole.getRoleTreasure(entry.getKey());
+				treasure.changeQuantity(-entry.getValue());
+				oneReplyDomain.setStringDomain("扣减物品",
+						UserTreasureType.getUserTreasureType(entry.getValue()) + "*" + entry.getValue());
+			}
+			for (Entry<Integer, Integer> entry : oneTreasure.entrySet()) {
+				UserTreasure treasure = twoRole.getRoleTreasure(entry.getKey());
+				treasure.changeQuantity(entry.getValue());
+				twoReplyDomain.setStringDomain("获得物品",
+						UserTreasureType.getUserTreasureType(entry.getValue()) + "*" + entry.getValue());
+			}
+
 		}
-		for (Entry<Integer, Integer> entry : twoTreasure.entrySet()) {
-			UserTreasure treasure = twoRole.getRoleTreasure(entry.getKey());
-			treasure.changeQuantity(-entry.getValue());
-			twoReplyDomain.setStringDomain("扣减物品",
-					UserTreasureType.getUserTreasureType(entry.getValue()) + "*" + entry.getValue());
+
+		if (twoTreasure != null) {
+			for (Entry<Integer, Integer> entry : twoTreasure.entrySet()) {
+				UserTreasure treasure = twoRole.getRoleTreasure(entry.getKey());
+				treasure.changeQuantity(-entry.getValue());
+				twoReplyDomain.setStringDomain("扣减物品",
+						UserTreasureType.getUserTreasureType(entry.getValue()) + "*" + entry.getValue());
+			}
+
+			for (Entry<Integer, Integer> entry : twoTreasure.entrySet()) {
+				UserTreasure treasure = oneRole.getRoleTreasure(entry.getKey());
+				treasure.changeQuantity(entry.getValue());
+				oneReplyDomain.setStringDomain("获得物品",
+						UserTreasureType.getUserTreasureType(entry.getValue()) + "*" + entry.getValue());
+			}
 		}
 		// 扣减物品 end
-		
+
 		// 获得物品
 		for (BagMaterial material : twoMaterial) {
 			oneRole.addMaterial(material);
@@ -141,20 +164,6 @@ public class Transaction {
 		for (BagMaterial material : oneMaterial) {
 			twoRole.addMaterial(material);
 			twoReplyDomain.setStringDomain("获得物品", material.getName() + "*" + material.getQuantity());
-		}
-
-		for (Entry<Integer, Integer> entry : oneTreasure.entrySet()) {
-			UserTreasure treasure = twoRole.getRoleTreasure(entry.getKey());
-			treasure.changeQuantity(entry.getValue());
-			twoReplyDomain.setStringDomain("获得物品",
-					UserTreasureType.getUserTreasureType(entry.getValue()) + "*" + entry.getValue());
-		}
-
-		for (Entry<Integer, Integer> entry : twoTreasure.entrySet()) {
-			UserTreasure treasure = oneRole.getRoleTreasure(entry.getKey());
-			treasure.changeQuantity(entry.getValue());
-			oneReplyDomain.setStringDomain("获得物品",
-					UserTreasureType.getUserTreasureType(entry.getValue()) + "*" + entry.getValue());
 		}
 
 		// 发送交易成功的notify
@@ -167,10 +176,11 @@ public class Transaction {
 	private List<BagMaterial> getBagMaterialList(int roleId) {
 		List<BagMaterial> list = new ArrayList<>();
 
-		for (Box box : exchangeMaterial.get(roleId).values()) {
-			list.add(box.getMaterial());
+		if (exchangeMaterial.get(roleId) != null) {
+			for (Box box : exchangeMaterial.get(roleId).values()) {
+				list.add(box.getMaterial());
+			}
 		}
-
 		return list;
 	}
 

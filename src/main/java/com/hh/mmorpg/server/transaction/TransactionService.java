@@ -11,8 +11,10 @@ import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.Transaction;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
+import com.hh.mmorpg.domain.UserTreasureType;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -34,6 +36,8 @@ public class TransactionService {
 		this.transactionMap = new ConcurrentHashMap<>();
 		this.transactionId = new AtomicInteger(0);
 		this.lock = new ReentrantLock();
+
+		EventHandlerManager.INSATNCE.register(this);
 	}
 
 	/**
@@ -175,10 +179,10 @@ public class TransactionService {
 			return ReplyDomain.NOT_ENOUGH;
 		}
 
-		transaction.addMaterial(role.getId(), bagMaterial);
+		transaction.addMaterial(role.getId(), new BagMaterial(bagMaterial, role.getId(), num));
 
 		ReplyDomain notify = new ReplyDomain();
-		notify.setStringDomain("对方放入了", bagMaterial.getName() + "*" + bagMaterial.getQuantity());
+		notify.setStringDomain("对方放入了", bagMaterial.getName() + "*" + num);
 		TransactionExtension.notifyRole(UserService.INSTANCE.getUser(anotherRole.getUserId()), notify);
 
 		return ReplyDomain.SUCCESS;
@@ -215,6 +219,10 @@ public class TransactionService {
 		}
 
 		transaction.addTreasure(role.getId(), id, num);
+
+		ReplyDomain notify = new ReplyDomain();
+		notify.setStringDomain("对方放入了", UserTreasureType.getUserTreasureType(id).getName() + "*" + num);
+		TransactionExtension.notifyRole(UserService.INSTANCE.getUser(anotherRole.getUserId()), notify);
 
 		return ReplyDomain.SUCCESS;
 	}
@@ -256,7 +264,7 @@ public class TransactionService {
 		User anOtherUser = UserService.INSTANCE.getUser(anotherRoleId.getUserId());
 
 		// 在线的话发消息
-		if (anOtherUser == null) {
+		if (anOtherUser != null) {
 			ReplyDomain notify = new ReplyDomain();
 
 			notify.setStringDomain("cmd", TransactionExtension.NOTIFY_TRANSACTION_SHUTDOWN);
@@ -274,6 +282,10 @@ public class TransactionService {
 			return ReplyDomain.FAILE;
 		}
 
+		if (transaction.getConfirmInfo(role.getId()) != null && transaction.getConfirmInfo(role.getId()) == true) {
+			return ReplyDomain.HAS_COMFIRM;
+		}
+
 		Role anotherRole = transaction.getAnotherRole(role.getId());
 
 		// 对方不在线，交易关闭
@@ -287,10 +299,16 @@ public class TransactionService {
 		if (transaction.judgeIsAllAccept()) {
 			ReplyDomain replyDomain = transaction.startTrade();
 
-			stopTransaction(role);
+			// 交易完成，关闭交易
+			transactionMap.remove(role.getTransactionPerson());
+			anotherRole.setTransactionPerson(0);
+			role.setTransactionPerson(0);
 
 			return replyDomain;
 		} else {
+			User anOtherUser = UserService.INSTANCE.getUser(anotherRole.getUserId());
+			ReplyDomain notify = new ReplyDomain();
+			TransactionExtension.notifyRole(anOtherUser, notify);
 			return ReplyDomain.SUCCESS;
 		}
 
