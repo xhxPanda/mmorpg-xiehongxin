@@ -17,5 +17,8 @@ public class MissionType {
 	public static final int TEAM_MISSION = 7; // 组队任务
 	public static final int MATERIAL_MISSION = 8; // 获得物品任务
 	public static final int EQUIMENT_MISSION = 9; // 穿上装备的任务
-
+	public static final int COPY = 10; // 通过副本
+	public static final int TREASURE = 11; // 获得财富类物品的任务
+	public static final int MISSION_CONPETE = 12; // 完成一系列的任务
+	public static final int TRANSCATION = 13; // 交易任务
 }

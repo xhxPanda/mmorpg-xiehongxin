@@ -22,7 +22,6 @@ public class MissionExtension {
 
 	@CmdService(cmd = SHOW_MISSION_CAN_ACCEPT)
 	public void showMissionCanAccept(User user, CMDdomain cmdDomain) {
-
 		ReplyDomain replyDomain = service.showMissionCanAccept(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
@@ -30,8 +29,8 @@ public class MissionExtension {
 	@CmdService(cmd = SHOW_MISSION_ACCEPTED)
 	public void showMissionAccept(User user, CMDdomain cmdDomain) {
 
-//		ReplyDomain replyDomain = service.showMissionAccept(user);
-//		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+		ReplyDomain replyDomain = service.showMissionAccept(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = ACCEPT_MISSION)
@@ -45,18 +44,18 @@ public class MissionExtension {
 	@CmdService(cmd = MISSION_COMPETE)
 	public void missionCompete(User user, CMDdomain cmdDomain) {
 		int missionId = cmdDomain.getIntParam(2);
-//
-//		ReplyDomain replyDomain = service.missionCompete(user, missionId);
-//
-//		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+
+		ReplyDomain replyDomain = service.missionCompete(user, missionId);
+
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = GIVE_UP_MISSION)
 	public void giveUpMission(User user, CMDdomain cmdDomain) {
 		int missionId = cmdDomain.getIntParam(2);
 
-//		ReplyDomain replyDomain = service.giveUpMission(user, missionId);
-//		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+		ReplyDomain replyDomain = service.giveUpMission(user, missionId);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	public static void notifyRoleMissionInfo(User user, ReplyDomain replyDomain) {

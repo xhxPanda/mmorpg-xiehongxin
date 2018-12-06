@@ -1,8 +1,7 @@
 package com.hh.mmorpg.server.mission.handler;
 
-import java.util.Map;
+import java.util.List;
 
-import com.hh.mmorpg.domain.MissionType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.event.data.GuildJoinData;
@@ -21,16 +20,15 @@ public class GuildJoinMissionHandler extends AbstractMissionHandler<GuildJoinDat
 	 * 获取用户升级信息，处理有关升级的任务
 	 */
 	@Override
-	public void dealMission(GuildJoinData eventData) {
+	public void dealMission(GuildJoinData eventData, List<RoleMission> missions) {
 		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
-		Map<Integer, RoleMission> missionMap = role.getRoleMissionCache().get(MissionType.TLAK_NPC);
-		if (missionMap == null || missionMap.size() == 0) {
+		if (missions.size() == 0) {
 			return;
 		}
 
-		for (RoleMission roleMission : missionMap.values()) {
+		for (RoleMission roleMission : missions) {
 			if (roleMission.getStatus() == 1) {
 				continue;
 			}

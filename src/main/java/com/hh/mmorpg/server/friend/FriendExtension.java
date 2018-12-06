@@ -12,7 +12,7 @@ import com.hh.mmorpg.server.ExtensionSender;
  * @author xhx 好友系统
  */
 
-@Extension(id = 12)
+@Extension(id = 9)
 public class FriendExtension {
 
 	private FriendService service = FriendService.INSTANCE;
@@ -30,7 +30,7 @@ public class FriendExtension {
 		ReplyDomain replyDomain = service.getRoleFriends(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
-	
+
 	@CmdService(cmd = GET_FRIENDS_APPLICATION)
 	public void getFriendsApplication(User user, CMDdomain cmDdomain) {
 		ReplyDomain replyDomain = service.getFriendsApplication(user);

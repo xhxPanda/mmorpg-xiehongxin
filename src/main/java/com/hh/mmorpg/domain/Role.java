@@ -49,14 +49,14 @@ public class Role extends LivingThing {
 
 	private int pkRoleId;
 
-	private Map<Integer, Map<Integer, RoleMission>> roleMissionCache;
-
 	// 背包
 	private Map<Integer, BagMaterial> materialMap;
 	// 财富背包
 	private Map<Integer, UserTreasure> treasureMap;
 	// 装备栏
 	private Map<Integer, UserEquipment> equipmentMap;
+	// 用户已接任务
+	private Map<Integer, RoleMission> roleMissionMap;
 
 	public Role(int userId, int id, String name, int occupationId, int capacity, int level, int exp, int lastJoinScene,
 			int teamId, String attributeStr, int guildId) {
@@ -97,7 +97,7 @@ public class Role extends LivingThing {
 		}
 		setAttributeMap(attributeMap);
 
-		this.roleMissionCache = new HashMap<>();
+		this.roleMissionMap = new HashMap<>();
 	}
 
 	public int getUserId() {
@@ -539,22 +539,11 @@ public class Role extends LivingThing {
 	}
 
 	/**
-	 * 获取用户已接受的任务
+	 * 领取新的任务
 	 * 
-	 * @param type
-	 * @param missionId
-	 * @return
+	 * @param roleMission
 	 */
-	public RoleMission getMission(int type, int missionId) {
-		return roleMissionCache.get(type).get(missionId);
-	}
-
 	public void reciveMission(RoleMission roleMission) {
-		Map<Integer, RoleMission> roleMissionMap = roleMissionCache.get(roleMission.getType());
-		if (roleMissionMap == null) {
-			roleMissionMap = new HashMap<>();
-			roleMissionCache.put(roleMission.getType(), roleMissionMap);
-		}
 
 		roleMissionMap.put(roleMission.getMissionId(), roleMission);
 	}
@@ -645,10 +634,6 @@ public class Role extends LivingThing {
 		this.equipmentMap = equipmentMap;
 	}
 
-	public Map<Integer, Map<Integer, RoleMission>> getRoleMissionCache() {
-		return roleMissionCache;
-	}
-
 	public int getTeamId() {
 		return teamId;
 	}
@@ -671,6 +656,14 @@ public class Role extends LivingThing {
 
 	public void setLastJoinScene(int lastJoinScene) {
 		this.lastJoinScene = lastJoinScene;
+	}
+
+	public Map<Integer, RoleMission> getRoleMissionMap() {
+		return roleMissionMap;
+	}
+
+	public void setRoleMissionMap(Map<Integer, RoleMission> roleMissionMap) {
+		this.roleMissionMap = roleMissionMap;
 	}
 
 }

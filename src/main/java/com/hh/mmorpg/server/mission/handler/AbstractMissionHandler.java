@@ -1,5 +1,7 @@
 package com.hh.mmorpg.server.mission.handler;
 
+import java.util.List;
+
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.domain.User;
@@ -19,7 +21,7 @@ import com.hh.mmorpg.service.user.UserService;
  *
  */
 public abstract class AbstractMissionHandler<T extends EventData> {
-	public abstract void dealMission(T eventData);
+	public abstract void dealMission(T eventData, List<RoleMission> missions);
 
 	/**
 	 * 完成任务后要做的的东西

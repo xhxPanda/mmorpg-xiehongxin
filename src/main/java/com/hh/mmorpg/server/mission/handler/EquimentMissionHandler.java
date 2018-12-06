@@ -1,8 +1,8 @@
 package com.hh.mmorpg.server.mission.handler;
 
+import java.util.List;
 import java.util.Map;
 
-import com.hh.mmorpg.domain.MissionType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.domain.UserEquipment;
@@ -17,18 +17,17 @@ import com.hh.mmorpg.event.data.EquimentLevelData;
 public class EquimentMissionHandler extends AbstractMissionHandler<EquimentLevelData> {
 
 	@Override
-	public void dealMission(EquimentLevelData eventData) {
+	public void dealMission(EquimentLevelData eventData, List<RoleMission> missions) {
 		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
 		Map<Integer, UserEquipment> equiments = eventData.getUserEquipmentMap();
 
-		Map<Integer, RoleMission> missionMap = role.getRoleMissionCache().get(MissionType.MATERIAL_MISSION);
-		if (missionMap == null || missionMap.size() == 0) {
+		if (missions.size() == 0) {
 			return;
 		}
 
-		for (RoleMission roleMission : missionMap.values()) {
+		for (RoleMission roleMission : missions) {
 			if (roleMission.getStatus() == 1) {
 				continue;
 			}

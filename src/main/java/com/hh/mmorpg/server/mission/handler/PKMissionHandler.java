@@ -1,8 +1,7 @@
 package com.hh.mmorpg.server.mission.handler;
 
-import java.util.Map;
+import java.util.List;
 
-import com.hh.mmorpg.domain.MissionType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.event.data.PKData;
@@ -13,18 +12,17 @@ public class PKMissionHandler extends AbstractMissionHandler<PKData> {
 	private static final String MISSION_ATT_KEY_PK = "p";
 
 	@Override
-	public void dealMission(PKData eventData) {
+	public void dealMission(PKData eventData, List<RoleMission> missions) {
 		// TODO Auto-generated method stub
 		int winRoleId = eventData.getWinRoleId();
 
 		Role role = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(winRoleId), winRoleId);
 
-		Map<Integer, RoleMission> missionMap = role.getRoleMissionCache().get(MissionType.TLAK_NPC);
-		if (missionMap == null || missionMap.size() == 0) {
+		if (missions.size() == 0) {
 			return;
 		}
 
-		for (RoleMission roleMission : missionMap.values()) {
+		for (RoleMission roleMission : missions) {
 			if (roleMission.getStatus() == 1) {
 				continue;
 			}

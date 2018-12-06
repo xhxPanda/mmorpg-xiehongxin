@@ -31,7 +31,7 @@ public class RoleMission {
 	 * @param missionAtts
 	 */
 	public RoleMission(int missionId, int roleId, String name, String dec, int type, int status,
-			Map<String, Integer> missionAtts) {
+			Map<String, MissionAttribute> missionAtts) {
 		this.missionId = missionId;
 		this.roleId = roleId;
 		this.status = status;
@@ -39,11 +39,7 @@ public class RoleMission {
 		this.dec = dec;
 		this.type = type;
 
-		this.attMap = new HashMap<>();
-		for (Entry<String, Integer> entry : missionAtts.entrySet()) {
-			MissionAttribute missionAttribute = new MissionAttribute(entry.getKey(), 0, entry.getValue());
-			attMap.put(missionAttribute.getKey(), missionAttribute);
-		}
+		this.attMap = missionAtts;
 	}
 
 	/**
@@ -91,37 +87,8 @@ public class RoleMission {
 	public boolean isMissionContainKey(String key) {
 		return attMap.containsKey(key);
 	}
-	
-	public List<String> getKeys(){
+
+	public List<String> getKeys() {
 		return new ArrayList<>(attMap.keySet());
-	}
-
-	class MissionAttribute {
-		private String key;
-		private int pocess;
-		private int max;
-
-		public MissionAttribute(String key, int pocess, int max) {
-			this.key = key;
-			this.pocess = pocess;
-			this.max = max;
-		}
-
-		public String getKey() {
-			return key;
-		}
-
-		public int getPocess() {
-			return pocess;
-		}
-
-		public int getMax() {
-			return max;
-		}
-
-		public void changeProcess(int value) {
-			this.pocess = (pocess + value) >= max ? max : (pocess + value);
-		}
-
 	}
 }
