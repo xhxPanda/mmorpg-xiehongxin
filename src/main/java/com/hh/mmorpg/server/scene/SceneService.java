@@ -345,8 +345,8 @@ public class SceneService {
 		UserEquipment userEquipment = role.getEquipmentMap().get(EquimentType.ARMS);
 		if (userEquipment == null || !userEquipment.dropDurability().isSuccess()) {
 			return ReplyDomain.EQUIMENT_DURABILITY_HARM;
-		} 
-		
+		}
+
 		long now = System.currentTimeMillis();
 
 		setAttackObject(scene, role, monster);
@@ -361,7 +361,7 @@ public class SceneService {
 		notifyReplyDomain.setStringDomain("m", monster.toString());
 		notifyReplyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BE_ATTACK);
 		scene.notifyAllUser(notifyReplyDomain);
-		
+
 		ReplyDomain domain = new ReplyDomain("攻击怪物" + ResultCode.SUCCESS);
 		return domain;
 	}
@@ -440,6 +440,7 @@ public class SceneService {
 	 * @param target
 	 */
 	private void setAttackObject(Scene scene, LivingThing attackObject, LivingThing target) {
+		
 		attackObject.setAttackObject(target);
 
 		Map<Integer, SummonMonster> summonMonsterMap = scene.getSummonMonstermap().get(attackObject.getId());
@@ -633,11 +634,11 @@ public class SceneService {
 		int userId = data.getData().getUserId();
 
 		Role oldRole = data.getData().getOldRole();
-		if(oldRole == null)
+		if (oldRole == null)
 			return;
 
 		Scene scene = sceneMap.get(oldRole.getSceneId());
-		
+
 		scene.userLeaveScene(userId);
 		judgeScene(scene);
 	}
@@ -649,14 +650,16 @@ public class SceneService {
 
 		Scene scene = sceneMap.get(monsterDeadData.getSceneId());
 
-		Monster monster = scene.getMonster(monsterDeadData.getMonsterId());
+		Monster monster = monsterDeadData.getMonster();
 		String bonus = monsterDeadBonus(monster.getKillFallItemMap());
+
+		Role role = monsterDeadData.getKillRole();
 
 		if (!bonus.isEmpty()) {
 
 			int id = IncrementManager.INSTANCE.increase("monsterBeKillBonus");
-			MonsterBeKillBonus monsterBeKillBonus = new MonsterBeKillBonus(id, monsterDeadData.getKillRoleId(),
-					monsterDeadData.getMonsterId(), System.currentTimeMillis(), bonus);
+			MonsterBeKillBonus monsterBeKillBonus = new MonsterBeKillBonus(id, role.getId(),
+					monsterDeadData.getMonster().getId(), System.currentTimeMillis(), bonus);
 			scene.addRoleKillMonsterBonus(monsterBeKillBonus);
 
 			ReplyDomain replyDomain = new ReplyDomain();
@@ -665,6 +668,25 @@ public class SceneService {
 
 			// 通知前端奖励加入场景
 			scene.notifyAllUser(replyDomain);
+		}
+
+		// 角色分配exp，队伍中的人都能获得经验
+		int teamId = role.getTeamId();
+		if (teamId == 0) {
+			User user = UserService.INSTANCE.getUser(role.getUserId());
+			MaterialService.INSTANCE.gainMasteral(user, role, "4:1:" + monster.getExp());
+			return;
+		}
+
+		Map<Integer, TeamMate> team = TeamService.INSTANCE.getTeam(teamId);
+		for (TeamMate teamMate : team.values()) {
+			if (!RoleService.INSTANCE.isOnline(teamMate.getRoleId())) {
+				continue;
+			}
+
+			Role teamRole = RoleService.INSTANCE.getUserRole(teamMate.getUserId(), teamMate.getRoleId());
+			User user = UserService.INSTANCE.getUser(teamMate.getUserId());
+			MaterialService.INSTANCE.gainMasteral(user, teamRole, "4:1:" + monster.getExp());
 		}
 
 	}

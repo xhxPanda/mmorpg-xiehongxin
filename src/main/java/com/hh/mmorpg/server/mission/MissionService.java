@@ -15,18 +15,25 @@ import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.EquimentLevelData;
+import com.hh.mmorpg.event.data.FriendData;
 import com.hh.mmorpg.event.data.GetMaterialData;
 import com.hh.mmorpg.event.data.GuildJoinData;
 import com.hh.mmorpg.event.data.JoinTeamData;
+import com.hh.mmorpg.event.data.MissionCompeteData;
+import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.NpcTalkData;
 import com.hh.mmorpg.event.data.UpdateLevelData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.mission.handler.AbstractMissionHandler;
+import com.hh.mmorpg.server.mission.handler.AddFriendMissionHandler;
 import com.hh.mmorpg.server.mission.handler.EquimentMissionHandler;
 import com.hh.mmorpg.server.mission.handler.GuildJoinMissionHandler;
+import com.hh.mmorpg.server.mission.handler.JoinTeamMission;
+import com.hh.mmorpg.server.mission.handler.KillMonsterMissionHandler;
 import com.hh.mmorpg.server.mission.handler.LevelUpMissionHandler;
 import com.hh.mmorpg.server.mission.handler.MaterialMissionHandler;
+import com.hh.mmorpg.server.mission.handler.MissionCompeteMissionHandler;
 import com.hh.mmorpg.server.mission.handler.NpcTalkMissionHandler;
 import com.hh.mmorpg.server.role.RoleService;
 
@@ -48,6 +55,10 @@ public class MissionService {
 		handlerMap.put(MissionType.MATERIAL_MISSION, new MaterialMissionHandler());
 		handlerMap.put(MissionType.EQUIMENT_MISSION, new EquimentMissionHandler());
 		handlerMap.put(MissionType.GUILD_MISSION, new GuildJoinMissionHandler());
+		handlerMap.put(MissionType.KILL_MONSTER, new KillMonsterMissionHandler());
+		handlerMap.put(MissionType.MISSION_CONPETE, new MissionCompeteMissionHandler());
+		handlerMap.put(MissionType.ADD_FIREND, new AddFriendMissionHandler());
+		handlerMap.put(MissionType.TEAM_MISSION, new JoinTeamMission());
 
 		// 注册监听
 		EventHandlerManager.INSATNCE.register(this);
@@ -97,6 +108,9 @@ public class MissionService {
 			return ReplyDomain.MISSION_NOT_EXIST;
 		}
 
+		// 设置任务状态为已领取奖品
+		roleMission.setStatus(2);
+
 		MissionDomain missionDomain = missionDomainMap.get(missionId);
 		MaterialService.INSTANCE.gainMasteral(user, role, missionDomain.getBonus());
 		return ReplyDomain.SUCCESS;
@@ -134,8 +148,17 @@ public class MissionService {
 
 		Map<Integer, RoleMission> roleMission = role.getRoleMissionMap();
 
+		// 去除已领奖的任务
+		List<RoleMission> roleMissions = new ArrayList<>();
+		for (RoleMission mission : roleMission.values()) {
+			if (mission.getStatus() == 2) {
+				continue;
+			}
+			roleMissions.add(mission);
+		}
+
 		ReplyDomain replyDomain = new ReplyDomain();
-		replyDomain.setListDomain("已接受任务", roleMission.values());
+		replyDomain.setListDomain("已接受任务", roleMissions);
 
 		return replyDomain;
 	}
@@ -232,6 +255,31 @@ public class MissionService {
 		handlerMap.get(MissionType.TEAM_MISSION).dealMission(joinTeamData,
 				getRoleMissionByType(joinTeamData.getRole(), MissionType.TEAM_MISSION));
 	}
+
+	@SuppressWarnings("unchecked")
+	@Event(eventType = EventType.MISSION_COMPETE)
+	public void handleUserMissionCompete(EventDealData<MissionCompeteData> data) {
+		MissionCompeteData competeData = data.getData();
+		handlerMap.get(MissionType.MISSION_CONPETE).dealMission(competeData,
+				getRoleMissionByType(competeData.getRole(), MissionType.MISSION_CONPETE));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Event(eventType = EventType.MONSTER_DEAD)
+	public void handleMonsterDead(EventDealData<MonsterDeadData> data) {
+		MonsterDeadData monsterDeadData = data.getData();
+		handlerMap.get(MissionType.KILL_MONSTER).dealMission(monsterDeadData,
+				getRoleMissionByType(monsterDeadData.getKillRole(), MissionType.KILL_MONSTER));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Event(eventType = EventType.BECOME_FRIEND)
+	public void handleAddFriend(EventDealData<FriendData> data) {
+		FriendData monsterDeadData = data.getData();
+		handlerMap.get(MissionType.ADD_FIREND).dealMission(monsterDeadData,
+				getRoleMissionByType(monsterDeadData.getRole(), MissionType.ADD_FIREND));
+	}
+
 
 	private List<RoleMission> getRoleMissionByType(Role role, int type) {
 		List<RoleMission> missionList = new ArrayList<>();

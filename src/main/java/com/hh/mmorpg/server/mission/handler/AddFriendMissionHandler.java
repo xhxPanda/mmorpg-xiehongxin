@@ -4,23 +4,14 @@ import java.util.List;
 
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
-import com.hh.mmorpg.event.data.GuildJoinData;
+import com.hh.mmorpg.event.data.FriendData;
 
-/**
- * 处理有关加入公会的任务
- * 
- * @author xhx
- *
- */
-public class GuildJoinMissionHandler extends AbstractMissionHandler<GuildJoinData> {
+public class AddFriendMissionHandler extends AbstractMissionHandler<FriendData> {
 
-	private static final String MISSION_ATT_KEY_GUILD = "g";
+	private static final String MISSION_ATT_KEY_FRIEND = "f";
 
-	/**
-	 * 获取用户公会信息，处理有关公会的任务
-	 */
 	@Override
-	public void dealMission(GuildJoinData eventData, List<RoleMission> missions) {
+	public void dealMission(FriendData eventData, List<RoleMission> missions) {
 		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
@@ -35,8 +26,8 @@ public class GuildJoinMissionHandler extends AbstractMissionHandler<GuildJoinDat
 			if (roleMission.isMissionCompete()) {
 				continue;
 			}
-
-			roleMission.updateMissionProcess(MISSION_ATT_KEY_GUILD, 1);
+			roleMission.updateMissionProcess(MISSION_ATT_KEY_FRIEND, 1);
+			notifyMissionStatusChange(role, roleMission);
 			if (roleMission.isMissionCompete()) {
 				dealFinishMission(role, roleMission);
 			}

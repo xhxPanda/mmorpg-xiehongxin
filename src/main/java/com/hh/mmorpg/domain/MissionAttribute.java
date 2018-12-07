@@ -43,4 +43,7 @@ public class MissionAttribute {
 		return dec;
 	}
 
+	public String toString() {
+		return dec + ":" + max + "/" + pocess;
+	}
 }

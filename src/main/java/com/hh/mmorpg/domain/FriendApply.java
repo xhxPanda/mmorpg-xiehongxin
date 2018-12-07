@@ -12,13 +12,15 @@ public class FriendApply {
 	private String roleName;
 	private int roleLevel;
 	private String content;
+	private int userId;
 
-	public FriendApply(int applyRoleId, int roleId, String roleName, int roleLevel, String content) {
+	public FriendApply(int applyRoleId, int roleId, String roleName, int roleLevel, String content,  int userId) {
 		this.applyRoleId = applyRoleId;
 		this.roleId = roleId;
 		this.roleName = roleName;
 		this.roleLevel = roleLevel;
 		this.content = content;
+		this.userId = userId;
 	}
 
 	public int getApplyRoleId() {
@@ -40,6 +42,12 @@ public class FriendApply {
 	public String getContent() {
 		return content;
 	}
+	
+	
+
+	public int getUserId() {
+		return userId;
+	}
 
 	@Override
 	public String toString() {
@@ -57,7 +65,8 @@ public class FriendApply {
 			String roleName = result.getString("roleName");
 			int roleLevel = result.getInt("roleLevel");
 			String content = result.getString("content");
-			return new FriendApply(applyId, roleId, roleName, roleLevel, content);
+			int userId = result.getInt("userId");
+			return new FriendApply(applyId, roleId, roleName, roleLevel, content, userId);
 		}
 	};
 }

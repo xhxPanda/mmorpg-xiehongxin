@@ -18,6 +18,7 @@ public class Monster extends LivingThing {
 	private Map<String, Integer> killFallItemMap;
 
 	private boolean isNeedAi; // 是否需要主动攻击
+	private int exp; // 经验
 
 	public Monster(int uniqueId, int sceneId, MonsterDomain domain, boolean isNeedAi) {
 		super(domain.getId(), uniqueId, domain.getName());
@@ -25,6 +26,7 @@ public class Monster extends LivingThing {
 		this.freshTime = domain.getFreshTime();
 		this.killFallItemMap = domain.getKillFallItemMap();
 		this.isNeedAi = isNeedAi;
+		this.exp = domain.getExp();
 		setAttributeMap(domain.getAttributeMap());
 		setSkillMap(domain.getRoleSkillMap());
 		setSceneId(sceneId);
@@ -46,11 +48,11 @@ public class Monster extends LivingThing {
 		setStatus(false);
 		setBeKilledTime(System.currentTimeMillis());
 
-		setAttackObject(null);
-
 		// 抛出最后一击的人
-		MonsterDeadData data = new MonsterDeadData(getUniqueId(), getAttackObject().getId(), getSceneId());
+		MonsterDeadData data = new MonsterDeadData(this, (Role) getAttackObject(), getSceneId());
 		EventHandlerManager.INSATNCE.methodInvoke(EventType.MONSTER_DEAD, new EventDealData<MonsterDeadData>(data));
+
+		setAttackObject(null);
 	}
 
 	public Map<String, Integer> getKillFallItemMap() {
@@ -63,6 +65,10 @@ public class Monster extends LivingThing {
 
 	public boolean isNeedAi() {
 		return isNeedAi;
+	}
+
+	public int getExp() {
+		return exp;
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.RoleChangeData;
+import com.hh.mmorpg.event.data.UpdateLevelData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
@@ -33,6 +34,7 @@ import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.scene.SceneService;
 import com.hh.mmorpg.server.skill.SkillService;
+import com.hh.mmorpg.service.user.UserService;
 
 public class RoleService {
 
@@ -311,11 +313,29 @@ public class RoleService {
 		int userId = userLostData.getUser().getUserId();
 		Role role = userRoleMap.remove(userId);
 
+		if (role == null) {
+			return;
+		}
+
 		RoleDao.INSTANCE.updateRole(role);
 
 		roleToUser.remove(role.getId());
 		MaterialService.INSTANCE.persistenceRoleMatetrial(role);
 		System.out.println("删除用户缓存使用角色");
+	}
+
+	@Event(eventType = EventType.LEVEL_UP)
+	public void handleUserLevelUp(EventDealData<UpdateLevelData> data) {
+		UpdateLevelData updateLevelData = data.getData();
+
+		Role role = updateLevelData.getRole();
+		if (isOnline(role.getId())) {
+			User user = UserService.INSTANCE.getUser(role.getUserId());
+
+			ReplyDomain replyDomain = new ReplyDomain();
+			replyDomain.setIntDomain("恭喜你，等级达到了", updateLevelData.getNewLevel());
+			RoleExtension.notify(user, replyDomain);
+		}
 	}
 
 }

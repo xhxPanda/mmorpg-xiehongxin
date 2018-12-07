@@ -34,15 +34,30 @@ public abstract class AbstractMissionHandler<T extends EventData> {
 
 		// 唤醒前端
 		if (user != null) {
-			ReplyDomain domain = new ReplyDomain();
-			domain.setStringDomain("cmd", MissionExtension.NOTIFY_MISSION_COMPETE);
-			domain.setStringDomain("任务名称", mission.getName());
+			ReplyDomain replyDomain = new ReplyDomain();
+			replyDomain.setStringDomain("cmd", MissionExtension.NOTIFY_MISSION_COMPETE);
+			replyDomain.setStringDomain("任务名称", mission.getName());
+			MissionExtension.notifyRoleMissionInfo(user, replyDomain);
 		}
+
+		// 设置完成的状态
+		mission.setStatus(1);
 
 		// 抛出完成任务事件
 		MissionCompeteData missionCompeteData = new MissionCompeteData(mission.getMissionId(), role);
 		EventHandlerManager.INSATNCE.methodInvoke(EventType.MISSION_COMPETE,
 				new EventDealData<MissionCompeteData>(missionCompeteData));
+	}
+	
+	public void notifyMissionStatusChange(Role role, RoleMission mission) {
+		User user = UserService.INSTANCE.getUser(role.getUserId());
+		
+		if (user != null) {
+			ReplyDomain replyDomain = new ReplyDomain();
+			replyDomain.setStringDomain("cmd", MissionExtension.NOTIFY_MISSION_COMPETE);
+			replyDomain.setStringDomain("任务更新", mission.toString());
+			MissionExtension.notifyRoleMissionInfo(user, replyDomain);
+		}
 	}
 
 }

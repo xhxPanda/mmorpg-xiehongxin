@@ -17,11 +17,14 @@ public class MonsterDomain {
 	private Map<String, Integer> killFallItemMap;
 	private Map<Integer, RoleSkill> roleSkillMap;
 
+	private int exp;
+
 	public MonsterDomain(int id, String name, int freshTime, String attributeStr, String killFallItemStr,
-			String skillsStr) {
+			String skillsStr, int exp) {
 		this.id = id;
 		this.name = name;
 		this.freshTime = freshTime;
+		this.exp = exp;
 
 		this.attributeMap = new HashMap<>();
 		for (String attributeDomain : attributeStr.split(",")) {
@@ -71,6 +74,10 @@ public class MonsterDomain {
 
 	public Map<Integer, RoleSkill> getRoleSkillMap() {
 		return roleSkillMap;
+	}
+
+	public int getExp() {
+		return exp;
 	}
 
 }

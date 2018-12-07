@@ -14,7 +14,7 @@ public class RoleDao {
 	private static final int DB_INDEX = 1000 * 10000;
 
 	private static final String SELECT_USER_ROLE = "SELECT * FROM role%s where userId = ?";
-	private static final String SELECT_ROLE = "SELECT * FROM role0 where roleId = ?";
+	private static final String SELECT_ROLE = "SELECT * FROM role0 where `id` = ?";
 	private static final String INSERT_USER_ROLE = "INSERT INTO `role0` (`userId`, `id`, `occupationId`, `name`, `capacity`, `TeamId`, `exp`, `Level`, `lastJoinScene`, `attribute`, `guildId`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private static final String UPDATE_ROLE_SKILL = "REPLACE INTO `RoleSkill` (`roleId`, `SkillId`, `level`, `LastUsedTime`) values (?, ?, ?, ?)";

@@ -132,6 +132,7 @@ public class SkillService {
 
 		if (needAttackLivingThings.size() != 0) {
 			for (LivingThing beAttackedObject : needAttackLivingThings) {
+				beAttackedObject.setAttackObject(attackedObject);
 				for (Entry<Integer, Integer> entry : domain.getEffectAttribute().entrySet()) {
 					// 具有伤害性的技能，需要计算防御值等
 					if (entry.getKey() == AttributeEnum.HP.getId() && entry.getValue() < 0) {
@@ -151,7 +152,7 @@ public class SkillService {
 					beAttackedObject.addBuff(buff);
 				}
 				
-				beAttackedObject.setAttackObject(attackedObject);
+				
 			}
 		}
 

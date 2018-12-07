@@ -179,6 +179,11 @@ public class GuildSerivice {
 		// 给自己设置公会id
 		role.setGuildId(guildId);
 
+		// 抛出角色进入公会事件
+		GuildJoinData guildJoinData = new GuildJoinData(role, guild.getId());
+		EventHandlerManager.INSATNCE.methodInvoke(EventType.JOIN_GUILD,
+				new EventDealData<GuildJoinData>(guildJoinData));
+
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 
 		return replyDomain;
@@ -679,7 +684,7 @@ public class GuildSerivice {
 			guild.putMaterial(bagMaterial);
 		}
 
-		for(GuildTreasure guildTreasure : treasures) {
+		for (GuildTreasure guildTreasure : treasures) {
 			guild.putGuildTreasure(guildTreasure.getId(), guildTreasure.getQuantity());
 		}
 	}

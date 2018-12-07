@@ -1,15 +1,13 @@
 package com.hh.mmorpg.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * 用户所接受的任务
  * 
- * @author 37
+ * @author xhx
  *
  */
 public class RoleMission {
@@ -72,6 +70,10 @@ public class RoleMission {
 		return status;
 	}
 
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -91,4 +93,24 @@ public class RoleMission {
 	public List<String> getKeys() {
 		return new ArrayList<>(attMap.keySet());
 	}
+
+	@Override
+	public String toString() {
+		return "任务 [任务id=" + missionId + ", 名称=" + name + ", 描述=" + dec + ", status=" + (status == -1 ? "待完成" : "已完成")
+				+ "," + getMissionProcess() + "]";
+	}
+
+	private String getMissionProcess() {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (MissionAttribute missionAttribute : attMap.values()) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(",");
+			}
+
+			stringBuilder.append(missionAttribute.toString());
+		}
+
+		return stringBuilder.toString();
+	}
+
 }

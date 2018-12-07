@@ -1,25 +1,27 @@
 package com.hh.mmorpg.event.data;
 
+import com.hh.mmorpg.domain.Monster;
+import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.event.EventData;
 
 public class MonsterDeadData extends EventData {
 
-	private int monsterId;
-	private int killRoleId;
+	private Monster monster;
+	private Role killRole;
 	private int sceneId;
 
-	public MonsterDeadData(int monsterId, int killRoleId, int sceneId) {
-		this.monsterId = monsterId;
-		this.killRoleId = killRoleId;
+	public MonsterDeadData(Monster monster, Role killRole, int sceneId) {
+		this.monster = monster;
+		this.killRole = killRole;
 		this.sceneId = sceneId;
 	}
 
-	public int getMonsterId() {
-		return monsterId;
+	public Monster getMonster() {
+		return monster;
 	}
 
-	public int getKillRoleId() {
-		return killRoleId;
+	public Role getKillRole() {
+		return killRole;
 	}
 
 	public int getSceneId() {

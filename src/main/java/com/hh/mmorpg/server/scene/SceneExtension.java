@@ -20,7 +20,7 @@ public class SceneExtension {
 	private static final String GET_ROLE_KILL_MONSTER_BONUS = "getRoleKillMonsterBonus";
 	private static final String JOIN_COPY_SCENE = "joinCopyScene"; // 进入副本
 
-	private static final String TALK_TO_NPC = "takeToNpc"; // 与npc交谈
+	private static final String TALK_TO_NPC = "talkToNpc"; // 与npc交谈
 
 	public static final String NOTIFY_USER_ENTER = "用户进入场景";
 	public static final String NOTIFY_USER_LEAVE = "用户离开场景";

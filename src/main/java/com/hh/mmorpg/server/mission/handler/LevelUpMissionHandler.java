@@ -38,6 +38,7 @@ public class LevelUpMissionHandler extends AbstractMissionHandler<UpdateLevelDat
 				continue;
 			}
 			roleMission.updateMissionProcess(MISSION_ATT_KEY_LEVEL, upLevel);
+			notifyMissionStatusChange(role, roleMission);
 			if (roleMission.isMissionCompete()) {
 				dealFinishMission(role, roleMission);
 			}

@@ -72,8 +72,14 @@ public class FriendService {
 			return ReplyDomain.FRIEND_FULL;
 		}
 
-		FriendApply apply = new FriendApply(roleId, role.getId(), role.getName(), role.getLevel(), content);
+		if (getFriendApply(role.getId()).containsKey(roleId)) {
+			return ReplyDomain.HAS_SENT_APPLY;
+		}
 
+		FriendApply apply = new FriendApply(roleId, role.getId(), role.getName(), role.getLevel(), content,
+				user.getUserId());
+
+		addApply(roleId, apply);
 		// 持久化申请的信息
 		FriendDao.INSTANCE.insertFriendApply(apply);
 
@@ -113,6 +119,8 @@ public class FriendService {
 			return ReplyDomain.FAILE;
 		}
 
+		FriendApply friendApply = map.get(roleId);
+
 		// 从检测对方的好友列表的时候加锁，因为这里有可能有并发问题
 		lock.lock();
 
@@ -131,11 +139,20 @@ public class FriendService {
 			Friend friend = new Friend(role.getId(), roleId, System.currentTimeMillis());
 			assemblingFriend(friend);
 			// 更新缓存
+			if (friendMap == null) {
+				friendMap = new HashMap<>();
+				cache.put(role.getId(), friendMap);
+			}
 			friendMap.put(friend.getFriendId(), friend);
 
 			// 生成对方的friend对象
-			Friend applyRolefriend = new Friend(role.getId(), roleId, System.currentTimeMillis());
-
+			Friend applyRolefriend = new Friend(roleId, role.getId(), System.currentTimeMillis());
+			assemblingFriend(applyRolefriend);
+			if (applyRoleMap == null) {
+				applyRoleMap = new HashMap<>();
+				cache.put(role.getId(), applyRoleMap);
+			}
+			applyRoleMap.put(applyRolefriend.getFriendId(), applyRolefriend);
 			// 两者都需要持久化
 			FriendDao.INSTANCE.insertFriend(friend);
 			FriendDao.INSTANCE.insertFriend(applyRolefriend);
@@ -154,7 +171,9 @@ public class FriendService {
 
 			// 抛出加好友事件
 			FriendData friendData = new FriendData(role, roleId);
-			FriendData applyFriendData = new FriendData(role, role.getId());
+
+			Role applyRole = RoleService.INSTANCE.getUserRole(friendApply.getUserId(), roleId);
+			FriendData applyFriendData = new FriendData(applyRole, role.getId());
 
 			EventHandlerManager.INSATNCE.methodInvoke(EventType.BECOME_FRIEND,
 					new EventDealData<FriendData>(friendData));
@@ -169,6 +188,12 @@ public class FriendService {
 		FriendDao.INSTANCE.deleteFriendApply(role.getId(), roleId);
 		map.remove(roleId);
 		return ReplyDomain.SUCCESS;
+	}
+
+	private void addApply(int roleId, FriendApply friendApply) {
+		Map<Integer, FriendApply> map = friendApplyMap.get(roleId);
+
+		map.put(friendApply.getRoleId(), friendApply);
 	}
 
 	/**
@@ -243,6 +268,27 @@ public class FriendService {
 		friend.setFriendName(role.getName());
 		friend.setFriendOccupation(OccupationEmun.getOccupationEmun(role.getOccupationId()).getName());
 		friend.setOnline(isOnline);
+	}
+
+	/**
+	 * 获取好友请求，如果缓存中没有就从数据库中获取
+	 * @param roleId
+	 * @return
+	 */
+	private Map<Integer, FriendApply> getFriendApply(int roleId) {
+		Map<Integer, FriendApply> map = friendApplyMap.get(roleId);
+
+		if (map == null) {
+			map = new HashMap<>();
+			friendApplyMap.put(roleId, map);
+		}
+		
+		List<FriendApply> friendApplies = FriendDao.INSTANCE.getRoleFriendsApply(roleId);
+		for(FriendApply friendApply : friendApplies) {
+			map.put(friendApply.getApplyRoleId(), friendApply);
+		}
+		
+		return map;
 	}
 
 	/**

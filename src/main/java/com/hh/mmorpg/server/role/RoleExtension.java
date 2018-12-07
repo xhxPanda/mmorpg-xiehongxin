@@ -17,6 +17,8 @@ public class RoleExtension {
 	private static final String USE_ROLE = "useRole"; // 使用角色
 	private static final String GET_USER_NOW_ROLE = "getUserNowRole"; // 获取用户当前角色的信息
 	private static final String TRANSFER_OCCUPATION = "transferOccupation"; // 转职
+	
+	public static final String NOTIFY_LEVEL_UP = "升级";
 
 	@CmdService(cmd = GET_ALL_ROLE)
 	public void getAllRole(User user, CMDdomain cmdDomain) {
@@ -55,5 +57,7 @@ public class RoleExtension {
 		ReplyDomain reply = service.transferOccupation(user, occupationId);
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
-
+	public static void notify(User user, ReplyDomain replyDomain) {
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
 }

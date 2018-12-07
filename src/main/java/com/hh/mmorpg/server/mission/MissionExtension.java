@@ -19,6 +19,7 @@ public class MissionExtension {
 	private static final String SHOW_MISSION_ACCEPTED = "showMissionAccept"; // 显示已接任务
 
 	public static final String NOTIFY_MISSION_COMPETE = "任务已完成";
+	public static final String NOTIFT_MISSION_PROCESS_CHANGE = "任务状态变化";
 
 	@CmdService(cmd = SHOW_MISSION_CAN_ACCEPT)
 	public void showMissionCanAccept(User user, CMDdomain cmdDomain) {
@@ -46,7 +47,6 @@ public class MissionExtension {
 		int missionId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.missionCompete(user, missionId);
-
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 

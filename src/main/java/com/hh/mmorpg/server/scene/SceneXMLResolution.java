@@ -131,15 +131,16 @@ public class SceneXMLResolution {
 			String attributeStr = element.attributeValue("attribute");
 			String skillsStr = element.attributeValue("skills");
 			String killFallItemStr = element.attributeValue("fallPossibility");
+			int exp = Integer.parseInt(element.attributeValue("exp"));
 			MonsterDomain monsterDomain = new MonsterDomain(id, name, freshTime, attributeStr, killFallItemStr,
-					skillsStr);
+					skillsStr, exp);
 
 			map.put(id, monsterDomain);
 		}
 
 		return map;
 	}
-	
+
 	public static final void main(String args[]) {
 		SceneXMLResolution.INSTANCE.resolution();
 	}

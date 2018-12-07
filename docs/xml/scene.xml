@@ -5,6 +5,7 @@
 		<npcs>
 			<npc id="1" name="古尔丹"></npc>
 			<npc id="2" name="血煞女王"></npc>
+			<npc id="3" name="遗忘之城大将"></npc>
 		</npcs>
 		<monsters monster="1:3,2:4" />
 	</scene>

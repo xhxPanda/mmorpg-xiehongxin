@@ -2,6 +2,7 @@ package com.hh.mmorpg.server.mission.handler;
 
 import java.util.List;
 
+import com.hh.mmorpg.domain.MissionAttribute;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.event.data.NpcTalkData;
@@ -14,10 +15,8 @@ import com.hh.mmorpg.event.data.NpcTalkData;
  */
 public class NpcTalkMissionHandler extends AbstractMissionHandler<NpcTalkData> {
 
-	private static final String MISSION_ATT_KEY_LEVEL = "l";
-
 	/**
-	 * 获取用户升级信息，处理有关升级的任务
+	 * 获取用户升级信息，处理有关与npc交谈的任务
 	 */
 	@Override
 	public void dealMission(NpcTalkData eventData, List<RoleMission> missions) {
@@ -37,14 +36,14 @@ public class NpcTalkMissionHandler extends AbstractMissionHandler<NpcTalkData> {
 			if (roleMission.isMissionCompete()) {
 				continue;
 			}
-			if (npcId != Integer.parseInt(roleMission.getDec())) {
-				continue;
+
+			if (roleMission.isMissionContainKey(String.valueOf(npcId))) {
+				roleMission.updateMissionProcess(String.valueOf(npcId), 1);
+				if (roleMission.isMissionCompete()) {
+					dealFinishMission(role, roleMission);
+				}
 			}
 
-			roleMission.updateMissionProcess(MISSION_ATT_KEY_LEVEL, 1);
-			if (roleMission.isMissionCompete()) {
-				dealFinishMission(role, roleMission);
-			}
 		}
 	}
 
