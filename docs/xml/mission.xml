@@ -26,10 +26,10 @@
 		needLevel="1" missionCondition="坚强布甲:100002:1,坚强腿甲:100003:1"></mission>
 
 	<mission id="9" name="一身极品" type="9" dec="身上的装备分数超过500分"
-		bonus="3:1:100" needLevel="1" missionCondition="m:s:1,m:a:1"></mission>
+		bonus="3:1:100" needLevel="1" missionCondition="分数:ml:500"></mission>
 
 	<mission id="10" name="交易" type="13" dec="与别人交易一次"
-		bonus="3:1:100" needLevel="2" missionCondition="m:s:1,m:a:1"></mission>
+		bonus="3:1:100" needLevel="2" missionCondition="交易:t:1"></mission>
 
 	<mission id="11" name="告别新手" type="12" dec="完成所有新手任务"
 		bonus="3:1:100" needLevel="1" missionCondition="提升自我:1:1,都城保卫战:2:1"></mission>

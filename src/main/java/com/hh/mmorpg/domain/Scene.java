@@ -325,12 +325,25 @@ public class Scene {
 		return npcRoleMap.get(npcId);
 	}
 
+	/**
+	 * 场景怪物自动攻击
+	 * 
+	 * @param monster
+	 * @param attackDistance
+	 */
 	private void monsterAIAttack(LivingThing monster, List<? extends LivingThing> attackDistance) {
 		List<RoleSkill> monsterSkillList = new ArrayList<>(monster.getSkillMap().values());
 
 		Random skillRandom = new Random();
 		int randomSkillIndex = skillRandom.nextInt(monsterSkillList.size());
 
+		// 在副本中有可能会没有指定目标
+		if(isCopy && monster.getAttackObject() == null) {
+			Random attackRandom = new Random();
+			int randomIndex = attackRandom.nextInt(attackDistance.size());
+			monster.setAttackObject(attackDistance.get(randomIndex));
+		}
+		
 		SkillService.INSTANCE.dealSkillEffect(monsterSkillList.get(randomSkillIndex), monster, attackDistance,
 				System.currentTimeMillis());
 	}
@@ -347,6 +360,7 @@ public class Scene {
 
 	/**
 	 * 副本刷新怪物，如果没有代表副本已完成
+	 * 
 	 * @return
 	 */
 	private boolean refreshMonster() {
@@ -423,11 +437,12 @@ public class Scene {
 					replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
 
 					// 完成副本后全场的用户都抛出完成副本的事件
-					for(SceneUserCache cache : userMap.values()) {
-						PassCopyData passCopyData  = new PassCopyData(cache.getRole(), sceneTypeId);
-						EventHandlerManager.INSATNCE.methodInvoke(EventType.PASS_COPY, new EventDealData<PassCopyData>(passCopyData));
+					for (SceneUserCache cache : userMap.values()) {
+						PassCopyData passCopyData = new PassCopyData(cache.getRole(), sceneTypeId);
+						EventHandlerManager.INSATNCE.methodInvoke(EventType.PASS_COPY,
+								new EventDealData<PassCopyData>(passCopyData));
 					}
-					
+
 					// 完成副本60分钟后解散副本
 					SceneService.INSTANCE.finishScene(id);
 					notifyAllUser(replyDomain);

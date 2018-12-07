@@ -7,7 +7,7 @@
 	<buff id="3" name="护甲" isBuff="true" attribute="2:30"
 		lastTime="200000" heartbeatTime="0" isCanResore="true" />
 	<buff id="4" name="中毒" isBuff="false" attribute="3:10"
-		lastTime="200000" heartbeatTime="0" isCanResore="false" />
+		lastTime="20000" heartbeatTime="0" isCanResore="false" />
 	<buff id="5" name="打晕" isBuff="false" attribute=""
 		lastTime="50000" heartbeatTime="0" isCanResore="false" />
 	<buff id="6" name="沉默" isBuff="false" attribute=""

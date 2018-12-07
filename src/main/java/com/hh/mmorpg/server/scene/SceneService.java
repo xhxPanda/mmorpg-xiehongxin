@@ -256,8 +256,6 @@ public class SceneService {
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("场景名称", scene.getName());
-		replyDomain.setStringDomain("场景名称", scene.getName());
-		replyDomain.setListDomain("角色列表", scene.getUserMap().values());
 		replyDomain.setListDomain("npc角色列表", scene.getNpcRoleMap().values());
 		replyDomain.setListDomain("怪物列表", scene.getMonsterMap().values());
 
@@ -440,7 +438,7 @@ public class SceneService {
 	 * @param target
 	 */
 	private void setAttackObject(Scene scene, LivingThing attackObject, LivingThing target) {
-		
+
 		attackObject.setAttackObject(target);
 
 		Map<Integer, SummonMonster> summonMonsterMap = scene.getSummonMonstermap().get(attackObject.getId());
@@ -495,6 +493,12 @@ public class SceneService {
 		return replyDomain;
 	}
 
+	/**
+	 * 拾取掉落
+	 * @param user
+	 * @param bonusId
+	 * @return
+	 */
 	public ReplyDomain getRoleKillMonsterBonus(User user, int bonusId) {
 		int userId = user.getUserId();
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
@@ -566,6 +570,12 @@ public class SceneService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 放怪物进场景中
+	 * @param userId
+	 * @param MonsterId
+	 * @return
+	 */
 	public ReplyDomain putMonsterIntoScene(int userId, int MonsterId) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
@@ -588,6 +598,13 @@ public class SceneService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 与npc对话
+	 * 
+	 * @param user
+	 * @param npcId
+	 * @return
+	 */
 	public ReplyDomain taklToNpc(User user, int npcId) {
 		int userId = user.getUserId();
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
