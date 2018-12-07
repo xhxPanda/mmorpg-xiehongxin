@@ -2,6 +2,10 @@ package com.hh.mmorpg.server.masterial.handler;
 
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserTreasure;
+import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.GainTreasureData;
 import com.hh.mmorpg.result.ReplyDomain;
 
 public class TreasureMaterialHandler extends AbstractMaterialHandler {
@@ -14,6 +18,11 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler {
 
 		UserTreasure treasure = role.getRoleTreasure(id);
 		treasure.changeQuantity(num);
+
+		GainTreasureData gainTreasureData = new GainTreasureData(role, id, num);
+		EventHandlerManager.INSATNCE.methodInvoke(EventType.TREASURE,
+				new EventDealData<GainTreasureData>(gainTreasureData));
+
 		return ReplyDomain.SUCCESS;
 	}
 

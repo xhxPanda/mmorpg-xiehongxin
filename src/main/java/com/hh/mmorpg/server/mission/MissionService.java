@@ -14,19 +14,22 @@ import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
-import com.hh.mmorpg.event.data.EquimentLevelData;
 import com.hh.mmorpg.event.data.FriendData;
+import com.hh.mmorpg.event.data.GainTreasureData;
 import com.hh.mmorpg.event.data.GetMaterialData;
 import com.hh.mmorpg.event.data.GuildJoinData;
 import com.hh.mmorpg.event.data.JoinTeamData;
 import com.hh.mmorpg.event.data.MissionCompeteData;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.NpcTalkData;
+import com.hh.mmorpg.event.data.PassCopyData;
 import com.hh.mmorpg.event.data.UpdateLevelData;
+import com.hh.mmorpg.event.data.UserEquimentData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.mission.handler.AbstractMissionHandler;
 import com.hh.mmorpg.server.mission.handler.AddFriendMissionHandler;
+import com.hh.mmorpg.server.mission.handler.CopyMissionHandler;
 import com.hh.mmorpg.server.mission.handler.EquimentMissionHandler;
 import com.hh.mmorpg.server.mission.handler.GuildJoinMissionHandler;
 import com.hh.mmorpg.server.mission.handler.JoinTeamMission;
@@ -35,6 +38,8 @@ import com.hh.mmorpg.server.mission.handler.LevelUpMissionHandler;
 import com.hh.mmorpg.server.mission.handler.MaterialMissionHandler;
 import com.hh.mmorpg.server.mission.handler.MissionCompeteMissionHandler;
 import com.hh.mmorpg.server.mission.handler.NpcTalkMissionHandler;
+import com.hh.mmorpg.server.mission.handler.TranscationMissionHandler;
+import com.hh.mmorpg.server.mission.handler.TreasureMissionHandler;
 import com.hh.mmorpg.server.role.RoleService;
 
 public class MissionService {
@@ -59,6 +64,9 @@ public class MissionService {
 		handlerMap.put(MissionType.MISSION_CONPETE, new MissionCompeteMissionHandler());
 		handlerMap.put(MissionType.ADD_FIREND, new AddFriendMissionHandler());
 		handlerMap.put(MissionType.TEAM_MISSION, new JoinTeamMission());
+		handlerMap.put(MissionType.COPY, new CopyMissionHandler());
+		handlerMap.put(MissionType.TREASURE, new TreasureMissionHandler());
+		handlerMap.put(MissionType.TRANSCATION, new TranscationMissionHandler());
 
 		// 注册监听
 		EventHandlerManager.INSATNCE.register(this);
@@ -232,8 +240,8 @@ public class MissionService {
 	// 处理用户穿装备的事件
 	@SuppressWarnings("unchecked")
 	@Event(eventType = EventType.WEAR_QUEIMENT)
-	public void handleUserWearEquiment(EventDealData<EquimentLevelData> data) {
-		EquimentLevelData equimentLevelData = data.getData();
+	public void handleUserWearEquiment(EventDealData<UserEquimentData> data) {
+		UserEquimentData equimentLevelData = data.getData();
 		handlerMap.get(MissionType.EQUIMENT_MISSION).dealMission(equimentLevelData,
 				getRoleMissionByType(equimentLevelData.getRole(), MissionType.EQUIMENT_MISSION));
 	}
@@ -256,6 +264,11 @@ public class MissionService {
 				getRoleMissionByType(joinTeamData.getRole(), MissionType.TEAM_MISSION));
 	}
 
+	/**
+	 * 完成任务
+	 * 
+	 * @param data
+	 */
 	@SuppressWarnings("unchecked")
 	@Event(eventType = EventType.MISSION_COMPETE)
 	public void handleUserMissionCompete(EventDealData<MissionCompeteData> data) {
@@ -264,6 +277,11 @@ public class MissionService {
 				getRoleMissionByType(competeData.getRole(), MissionType.MISSION_CONPETE));
 	}
 
+	/**
+	 * 打怪
+	 * 
+	 * @param data
+	 */
 	@SuppressWarnings("unchecked")
 	@Event(eventType = EventType.MONSTER_DEAD)
 	public void handleMonsterDead(EventDealData<MonsterDeadData> data) {
@@ -271,15 +289,45 @@ public class MissionService {
 		handlerMap.get(MissionType.KILL_MONSTER).dealMission(monsterDeadData,
 				getRoleMissionByType(monsterDeadData.getKillRole(), MissionType.KILL_MONSTER));
 	}
-	
+
+	/**
+	 * 加为好友
+	 * 
+	 * @param data
+	 */
 	@SuppressWarnings("unchecked")
 	@Event(eventType = EventType.BECOME_FRIEND)
 	public void handleAddFriend(EventDealData<FriendData> data) {
-		FriendData monsterDeadData = data.getData();
-		handlerMap.get(MissionType.ADD_FIREND).dealMission(monsterDeadData,
-				getRoleMissionByType(monsterDeadData.getRole(), MissionType.ADD_FIREND));
+		FriendData friendData = data.getData();
+		handlerMap.get(MissionType.ADD_FIREND).dealMission(friendData,
+				getRoleMissionByType(friendData.getRole(), MissionType.ADD_FIREND));
 	}
 
+	/**
+	 * 通关副本
+	 * 
+	 * @param data
+	 */
+	@SuppressWarnings("unchecked")
+	@Event(eventType = EventType.PASS_COPY)
+	public void handlePassCopy(EventDealData<PassCopyData> data) {
+		PassCopyData passCopyData = data.getData();
+		handlerMap.get(MissionType.COPY).dealMission(passCopyData,
+				getRoleMissionByType(passCopyData.getRole(), MissionType.COPY));
+	}
+
+	/**
+	 * 获得财富
+	 * 
+	 * @param data
+	 */
+	@SuppressWarnings("unchecked")
+	@Event(eventType = EventType.PASS_COPY)
+	public void handleGainTreasure(EventDealData<GainTreasureData> data) {
+		GainTreasureData passCopyData = data.getData();
+		handlerMap.get(MissionType.TREASURE).dealMission(passCopyData,
+				getRoleMissionByType(passCopyData.getRole(), MissionType.TREASURE));
+	}
 
 	private List<RoleMission> getRoleMissionByType(Role role, int type) {
 		List<RoleMission> missionList = new ArrayList<>();

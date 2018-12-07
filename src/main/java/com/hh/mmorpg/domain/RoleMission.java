@@ -90,6 +90,14 @@ public class RoleMission {
 		return attMap.containsKey(key);
 	}
 
+	public Map<String, MissionAttribute> getAttMap() {
+		return attMap;
+	}
+	
+	public MissionAttribute getAtt(String key) {
+		return attMap.get(key);
+	}
+
 	public List<String> getKeys() {
 		return new ArrayList<>(attMap.keySet());
 	}

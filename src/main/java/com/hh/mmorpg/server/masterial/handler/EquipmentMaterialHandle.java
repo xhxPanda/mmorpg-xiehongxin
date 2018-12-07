@@ -8,6 +8,10 @@ import com.hh.mmorpg.domain.EquimentDomain;
 import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.UserEquipment;
+import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.UserEquimentData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.equiment.UserEquimentService;
 import com.hh.mmorpg.server.masterial.MaterialDao;
@@ -38,11 +42,12 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 		UserEquipment userEquipment = new UserEquipment(role.getId(), uniqueId, equimentDomain.getId(),
 				equimentDomain.getName(), equimentDomain.getSellPrice(), equimentDomain.getEquimentLevel(),
 				equimentDomain.getEquimentSource(), equimentDomain.getMaxDurability(),
-				equimentDomain.getMaxDurability(), equimentDomain.getEquimentType(), equimentDomain.getAttributes(), false);
-		
+				equimentDomain.getMaxDurability(), equimentDomain.getEquimentType(), equimentDomain.getAttributes(),
+				false);
+
 		// 持久化
 		MaterialDao.INSTANCE.updateRoleEquiment(userEquipment);
-		
+
 		ReplyDomain replyDomain = role.addMaterial(new BagMaterial(uniqueId, roleId, equimentDomain.getId(),
 				equimentDomain.getName(), MaterialType.EQUIPMENT_TYPE.getId(), 1, 0, equimentDomain.getSellPrice()));
 
@@ -72,6 +77,10 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 		UserEquipment equipment = UserEquimentService.INSTANCE.getUserEquiment(uniqueId);
 
 		role.setEquipment(equipment);
+
+		UserEquimentData userEquimentData = new UserEquimentData(role);
+		EventHandlerManager.INSATNCE.methodInvoke(EventType.WEAR_QUEIMENT,
+				new EventDealData<UserEquimentData>(userEquimentData));
 		return ReplyDomain.SUCCESS;
 	}
 

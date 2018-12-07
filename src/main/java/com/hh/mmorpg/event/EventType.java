@@ -20,5 +20,8 @@ public class EventType {
 	public static final int JOIN_TEAM = 10; // 加入队伍
 	public static final int BECOME_FRIEND = 11; // 结为好友
 	public static final int PK = 12; // pk
+	public static final int PASS_COPY = 13; // 完成副本
+	public static final int TREASURE = 14; // 财富相关
+	public static final int TRANSACTION = 15; // 交易相关
 
 }

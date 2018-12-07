@@ -3,10 +3,11 @@ package com.hh.mmorpg.server.mission.handler;
 import java.util.List;
 import java.util.Map;
 
+import com.hh.mmorpg.domain.MissionAttribute;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.domain.UserEquipment;
-import com.hh.mmorpg.event.data.EquimentLevelData;
+import com.hh.mmorpg.event.data.UserEquimentData;
 
 /**
  * 身上的装备等级
@@ -14,17 +15,24 @@ import com.hh.mmorpg.event.data.EquimentLevelData;
  * @author xhx
  *
  */
-public class EquimentMissionHandler extends AbstractMissionHandler<EquimentLevelData> {
+public class EquimentMissionHandler extends AbstractMissionHandler<UserEquimentData> {
+
+	private static final String MISSION_LEVEL = "ml";
 
 	@Override
-	public void dealMission(EquimentLevelData eventData, List<RoleMission> missions) {
+	public void dealMission(UserEquimentData eventData, List<RoleMission> missions) {
 		// TODO Auto-generated method stub
-		Role role = eventData.getRole();
-
-		Map<Integer, UserEquipment> equiments = eventData.getUserEquipmentMap();
 
 		if (missions.size() == 0) {
 			return;
+		}
+
+		Role role = eventData.getRole();
+		Map<Integer, UserEquipment> equiments = role.getEquipmentMap();
+
+		int totalSource = 0;
+		for (UserEquipment userEquipment : equiments.values()) {
+			totalSource += userEquipment.getEquimentSource();
 		}
 
 		for (RoleMission roleMission : missions) {
@@ -35,21 +43,16 @@ public class EquimentMissionHandler extends AbstractMissionHandler<EquimentLevel
 				continue;
 			}
 
-			for (String s : roleMission.getKeys()) {
-				for (UserEquipment userEquipment : equiments.values()) {
-					// 如果有一件装备不符合，立刻跳出循环
-					if (userEquipment.getEquimentLevel() < Integer.parseInt(s)) {
-						break;
-					}
-				}
-				roleMission.updateMissionProcess(s, 1);
-				if (roleMission.isMissionCompete()) {
-					dealFinishMission(role, roleMission);
-					break;
-				}
+			MissionAttribute missionAttribute = roleMission.getAtt(MISSION_LEVEL);
+			if (missionAttribute.getMax() <= totalSource) {
+				missionAttribute
+						.setprocess(missionAttribute.getMax() <= totalSource ? missionAttribute.getMax() : totalSource);
 			}
-
+			if (roleMission.isMissionCompete()) {
+				dealFinishMission(role, roleMission);
+			}
 		}
+
 	}
 
 }

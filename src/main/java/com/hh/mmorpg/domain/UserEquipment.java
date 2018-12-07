@@ -148,4 +148,12 @@ public class UserEquipment {
 					maxDurability, durability, equimentType, attributes, inUsed);
 		}
 	};
+
+	@Override
+	public String toString() {
+		return "装备 [装备id=" + materialId + ", 名称=" + name + ", 武器等级=" + equimentLevel
+				+ ", 武器评分=" + equimentSource + ", 耐久度=" + maxDurability + "/"	+ durability + "]";
+	}
+	
+	
 }

@@ -16,6 +16,7 @@ import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
+import com.hh.mmorpg.event.data.TransactionData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.role.RoleService;
@@ -299,6 +300,16 @@ public class TransactionService {
 		if (transaction.judgeIsAllAccept()) {
 			ReplyDomain replyDomain = transaction.startTrade();
 
+			if (replyDomain.isSuccess()) {
+				// 抛出双方交易的事件
+				TransactionData oneData = new TransactionData(role, anotherRole);
+				TransactionData twoData = new TransactionData(role, anotherRole);
+
+				EventHandlerManager.INSATNCE.methodInvoke(EventType.TRANSACTION,
+						new EventDealData<TransactionData>(oneData));
+				EventHandlerManager.INSATNCE.methodInvoke(EventType.TRANSACTION,
+						new EventDealData<TransactionData>(twoData));
+			}
 			// 交易完成，关闭交易
 			transactionMap.remove(role.getTransactionPerson());
 			anotherRole.setTransactionPerson(0);

@@ -1,42 +1,42 @@
 <missions>
 	<mission id="1" name="提升自我" type="1" dec="把等级升到2级"
 		bonus="3:1:100" needLevel="1" missionCondition="m:l:2"></mission>
-		
+
 	<mission id="2" name="都城保卫战" type="2" needLevel="1"
 		dec="为了保护遗忘之城，需要抵御遗忘者的进攻，杀死4个遗忘者士兵，4个遗忘者将军" bonus="3:1:100"
 		missionCondition="遗忘者士兵:1:4,遗忘者将军:2:4"></mission>
-		
+
 	<mission id="3" name="与遗忘之城大将谈话" type="3" needLevel="1"
 		dec="与遗忘之城大将沟通，了解遗忘之城的历史" bonus="3:1:100"
 		missionCondition="遗忘之城大将:3:1"></mission>
-		
+
 	<mission id="4" name="获得一个好友" type="4" dec="获得一个好友"
 		needLevel="1" bonus="3:1:100" missionCondition="m:f:1"></mission>
-		
+
 	<mission id="5" name="pk胜利" type="5" dec="获得一次pk的胜利"
 		bonus="3:1:100" needLevel="1" missionCondition="m:s:1,m:a:1"></mission>
-		
+
 	<mission id="6" name="加入公会" type="6" dec="加入一个公会" needLevel="1"
 		bonus="3:1:100" missionCondition="加入公会:g:1"></mission>
-		
+
 	<mission id="7" name="组队" type="7" dec="组一次队" bonus="3:1:100"
 		needLevel="1" missionCondition="组队:t:1"></mission>
-		
+
 	<mission id="8" name="装备" type="8" dec="获得坚强套装" bonus="3:1:100"
-		needLevel="1" missionCondition="m:s:1,m:a:1"></mission>
-		
+		needLevel="1" missionCondition="坚强布甲:100002:1,坚强腿甲:100003:1"></mission>
+
 	<mission id="9" name="一身极品" type="9" dec="身上的装备分数超过500分"
 		bonus="3:1:100" needLevel="1" missionCondition="m:s:1,m:a:1"></mission>
-		
+
 	<mission id="10" name="交易" type="13" dec="与别人交易一次"
 		bonus="3:1:100" needLevel="2" missionCondition="m:s:1,m:a:1"></mission>
-		
+
 	<mission id="11" name="告别新手" type="12" dec="完成所有新手任务"
 		bonus="3:1:100" needLevel="1" missionCondition="提升自我:1:1,都城保卫战:2:1"></mission>
-		
+
 	<mission id="12" name="闯龙穴" type="10" dec="通过龙穴副本一次"
 		bonus="3:1:100" needLevel="5" missionCondition="龙穴:c:1"></mission>
-		
-	<mission id="13" name="富甲一方" type="11" dec="拥有1000000个金币"
+
+	<mission id="13" name="富甲一方" type="11" dec="累积拥有1000000个金币"
 		bonus="3:1:100" needLevel="1" missionCondition="金币:1:1000000"></mission>
 </missions>

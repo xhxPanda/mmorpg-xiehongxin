@@ -258,6 +258,7 @@ public class Role extends LivingThing {
 		for (Entry<Integer, Integer> entry : equipment.getAttributeMap().entrySet()) {
 			effectAttribute(0, entry.getKey(), entry.getValue(), "穿上装备");
 		}
+
 		equipment.setInUsed(true);
 		MaterialDao.INSTANCE.updateRoleEquiment(equipment);
 	}
@@ -280,14 +281,6 @@ public class Role extends LivingThing {
 					userEquipment.getName(), MaterialType.EQUIPMENT_TYPE.getId(), 1, 0, userEquipment.getSellPrice()));
 		}
 	}
-
-//	private int getEquimentSource() {
-//		int totalSource = 0;
-//		for (UserEquipment equipment : equipmentMap.values()) {
-//			totalSource += equipment.getEquimentSource();
-//		}
-//		return totalSource;
-//	}
 
 	public void addMaterial(Map<Integer, Material> materialMap) {
 		materialMap.putAll(materialMap);

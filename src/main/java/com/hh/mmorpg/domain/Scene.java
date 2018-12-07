@@ -17,6 +17,7 @@ import com.hh.mmorpg.event.EventDealData;
 import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MonsterDeadData;
+import com.hh.mmorpg.event.data.PassCopyData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.scene.SceneService;
@@ -344,6 +345,10 @@ public class Scene {
 		return roles;
 	}
 
+	/**
+	 * 副本刷新怪物，如果没有代表副本已完成
+	 * @return
+	 */
 	private boolean refreshMonster() {
 		if (isAllMonsterDead()) {
 //			int monsterRoundId = monsterRound.get()
@@ -417,6 +422,12 @@ public class Scene {
 					ReplyDomain replyDomain = new ReplyDomain();
 					replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
 
+					// 完成副本后全场的用户都抛出完成副本的事件
+					for(SceneUserCache cache : userMap.values()) {
+						PassCopyData passCopyData  = new PassCopyData(cache.getRole(), sceneTypeId);
+						EventHandlerManager.INSATNCE.methodInvoke(EventType.PASS_COPY, new EventDealData<PassCopyData>(passCopyData));
+					}
+					
 					// 完成副本60分钟后解散副本
 					SceneService.INSTANCE.finishScene(id);
 					notifyAllUser(replyDomain);
