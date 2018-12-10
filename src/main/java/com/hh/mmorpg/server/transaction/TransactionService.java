@@ -331,6 +331,11 @@ public class TransactionService {
 		UserLostData userLostData = data.getData();
 
 		Role role = userLostData.getRole();
+
+		if (role == null) {
+			return;
+		}
+
 		stopTransaction(role);
 	}
 

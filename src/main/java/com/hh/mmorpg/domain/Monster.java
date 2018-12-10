@@ -19,6 +19,7 @@ public class Monster extends LivingThing {
 
 	private boolean isNeedAi; // 是否需要主动攻击
 	private int exp; // 经验
+	private String lastAttackBonus;
 
 	public Monster(int uniqueId, int sceneId, MonsterDomain domain, boolean isNeedAi) {
 		super(domain.getId(), uniqueId, domain.getName());
@@ -27,6 +28,7 @@ public class Monster extends LivingThing {
 		this.killFallItemMap = domain.getKillFallItemMap();
 		this.isNeedAi = isNeedAi;
 		this.exp = domain.getExp();
+		this.lastAttackBonus = domain.getLastAttackBonus();
 		setAttributeMap(domain.getAttributeMap());
 		setSkillMap(domain.getRoleSkillMap());
 		setSceneId(sceneId);
@@ -69,6 +71,10 @@ public class Monster extends LivingThing {
 
 	public int getExp() {
 		return exp;
+	}
+
+	public String getLastAttackBonus() {
+		return lastAttackBonus;
 	}
 
 	@Override

@@ -131,9 +131,10 @@ public class SceneXMLResolution {
 			String attributeStr = element.attributeValue("attribute");
 			String skillsStr = element.attributeValue("skills");
 			String killFallItemStr = element.attributeValue("fallPossibility");
+			String lastAttackBonus = element.attributeValue("lastAttackBonus");
 			int exp = Integer.parseInt(element.attributeValue("exp"));
 			MonsterDomain monsterDomain = new MonsterDomain(id, name, freshTime, attributeStr, killFallItemStr,
-					skillsStr, exp);
+					skillsStr, exp, lastAttackBonus);
 
 			map.put(id, monsterDomain);
 		}

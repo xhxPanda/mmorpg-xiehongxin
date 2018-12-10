@@ -222,6 +222,11 @@ public class SceneService {
 					return ReplyDomain.TEAM_NOT_ALL_IN_SAME_SCENE;
 				}
 
+			}
+			
+			for (TeamMate teamMate : team.values()) {
+				SceneUserCache sceneUserCache = oldScene
+						.getSceneUserCache(RoleService.INSTANCE.getUserId(teamMate.getRoleId()));
 				if (sceneUserCache.getRole().getTransactionPerson() != 0) {
 					return ReplyDomain.IN_TRANSACTION;
 				}
@@ -495,6 +500,7 @@ public class SceneService {
 
 	/**
 	 * 拾取掉落
+	 * 
 	 * @param user
 	 * @param bonusId
 	 * @return
@@ -572,6 +578,7 @@ public class SceneService {
 
 	/**
 	 * 放怪物进场景中
+	 * 
 	 * @param userId
 	 * @param MonsterId
 	 * @return
@@ -633,6 +640,10 @@ public class SceneService {
 		UserLostData userLostData = data.getData();
 		Role role = userLostData.getRole();
 
+		if (role == null) {
+			return;
+		}
+
 		int sceneId = role.getSceneId();
 		if (sceneId == 0) {
 			return;
@@ -671,9 +682,14 @@ public class SceneService {
 		String bonus = monsterDeadBonus(monster.getKillFallItemMap());
 
 		Role role = monsterDeadData.getKillRole();
+		User user = UserService.INSTANCE.getUser(role.getUserId());
+		
+		// 发放最后一击奖励， 不在线就不用发了
+		if(!monster.getLastAttackBonus().isEmpty()) {
+			MaterialService.INSTANCE.gainMasteral(user, role, monster.getLastAttackBonus());
+		}
 
 		if (!bonus.isEmpty()) {
-
 			int id = IncrementManager.INSTANCE.increase("monsterBeKillBonus");
 			MonsterBeKillBonus monsterBeKillBonus = new MonsterBeKillBonus(id, role.getId(),
 					monsterDeadData.getMonster().getId(), System.currentTimeMillis(), bonus);
@@ -690,7 +706,7 @@ public class SceneService {
 		// 角色分配exp，队伍中的人都能获得经验
 		int teamId = role.getTeamId();
 		if (teamId == 0) {
-			User user = UserService.INSTANCE.getUser(role.getUserId());
+			
 			MaterialService.INSTANCE.gainMasteral(user, role, "4:1:" + monster.getExp());
 			return;
 		}
@@ -702,8 +718,8 @@ public class SceneService {
 			}
 
 			Role teamRole = RoleService.INSTANCE.getUserRole(teamMate.getUserId(), teamMate.getRoleId());
-			User user = UserService.INSTANCE.getUser(teamMate.getUserId());
-			MaterialService.INSTANCE.gainMasteral(user, teamRole, "4:1:" + monster.getExp());
+			User teamMateUser = UserService.INSTANCE.getUser(teamMate.getUserId());
+			MaterialService.INSTANCE.gainMasteral(teamMateUser, teamRole, "4:1:" + monster.getExp());
 		}
 
 	}

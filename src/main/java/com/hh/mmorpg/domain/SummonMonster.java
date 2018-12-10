@@ -4,16 +4,16 @@ import java.util.List;
 
 public class SummonMonster extends LivingThing {
 
-	private int belongerId;
+	private LivingThing belonger;
 	private long terminalTime;
 
 	// 单体攻击主攻对象
 	private List<? extends LivingThing> targetAttackObject;
 
-	public SummonMonster(int belongerId, int uniqueId, int sceneId, SummonDomain domain, long insistTime,
+	public SummonMonster(LivingThing belonger, int uniqueId, int sceneId, SummonDomain domain, long insistTime,
 			List<? extends LivingThing> targetAttackObject, LivingThing targetObject) {
 		super(domain.getId(), uniqueId, domain.getName());
-		this.belongerId = belongerId;
+		this.belonger = belonger;
 		this.terminalTime = insistTime + System.currentTimeMillis();
 		this.targetAttackObject = targetAttackObject;
 
@@ -41,8 +41,8 @@ public class SummonMonster extends LivingThing {
 
 	}
 
-	public int getBelongerId() {
-		return belongerId;
+	public LivingThing getBelonger() {
+		return belonger;
 	}
 
 	public long getTerminalTime() {

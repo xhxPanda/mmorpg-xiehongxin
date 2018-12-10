@@ -15,6 +15,8 @@ public class ExtensionSender {
 	}
 
 	public void sendReply(User user, ReplyDomain replyDomain) {
+		if(user == null)
+			return;
 		Channel channel = user.getChannel();
 		if (channel != null)
 			channel.writeAndFlush(new TextWebSocketFrame(replyDomain.parseJsonObject()));

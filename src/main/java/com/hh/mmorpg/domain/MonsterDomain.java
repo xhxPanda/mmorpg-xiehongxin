@@ -17,14 +17,17 @@ public class MonsterDomain {
 	private Map<String, Integer> killFallItemMap;
 	private Map<Integer, RoleSkill> roleSkillMap;
 
+	private String lastAttackBonus; // 最后一击奖品
+	
 	private int exp;
 
 	public MonsterDomain(int id, String name, int freshTime, String attributeStr, String killFallItemStr,
-			String skillsStr, int exp) {
+			String skillsStr, int exp, String lastAttackBonus) {
 		this.id = id;
 		this.name = name;
 		this.freshTime = freshTime;
 		this.exp = exp;
+		this.lastAttackBonus = lastAttackBonus;
 
 		this.attributeMap = new HashMap<>();
 		for (String attributeDomain : attributeStr.split(",")) {
@@ -78,6 +81,10 @@ public class MonsterDomain {
 
 	public int getExp() {
 		return exp;
+	}
+
+	public String getLastAttackBonus() {
+		return lastAttackBonus;
 	}
 
 }

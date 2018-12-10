@@ -290,6 +290,10 @@ public class Scene {
 
 				monsterAIAttack(summonMonster, summonMonster.getTargetAttackObject());
 			}
+			
+			for(SummonMonster summonMonster : needRemoveSummonMonster) {
+				summonMonstermap.remove(summonMonster.getUniqueId());
+			}
 		}
 	}
 

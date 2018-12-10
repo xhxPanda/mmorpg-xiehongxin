@@ -118,7 +118,7 @@ public class SkillService {
 			int needAttackId = attackedObject.getAttackObject().getUniqueId();
 
 			for (int i = 0; i < livingThings.size(); i++) {
-				if (needAttackId == livingThings.get(i).getUniqueId()) {
+				if (needAttackId == livingThings.get(i).getUniqueId() && !livingThings.get(i).isDead()) {
 					needAttackLivingThings.add(livingThings.get(i));
 					break;
 				}
@@ -132,15 +132,19 @@ public class SkillService {
 
 		if (needAttackLivingThings.size() != 0) {
 			for (LivingThing beAttackedObject : needAttackLivingThings) {
-				beAttackedObject.setAttackObject(attackedObject);
+				if(attackedObject instanceof SummonMonster) {
+					beAttackedObject.setAttackObject(((SummonMonster) attackedObject).getBelonger());
+				}else {
+					beAttackedObject.setAttackObject(attackedObject);
+				}
+				
 				for (Entry<Integer, Integer> entry : domain.getEffectAttribute().entrySet()) {
 					// 具有伤害性的技能，需要计算防御值等
 					if (entry.getKey() == AttributeEnum.HP.getId() && entry.getValue() < 0) {
-						beAttackedObject
-								.effectAttribute(roleSkill.getRoleId(), entry.getKey(),
-										entry.getValue() - attackedObject.getAttribute(1).getValue()
-												+ beAttackedObject.getAttribute(2).getValue(),
-												attackedObject.getName()+"使用"+domain.getName() + "技能");
+						beAttackedObject.effectAttribute(roleSkill.getRoleId(), entry.getKey(),
+								entry.getValue() - attackedObject.getAttribute(1).getValue()
+										+ beAttackedObject.getAttribute(2).getValue(),
+								attackedObject.getName() + "使用" + domain.getName() + "技能");
 					} else {
 						beAttackedObject.effectAttribute(roleSkill.getRoleId(), entry.getKey(), entry.getValue(),
 								domain.getName() + "技能作用");
@@ -151,8 +155,7 @@ public class SkillService {
 					RoleBuff buff = dealBuffAttribute(attackedObject.getId(), buffDomainId);
 					beAttackedObject.addBuff(buff);
 				}
-				
-				
+
 			}
 		}
 
@@ -174,7 +177,7 @@ public class SkillService {
 
 				SummonDomain summonDomain = summonDomainmap.get(summonId);
 				scene.addSummon(attackedObject.getId(),
-						new SummonMonster(attackedObject.getId(), 1, attackedObject.getSceneId(), summonDomain,
+						new SummonMonster(attackedObject, 1, attackedObject.getSceneId(), summonDomain,
 								inistTime, livingThings, attackedObject.getAttackObject()));
 			}
 		}
