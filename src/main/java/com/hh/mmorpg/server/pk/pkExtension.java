@@ -1,6 +1,7 @@
 package com.hh.mmorpg.server.pk;
 
 import com.hh.mmorpg.annotation.CmdService;
+import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CMDdomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -12,6 +13,7 @@ import com.hh.mmorpg.server.ExtensionSender;
  * @author xhx
  *
  */
+@Extension(id = 13)
 public class pkExtension {
 
 	private PKService service = PKService.INSATNCE;
@@ -21,11 +23,8 @@ public class pkExtension {
 
 	public static final String NOTIFY_ROLE_INVITED_PK = "邀请pk";
 	public static final String NOTIFY_ROLE_JOIN_PK = "进入pk";
-
-	public static void notifyUserMessage(User user, ReplyDomain replyDomain) {
-		replyDomain.setStringDomain("cmd", NOTIFY_ROLE_INVITED_PK);
-		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
-	}
+	public static final String NOTIFY_ROLE_PK_WIN = "pk胜出";
+	public static final String NOTIFY_ROLE_PK_LOSE = "pk落败";
 
 	@CmdService(cmd = INVITE_ROLE_PK)
 	public void inviteRolePK(User user, CMDdomain cmDdomain) {
@@ -42,4 +41,10 @@ public class pkExtension {
 
 		ExtensionSender.INSTANCE.sendReply(user, domain);
 	}
+	
+	public static void notifyUserMessage(User user, ReplyDomain replyDomain) {
+//		replyDomain.setStringDomain("cmd", NOTIFY_ROLE_INVITED_PK);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+
 }

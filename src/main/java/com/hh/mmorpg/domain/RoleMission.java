@@ -1,8 +1,13 @@
 package com.hh.mmorpg.domain;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.hh.mmorpg.jdbc.ResultBuilder;
 
 /**
  * 用户所接受的任务
@@ -38,6 +43,21 @@ public class RoleMission {
 		this.type = type;
 
 		this.attMap = missionAtts;
+	}
+
+	public RoleMission(int missionId, int roleId, String name, String dec, int type, int status, String attrs) {
+		this.missionId = missionId;
+		this.roleId = roleId;
+		this.name = name;
+		this.dec = dec;
+		this.type = type;
+		this.status = status;
+
+		this.attMap = new HashMap<>();
+		for (String ss : attrs.split(",")) {
+			String str[] = ss.split(":");
+			new MissionAttribute(str[0], str[1], Integer.parseInt(str[2]), Integer.parseInt(str[3]));
+		}
 	}
 
 	/**
@@ -93,13 +113,27 @@ public class RoleMission {
 	public Map<String, MissionAttribute> getAttMap() {
 		return attMap;
 	}
-	
+
 	public MissionAttribute getAtt(String key) {
 		return attMap.get(key);
 	}
 
 	public List<String> getKeys() {
 		return new ArrayList<>(attMap.keySet());
+	}
+
+	public String getDbAttr() {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (MissionAttribute attribute : attMap.values()) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(",");
+			}
+
+			stringBuilder.append(attribute.dbString());
+		}
+
+		return stringBuilder.toString();
 	}
 
 	@Override
@@ -120,5 +154,14 @@ public class RoleMission {
 
 		return stringBuilder.toString();
 	}
+
+	public static final ResultBuilder<RoleMission> BUILDER = new ResultBuilder<RoleMission>() {
+
+		@Override
+		public RoleMission build(ResultSet result) throws SQLException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	};
 
 }

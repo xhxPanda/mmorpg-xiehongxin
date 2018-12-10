@@ -14,7 +14,7 @@
 		needLevel="1" bonus="3:1:100" missionCondition="m:f:1"></mission>
 
 	<mission id="5" name="pk胜利" type="5" dec="获得一次pk的胜利"
-		bonus="3:1:100" needLevel="1" missionCondition="m:s:1,m:a:1"></mission>
+		bonus="3:1:100" needLevel="1" missionCondition="pk胜利:p:1"></mission>
 
 	<mission id="6" name="加入公会" type="6" dec="加入一个公会" needLevel="1"
 		bonus="3:1:100" missionCondition="加入公会:g:1"></mission>

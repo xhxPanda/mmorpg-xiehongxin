@@ -7,6 +7,7 @@ import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.Event;
 import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventHandlerManager;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.PKData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -22,6 +23,8 @@ public class PKService {
 
 	private PKService() {
 		lock = new ReentrantLock();
+
+		EventHandlerManager.INSATNCE.register(this);
 	}
 
 	/**
@@ -37,7 +40,7 @@ public class PKService {
 		Scene scene = SceneService.INSTANCE.getUserScene(user.getUserId());
 
 		// 不在场景中或者该场景不能pk皆是错误
-		if (scene == null || scene.isCanBattle()) {
+		if (scene == null || !scene.isCanBattle()) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -81,7 +84,7 @@ public class PKService {
 		Scene scene = SceneService.INSTANCE.getUserScene(user.getUserId());
 
 		// 不在场景中或者该场景不能pk皆是错误
-		if (scene == null || scene.isCanBattle()) {
+		if (scene == null || !scene.isCanBattle()) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -129,7 +132,7 @@ public class PKService {
 	 * @param data
 	 */
 	@Event(eventType = EventType.PK)
-	public void handleUsertalkToNpc(EventDealData<PKData> data) {
+	public void handleUserPK(EventDealData<PKData> data) {
 		PKData npcTalkData = data.getData();
 
 		int winRoleId = npcTalkData.getWinRoleId();
@@ -140,5 +143,20 @@ public class PKService {
 
 		winRole.setPkRoleId(0);
 		loseRole.setPkRoleId(0);
+
+		// 如果pk结束了就给双方发出提示
+		if (RoleService.INSTANCE.isOnline(winRoleId)) {
+			User winUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(winRoleId));
+			ReplyDomain replyDomain = new ReplyDomain();
+			replyDomain.setStringDomain("cmd", pkExtension.NOTIFY_ROLE_PK_WIN);
+			pkExtension.notifyUserMessage(winUser, replyDomain);
+		}
+		
+		if (RoleService.INSTANCE.isOnline(loseRoleId)) {
+			User loseUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(loseRoleId));
+			ReplyDomain replyDomain = new ReplyDomain();
+			replyDomain.setStringDomain("cmd", pkExtension.NOTIFY_ROLE_PK_LOSE);
+			pkExtension.notifyUserMessage(loseUser, replyDomain);
+		}
 	}
 }

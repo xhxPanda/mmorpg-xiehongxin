@@ -157,7 +157,7 @@ public class Role extends LivingThing {
 		if (pkRoleId != 0) {
 
 			PKData data = new PKData(pkRoleId, id);
-			EventHandlerManager.INSATNCE.methodInvoke(EventType.MONSTER_DEAD, new EventDealData<PKData>(data));
+			EventHandlerManager.INSATNCE.methodInvoke(EventType.PK, new EventDealData<PKData>(data));
 			resurrection();
 		}
 

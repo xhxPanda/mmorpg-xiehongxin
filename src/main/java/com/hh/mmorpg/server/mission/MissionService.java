@@ -22,6 +22,7 @@ import com.hh.mmorpg.event.data.JoinTeamData;
 import com.hh.mmorpg.event.data.MissionCompeteData;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.NpcTalkData;
+import com.hh.mmorpg.event.data.PKData;
 import com.hh.mmorpg.event.data.PassCopyData;
 import com.hh.mmorpg.event.data.UpdateLevelData;
 import com.hh.mmorpg.event.data.UserEquimentData;
@@ -38,6 +39,7 @@ import com.hh.mmorpg.server.mission.handler.LevelUpMissionHandler;
 import com.hh.mmorpg.server.mission.handler.MaterialMissionHandler;
 import com.hh.mmorpg.server.mission.handler.MissionCompeteMissionHandler;
 import com.hh.mmorpg.server.mission.handler.NpcTalkMissionHandler;
+import com.hh.mmorpg.server.mission.handler.PKMissionHandler;
 import com.hh.mmorpg.server.mission.handler.TranscationMissionHandler;
 import com.hh.mmorpg.server.mission.handler.TreasureMissionHandler;
 import com.hh.mmorpg.server.role.RoleService;
@@ -67,6 +69,7 @@ public class MissionService {
 		handlerMap.put(MissionType.COPY, new CopyMissionHandler());
 		handlerMap.put(MissionType.TREASURE, new TreasureMissionHandler());
 		handlerMap.put(MissionType.TRANSCATION, new TranscationMissionHandler());
+		handlerMap.put(MissionType.PK, new PKMissionHandler());
 
 		// 注册监听
 		EventHandlerManager.INSATNCE.register(this);
@@ -215,7 +218,7 @@ public class MissionService {
 				getRoleMissionByType(levelData.getRole(), MissionType.LEVEL_MISSION));
 	}
 
-	// 处理用户升级的任务
+	// 处理用户与npc的任务
 	@SuppressWarnings("unchecked")
 	@Event(eventType = EventType.TALK_TO_NPC)
 	public void handleUsertalkToNpc(EventDealData<NpcTalkData> data) {
@@ -329,6 +332,15 @@ public class MissionService {
 				getRoleMissionByType(passCopyData.getRole(), MissionType.TREASURE));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Event(eventType = EventType.PK)
+	public void handleUserPK(EventDealData<PKData> data) {
+		PKData pkData = data.getData();
+		Role winRole = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(pkData.getWinRoleId()),
+				pkData.getWinRoleId());
+		handlerMap.get(MissionType.PK).dealMission(pkData, getRoleMissionByType(winRole, MissionType.PK));
+	}
+
 	private List<RoleMission> getRoleMissionByType(Role role, int type) {
 		List<RoleMission> missionList = new ArrayList<>();
 
@@ -341,4 +353,5 @@ public class MissionService {
 
 		return missionList;
 	}
+
 }

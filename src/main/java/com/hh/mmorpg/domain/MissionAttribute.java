@@ -46,4 +46,8 @@ public class MissionAttribute {
 	public String toString() {
 		return dec + ":" + max + "/" + pocess;
 	}
+	
+	public String dbString() {
+		return key + ":" + dec + ":" + max + ":" + pocess;
+	}
 }

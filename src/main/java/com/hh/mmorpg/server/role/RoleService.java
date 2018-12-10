@@ -32,6 +32,7 @@ import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.equiment.UserEquimentService;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.MaterialService;
+import com.hh.mmorpg.server.mission.MissionDao;
 import com.hh.mmorpg.server.scene.SceneService;
 import com.hh.mmorpg.server.skill.SkillService;
 import com.hh.mmorpg.service.user.UserService;
@@ -321,6 +322,8 @@ public class RoleService {
 
 		roleToUser.remove(role.getId());
 		MaterialService.INSTANCE.persistenceRoleMatetrial(role);
+		MissionDao.INSTANCE.insertMission(role.getRoleMissionMap().values());
+		
 		System.out.println("删除用户缓存使用角色");
 	}
 

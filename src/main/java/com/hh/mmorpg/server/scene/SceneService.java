@@ -364,7 +364,7 @@ public class SceneService {
 		return domain;
 	}
 
-	// 修改pk规则，只能在pk场
+	// 修改pk规则
 	public ReplyDomain attackOtherRole(User user, int skillId, int otherUserId) {
 		int userId = user.getUserId();
 
@@ -380,7 +380,7 @@ public class SceneService {
 			return ReplyDomain.FAILE;
 		}
 
-		if (!scene.isCanBattle() || role.getAttackObject() == null) {
+		if (!scene.isCanBattle()) {
 			return ReplyDomain.CAN_NOT_BATTLE;
 		}
 
@@ -389,7 +389,7 @@ public class SceneService {
 			return ReplyDomain.FAILE;
 		}
 
-		Role otherRole = scene.getUserRole(otherUserId);
+		Role otherRole = scene.getUserRole(RoleService.INSTANCE.getUserId(otherUserId));
 		if (otherRole == null) {
 			return ReplyDomain.FAILE;
 		}
