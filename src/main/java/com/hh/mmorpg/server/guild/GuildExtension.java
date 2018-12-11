@@ -22,6 +22,9 @@ public class GuildExtension {
 	private static final String SHOW_GUILD_MEMBER = "showGuildMember"; // 展示公会会员
 	private static final String SHOW_GUILD_APPLY = "showGuildApply"; // 展示公会申请
 
+	/**
+	 * 公会内部功能
+	 */
 	private static final String CREAT_GUILD = "creatGuild"; // 创建公会
 	private static final String SEND_GUILD_APPLY = "sendGuildApply"; // 发送公会申请
 	private static final String EXAMINATION_APPLY = "eaminationApply"; // 审查申请

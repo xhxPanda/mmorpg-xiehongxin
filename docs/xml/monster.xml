@@ -2,7 +2,7 @@
 <monsters>
 	<monster id="1" name="遗忘者的士兵" freshTime="2000"
 		attribute="1:30,2:30,3:1000,4:1000,5:1000,6:1000" skills="4,3"
-		fallPossibility="1:100002:1$100,2:200001:1$100" exp="200"
+		fallPossibility="1:100002:1$100,2:200001:1$100,3:1:1000000$100" exp="200"
 		lastAttackBonus="2:200001:1">
 	</monster>
 	<monster id="2" name="遗忘者的将军" freshTime="2000"

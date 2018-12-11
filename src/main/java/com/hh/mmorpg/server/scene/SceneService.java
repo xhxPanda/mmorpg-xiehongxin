@@ -572,6 +572,9 @@ public class SceneService {
 				return ReplyDomain.FAILE;
 			}
 		}
+		
+		// 移除已领取的奖品
+		scene.getMonsterBeKillBonusmap().remove(bonusId);
 
 		return ReplyDomain.SUCCESS;
 	}

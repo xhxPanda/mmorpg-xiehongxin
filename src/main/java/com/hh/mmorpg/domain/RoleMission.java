@@ -56,7 +56,7 @@ public class RoleMission {
 		this.attMap = new HashMap<>();
 		for (String ss : attrs.split(",")) {
 			String str[] = ss.split(":");
-			new MissionAttribute(str[0], str[1], Integer.parseInt(str[2]), Integer.parseInt(str[3]));
+			attMap.put(str[0], new MissionAttribute(str[0], str[1], Integer.parseInt(str[3]), Integer.parseInt(str[2])));
 		}
 	}
 
@@ -160,7 +160,15 @@ public class RoleMission {
 		@Override
 		public RoleMission build(ResultSet result) throws SQLException {
 			// TODO Auto-generated method stub
-			return null;
+			int missionId = result.getInt("missionId");
+			int roleId = result.getInt("roleId");
+			int type = result.getInt("type");
+			int status = result.getInt("status");
+
+			String dec = result.getString("dec");
+			String attrs = result.getString("process");
+			String name = result.getString("name");
+			return new RoleMission(missionId, roleId, name, dec, type, status, attrs);
 		}
 	};
 

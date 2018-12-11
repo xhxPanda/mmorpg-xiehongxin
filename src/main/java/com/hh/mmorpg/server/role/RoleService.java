@@ -16,6 +16,7 @@ import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.OccupationEmun;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleDomain;
+import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
@@ -250,6 +251,12 @@ public class RoleService {
 		for (UserTreasure userTreasure : userTreasureList) {
 			UserTreasure treasure = role.getRoleTreasure(userTreasure.getId());
 			treasure.changeQuantity(userTreasure.getQuantity());
+		}
+		
+		// 组建任务信息
+		List<RoleMission> missions = MissionDao.INSTANCE.getRoleMissions(roleId);
+		for(RoleMission mission : missions) {
+			role.reciveMission(mission);
 		}
 
 		SkillService.INSTANCE.addBuff(role, 1);

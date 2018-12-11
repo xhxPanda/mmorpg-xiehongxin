@@ -86,6 +86,9 @@ public class MissionService {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		MissionDomain missionDomain = missionDomainMap.get(missionId);
+		if(missionDomain == null) {
+			return ReplyDomain.FAILE;
+		}
 
 		if (missionDomain.getNeedLevel() > role.getLevel()) {
 			return ReplyDomain.LEVEL_NOT_ENOUGH;
@@ -325,7 +328,7 @@ public class MissionService {
 	 * @param data
 	 */
 	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.PASS_COPY)
+	@Event(eventType = EventType.TREASURE)
 	public void handleGainTreasure(EventDealData<GainTreasureData> data) {
 		GainTreasureData passCopyData = data.getData();
 		handlerMap.get(MissionType.TREASURE).dealMission(passCopyData,

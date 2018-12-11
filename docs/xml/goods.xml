@@ -6,7 +6,7 @@
 		priceName="30金币"></goods>
 	<goods id="3" name="凶猛长枪" item="1:100001:1" price="3:1:9000"
 		priceName="9000金币"></goods>
-	<goods id="4" name="坚强胸甲" item="1:100002:1" price="3:1:9000"
+	<goods id="4" name="坚强布甲" item="1:100002:1" price="3:1:9000"
 		priceName="9000金币"></goods>
 	<goods id="5" name="坚强腿甲" item="1:100003:1" price="3:1:9000"
 		priceName="9000金币"></goods>

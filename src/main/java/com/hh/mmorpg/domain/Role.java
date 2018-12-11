@@ -537,8 +537,9 @@ public class Role extends LivingThing {
 	 * @param roleMission
 	 */
 	public void reciveMission(RoleMission roleMission) {
-
-		roleMissionMap.put(roleMission.getMissionId(), roleMission);
+		
+		if(roleMission != null)
+			roleMissionMap.put(roleMission.getMissionId(), roleMission);
 	}
 
 	/**

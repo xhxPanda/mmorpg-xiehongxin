@@ -186,6 +186,10 @@ public class Scene {
 		return summonMonstermap;
 	}
 
+	public Map<Integer, MonsterBeKillBonus> getMonsterBeKillBonusmap() {
+		return monsterBeKillBonusmap;
+	}
+
 	public void putMonster(Monster monster) {
 		monsterMap.put(monster.getUniqueId(), monster);
 		ReplyDomain replyDomain = new ReplyDomain();

@@ -11,14 +11,15 @@ public class MissionDao {
 
 	public static final MissionDao INSTANCE = new MissionDao();
 
-	public static final String INSTERT_MISSION = "REPLACE INTO `rolemission0` (`roleId`, `missionId`, `status`, `process`, `dec`, `type`) VALUES (?, ?, ?, ?, ?, ?);";
-	public static final String SELECT_MISSION = "SELECT * FROMM `rolemission0` WHERE `roleId` = ?";
+	public static final String INSTERT_MISSION = "REPLACE INTO `rolemission0` (`roleId`, `missionId`, `name`, `status`, `process`, `dec`, `type`) VALUES (?, ?, ?, ?, ?, ?, ?);";
+	public static final String SELECT_MISSION = "SELECT * FROM `rolemission0` WHERE `roleId` = ?";
 
 	public void insertMission(Collection<RoleMission> list) {
 		// TODO Auto-generated method stub
 		for (RoleMission mission : list) {
-			JDBCManager.INSTANCE.getConn("part0").excuteObject(INSTERT_MISSION, new Object[] { mission.getRoleId(),
-					mission.getMissionId(), mission.getStatus(), mission.getDec(), mission.getType() });
+			JDBCManager.INSTANCE.getConn("part0").excuteObject(INSTERT_MISSION,
+					new Object[] { mission.getRoleId(), mission.getMissionId(), mission.getName(), mission.getStatus(),
+							mission.getDbAttr(), mission.getDec(), mission.getType() });
 		}
 	}
 
