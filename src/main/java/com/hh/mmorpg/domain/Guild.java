@@ -129,7 +129,11 @@ public class Guild {
 	 * @param value
 	 */
 	public void accessTreasure(int id, long value) {
-		long num = treasureMap.get(id);
+		Long num = treasureMap.get(id);
+		if(num == null) {
+			treasureMap.put(id, 0L);
+			num = value;
+		}
 		treasureMap.put(id, num + value);
 		GuildDao.INSTANCE.updateGuildTreasure(getId(), id, num + value);
 	}
@@ -296,6 +300,19 @@ public class Guild {
 			}
 			builder.append(entry.getKey()).append(":").append("名称：").append(entry.getValue().getName()).append(" 数量")
 					.append(":").append(entry.getValue().getQuantity());
+		}
+		return builder.toString();
+	}
+
+	public String getGuildTreasureStr() {
+		StringBuilder builder = new StringBuilder();
+
+		for (UserTreasureType treasureType : UserTreasureType.values()) {
+			if (builder.length() > 0) {
+				builder.append(",");
+			}
+			builder.append("名称：").append(treasureType.getName()).append(" 数量").append(":")
+					.append(treasureMap.get(treasureType.getId()) == null ? 0 : treasureMap.get(treasureType.getId()));
 		}
 		return builder.toString();
 	}

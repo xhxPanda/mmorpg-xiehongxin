@@ -235,7 +235,6 @@ public class Role extends LivingThing {
 			GetMaterialData data = new GetMaterialData(this, material, addNum);
 			EventHandlerManager.INSATNCE.methodInvoke(EventType.GET_MATERIAL, new EventDealData<GetMaterialData>(data));
 		}
-
 		return replyDomain;
 	}
 

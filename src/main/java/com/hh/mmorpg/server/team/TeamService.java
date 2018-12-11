@@ -3,8 +3,8 @@ package com.hh.mmorpg.server.team;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -336,20 +336,22 @@ public class TeamService {
 
 		TeamMate teamMate = teamsMap.get(teamId).get(role.getId());
 
+		List<TeamMate> onlineTeamMate = new ArrayList<>();
+		for (TeamMate mate : teamsMap.get(teamId).values()) {
+			if (!mate.isOnline()) {
+				onlineTeamMate.add(mate);
+			}
+		}
+		// 队伍中没有人在线了，移除该队伍
+		if (onlineTeamMate.size() == 0) {
+			teamsMap.remove(teamId);
+			return;
+		}
+
 		// 如果他是队长，就需要转交队长角色给别人
 		if (teamMate.isTeamLeader()) {
 			teamMate.setTeamLeader(false);
-			Random random = new Random();
-			int index = random.nextInt(teamsMap.size());
-
-			int i = 0;
-			for (TeamMate mate : teamsMap.get(teamId).values()) {
-				if (i == index) {
-					mate.setTeamLeader(true);
-					break;
-				}
-				i++;
-			}
+			onlineTeamMate.get(0).setOnline(true);
 		}
 
 		teamMate.setOnline(false);

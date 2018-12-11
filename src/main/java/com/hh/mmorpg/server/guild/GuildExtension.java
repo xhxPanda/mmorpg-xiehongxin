@@ -18,9 +18,7 @@ public class GuildExtension {
 	private GuildSerivice serivice = GuildSerivice.INSTANCE;
 
 	private static final String SHOW_GUILD_INFO = "showGuildInfo";// 展示公会信息
-	private static final String SHOW_GUILD_BANK = "showGuildBank"; // 展示公会仓库
 	private static final String SHOW_GUILD_MEMBER = "showGuildMember"; // 展示公会会员
-	private static final String SHOW_GUILD_APPLY = "showGuildApply"; // 展示公会申请
 
 	/**
 	 * 公会内部功能
@@ -35,6 +33,8 @@ public class GuildExtension {
 	private static final String TRANSFER_GUILD = "transferGuild"; // 转让公会
 	private static final String EXTRACT_MATERIAL = "extractMaterial"; // 提取物品
 	private static final String EXTRACT_TREASURE = "extractTreasure"; // 提取财富
+	private static final String SHOW_GUILD_BANK = "showGuildBank"; // 展示公会仓库
+	private static final String SHOW_GUILD_APPLY = "showGuildApply"; // 展示公会申请
 
 	public static final String NOTIFY_USER_JOIN_GUILD = "公会申请通过";
 	public static final String NOTIFY_USER_TICK_OUT = "踢出公会";

@@ -72,7 +72,7 @@ public class MaterialService {
 			} else {
 				bagMaterialStr.append("(").append("名称：").append(materialEntry.getValue().getName()).append(",")
 						.append("类型：")
-						.append(MaterialType.getMaterialType(materialEntry.getValue().getTypeId()).getName())
+						.append(MaterialType.getMaterialType(materialEntry.getValue().getTypeId()).getName()).append(",")
 						.append("数量：").append(materialEntry.getValue().getQuantity()).append(")");
 			}
 

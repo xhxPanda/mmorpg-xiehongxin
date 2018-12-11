@@ -535,17 +535,6 @@ public class GuildSerivice {
 			return ReplyDomain.LACK_OF_GUILD_JURISDICTION;
 		}
 
-//		GuildMemberAuthority authority = guild.getAuthorityMap(guildMember.getMemberIdentityId());
-//		if (!authority.isCanSeeBank()) {
-//			return ReplyDomain.GUILD_AUTHORITY;
-//		}
-
-//		int dayCanGet = authority.getTakeBankMaterialNum();
-//		int count = CounterService.INSTANCE.getRoleCounterRecord(role.getId(), CounterKey.GET_GUILD_TREASURE);
-//		if (count >= dayCanGet) {
-//			return ReplyDomain.NOT_ENOUGH;
-//		}
-
 		lock.lock();
 		try {
 			BagMaterial material = guild.getIndexMaterial(index);
@@ -655,7 +644,7 @@ public class GuildSerivice {
 
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("公会物品", guild.getGuildBankStr());
-
+		replyDomain.setStringDomain("公会财富", guild.getGuildTreasureStr());
 		return replyDomain;
 	}
 

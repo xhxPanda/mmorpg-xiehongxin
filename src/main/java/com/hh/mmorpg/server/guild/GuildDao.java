@@ -28,7 +28,7 @@ public class GuildDao {
 	private static final String SELECT_GUILD_MEMBER = "SELECT * FROM `guildmember` WHERE `GuildId` = ?";
 
 	private static final String UPDATE_GUILD_MATERIAL = "REPLACE INTO `guildmaterial` (`guildId`, `uniqueId`, `index`, `id`, `materialTypeId`, `name`, `quantity`, `sellPrice`, `roleId`, `typeId`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	private static final String DELETE_GUILD_MATERIAL = "delete from `guildmaterial` WHERE guildId = ? AND index = ?";
+	private static final String DELETE_GUILD_MATERIAL = "delete from `guildmaterial` WHERE `guildId` = ? AND `index` = ?";
 	private static final String SELECT_GUILD_MATERIAL = "SELECT * FROM `guildmaterial` WHERE guildId = ?";
 
 	private static final String UPDATE_GUILD_AUTHORITY = "REPLACE INTO `guildmemberauthority` (`guildId`, `guildMemberIdentityId`, `canTickMember`, `canSeeBank`, `takeBankMaterialNum`, `canSendPublicMessage`, `canUseGold`) VALUES (?, ?, ?, ?, ?, ?, ?)";
