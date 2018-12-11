@@ -127,7 +127,7 @@ public abstract class LivingThing {
 	public LivingThing getAttackObject() {
 		return attackObject;
 	}
-
+	
 	public void setAttackObject(LivingThing attackObject) {
 		this.attackObject = attackObject;
 	}

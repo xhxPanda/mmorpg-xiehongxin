@@ -36,6 +36,7 @@ import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.mission.MissionDao;
 import com.hh.mmorpg.server.scene.SceneService;
 import com.hh.mmorpg.server.skill.SkillService;
+import com.hh.mmorpg.server.team.TeamService;
 import com.hh.mmorpg.service.user.UserService;
 
 public class RoleService {
@@ -252,11 +253,16 @@ public class RoleService {
 			UserTreasure treasure = role.getRoleTreasure(userTreasure.getId());
 			treasure.changeQuantity(userTreasure.getQuantity());
 		}
-		
+
 		// 组建任务信息
 		List<RoleMission> missions = MissionDao.INSTANCE.getRoleMissions(roleId);
-		for(RoleMission mission : missions) {
+		for (RoleMission mission : missions) {
 			role.reciveMission(mission);
+		}
+
+		// 如果队伍没了的话就设置队伍为空
+		if(role.getTeamId() != 0 && TeamService.INSTANCE.getTeam(role.getTeamId()) == null) {
+			role.setTeamId(0);
 		}
 
 		SkillService.INSTANCE.addBuff(role, 1);
@@ -330,7 +336,7 @@ public class RoleService {
 		roleToUser.remove(role.getId());
 		MaterialService.INSTANCE.persistenceRoleMatetrial(role);
 		MissionDao.INSTANCE.insertMission(role.getRoleMissionMap().values());
-		
+
 		System.out.println("删除用户缓存使用角色");
 	}
 

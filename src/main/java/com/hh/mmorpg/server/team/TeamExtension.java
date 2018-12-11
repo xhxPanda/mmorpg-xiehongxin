@@ -13,7 +13,7 @@ public class TeamExtension {
 	private TeamService service = TeamService.INSTANCE;
 
 	private static final String GET_TEAM_INFO = "getTeamInfo";
-	private static final String INVITE_ROLE_ORGANIZE_TEAM = "inviteRoleOrganizeTeam"; // 邀请人进入队伍
+	private static final String INVITE_ROLE_ORGANIZE_TEAM = "inviteRoleJoinTeam"; // 邀请人进入队伍
 	private static final String DEAL_TEAM_APPLY = "dealTeamApply"; // 处理邀请队伍的请求
 	private static final String QUIT_TEAM = "quitTeam"; // 退出队伍
 	private static final String TRANSFER_CHAPION = "transferCaptain"; // 转让队长

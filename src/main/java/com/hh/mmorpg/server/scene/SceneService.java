@@ -223,7 +223,7 @@ public class SceneService {
 				}
 
 			}
-			
+
 			for (TeamMate teamMate : team.values()) {
 				SceneUserCache sceneUserCache = oldScene
 						.getSceneUserCache(RoleService.INSTANCE.getUserId(teamMate.getRoleId()));
@@ -572,7 +572,7 @@ public class SceneService {
 				return ReplyDomain.FAILE;
 			}
 		}
-		
+
 		// 移除已领取的奖品
 		scene.getMonsterBeKillBonusmap().remove(bonusId);
 
@@ -656,6 +656,13 @@ public class SceneService {
 		role.setSceneId(0);
 		scene.userLeaveScene(userLostData.getUser().getUserId());
 		judgeScene(scene);
+		
+		for(Monster monster : scene.getMonsterMap().values()) {
+			if(monster.getAttackObject().getId() == role.getId()) {
+				monster.setAttackObject(null);
+			}
+		}
+		
 		System.out.println("用户下线了");
 	}
 
@@ -686,9 +693,9 @@ public class SceneService {
 
 		Role role = monsterDeadData.getKillRole();
 		User user = UserService.INSTANCE.getUser(role.getUserId());
-		
+
 		// 发放最后一击奖励， 不在线就不用发了
-		if(!monster.getLastAttackBonus().isEmpty()) {
+		if (!monster.getLastAttackBonus().isEmpty()) {
 			MaterialService.INSTANCE.gainMasteral(user, role, monster.getLastAttackBonus());
 		}
 
@@ -709,7 +716,7 @@ public class SceneService {
 		// 角色分配exp，队伍中的人都能获得经验
 		int teamId = role.getTeamId();
 		if (teamId == 0) {
-			
+
 			MaterialService.INSTANCE.gainMasteral(user, role, "4:1:" + monster.getExp());
 			return;
 		}

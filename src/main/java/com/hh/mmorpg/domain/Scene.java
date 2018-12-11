@@ -250,6 +250,9 @@ public class Scene {
 		}, 0, 1, TimeUnit.SECONDS);
 	}
 
+	/**
+	 * 心跳机制
+	 */
 	public void sceneHeartBeat() {
 		// 怪物场景心跳判断怪物是否需要复活,或者需要受到buff的影响
 		for (Monster monster : monsterMap.values()) {
@@ -294,13 +297,18 @@ public class Scene {
 
 				monsterAIAttack(summonMonster, summonMonster.getTargetAttackObject());
 			}
-			
-			for(SummonMonster summonMonster : needRemoveSummonMonster) {
+
+			for (SummonMonster summonMonster : needRemoveSummonMonster) {
 				summonMonstermap.remove(summonMonster.getUniqueId());
 			}
 		}
 	}
 
+	/**
+	 * 是否所有用户都死了
+	 * 
+	 * @return
+	 */
 	public boolean isAllDead() {
 		for (SceneUserCache cache : userMap.values()) {
 			if (!cache.getRole().isDead()) {
@@ -310,6 +318,11 @@ public class Scene {
 		return true;
 	}
 
+	/**
+	 * 判断是否所有怪物都死了
+	 * 
+	 * @return
+	 */
 	public boolean isAllMonsterDead() {
 		for (Monster monster : monsterMap.values()) {
 			if (!monster.isDead()) {
@@ -319,6 +332,11 @@ public class Scene {
 		return true;
 	}
 
+	/**
+	 * 场景是否已经没人了
+	 * 
+	 * @return
+	 */
 	public boolean isEmpty() {
 		return userMap.size() == 0;
 	}
@@ -345,6 +363,7 @@ public class Scene {
 		Random skillRandom = new Random();
 		int randomSkillIndex = skillRandom.nextInt(monsterSkillList.size());
 
+		
 		// 在副本中有可能会没有指定目标
 		if(isCopy && monster.getAttackObject() == null) {
 			Random attackRandom = new Random();
@@ -356,6 +375,12 @@ public class Scene {
 				System.currentTimeMillis());
 	}
 
+
+	/**
+	 * 获取所有的场景角色
+	 * 
+	 * @return
+	 */
 	public List<Role> getAllRole() {
 		List<Role> roles = new ArrayList<>();
 
