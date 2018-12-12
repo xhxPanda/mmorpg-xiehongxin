@@ -24,6 +24,7 @@ import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.NpcTalkData;
 import com.hh.mmorpg.event.data.PKData;
 import com.hh.mmorpg.event.data.PassCopyData;
+import com.hh.mmorpg.event.data.TransactionData;
 import com.hh.mmorpg.event.data.UpdateLevelData;
 import com.hh.mmorpg.event.data.UserEquimentData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -86,7 +87,7 @@ public class MissionService {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		MissionDomain missionDomain = missionDomainMap.get(missionId);
-		if(missionDomain == null) {
+		if (missionDomain == null) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -342,6 +343,15 @@ public class MissionService {
 		Role winRole = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(pkData.getWinRoleId()),
 				pkData.getWinRoleId());
 		handlerMap.get(MissionType.PK).dealMission(pkData, getRoleMissionByType(winRole, MissionType.PK));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Event(eventType = EventType.TRANSACTION)
+	public void handleUserTransaction(EventDealData<TransactionData> data) {
+		TransactionData transactionData = data.getData();
+
+		handlerMap.get(MissionType.TRANSCATION).dealMission(transactionData,
+				getRoleMissionByType(transactionData.getRole(), MissionType.TRANSCATION));
 	}
 
 	private List<RoleMission> getRoleMissionByType(Role role, int type) {

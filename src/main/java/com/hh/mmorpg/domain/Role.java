@@ -175,9 +175,10 @@ public class Role extends LivingThing {
 	public ReplyDomain addMaterial(BagMaterial material) {
 
 		int pileNum = MaterialService.INSTANCE.getMaterialPileNum(material.getTypeId(), material.getId());
-
 		List<BagMaterial> materials = getMaterialById(material.getId());
 
+		int needQuantity = material.getQuantity();
+		
 		int addNum = 0;
 		// 旧格子(可堆叠的情况下
 		if (materials.size() > 0) {
@@ -192,7 +193,7 @@ public class Role extends LivingThing {
 					m.changeQuantity(material.getQuantity());
 					addNum += material.getQuantity();
 					// 减少需要增加的物品的数量
-					material.setQuantity(0);
+					needQuantity = 0;
 
 				} else {
 					// 不能堆叠那么多，看看最多能承受多少
@@ -202,25 +203,33 @@ public class Role extends LivingThing {
 					}
 
 					material.changeQuantity(-realAddNum);
-					m.changeQuantity(realAddNum);
+					needQuantity -= realAddNum;
 				}
 			}
 		}
 
 		// 如果经过了上一步都没有吧数量归零证明超过了堆叠的个数，剩下的就需要寻找新的格子
-		while (material.getQuantity() > 0) {
+		while (needQuantity > 0) {
 
 			int index = findFreeBox();
 			if (index != -1) {
-				materialMap.put(index, material);
-				material.setIndex(index);
-				material.setRoleId(id);
-				addNum += material.getQuantity();
+				
+				if(needQuantity > pileNum) {
+					BagMaterial newBbagMaterial = new BagMaterial(material, id, pileNum);
+					materialMap.put(index, newBbagMaterial);
+					newBbagMaterial.setIndex(index);
+					needQuantity -= pileNum;
+				} else {
+					BagMaterial newBbagMaterial = new BagMaterial(material, id, needQuantity);
+					materialMap.put(index, newBbagMaterial);
+					newBbagMaterial.setIndex(index);
+					needQuantity = 0;
+				}
 			} else {
 
 				ReplyDomain replyDomain = new ReplyDomain(ResultCode.FAILE);
 				replyDomain.setStringDomain("不能成功添加的物品", material.getName());
-				replyDomain.setIntDomain("数量为", material.getQuantity());
+				replyDomain.setIntDomain("数量为", needQuantity);
 				return ReplyDomain.BOX_SPACE_NOT_ENOUGH;
 			}
 			if (addNum >= material.getQuantity()) {

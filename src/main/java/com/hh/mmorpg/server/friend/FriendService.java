@@ -123,6 +123,7 @@ public class FriendService {
 			// 最后删除请求
 			FriendDao.INSTANCE.deleteFriendApply(role.getId(), roleId);
 			map.remove(roleId);
+			return ReplyDomain.SUCCESS;
 		}
 
 		if (map == null || map.get(roleId) == null) {

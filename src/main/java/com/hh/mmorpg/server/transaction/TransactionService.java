@@ -303,7 +303,7 @@ public class TransactionService {
 			if (replyDomain.isSuccess()) {
 				// 抛出双方交易的事件
 				TransactionData oneData = new TransactionData(role, anotherRole);
-				TransactionData twoData = new TransactionData(role, anotherRole);
+				TransactionData twoData = new TransactionData(anotherRole, role);
 
 				EventHandlerManager.INSATNCE.methodInvoke(EventType.TRANSACTION,
 						new EventDealData<TransactionData>(oneData));
@@ -319,6 +319,7 @@ public class TransactionService {
 		} else {
 			User anOtherUser = UserService.INSTANCE.getUser(anotherRole.getUserId());
 			ReplyDomain notify = new ReplyDomain();
+			notify.setStringDomain("r", "对方已确认交易内容");
 			TransactionExtension.notifyRole(anOtherUser, notify);
 			return ReplyDomain.SUCCESS;
 		}

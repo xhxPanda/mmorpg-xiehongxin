@@ -662,6 +662,8 @@ public class SceneService {
 		judgeScene(scene);
 
 		for (Monster monster : scene.getMonsterMap().values()) {
+			if(monster.getAttackObject() ==null)
+				continue;
 			if (monster.getAttackObject().getId() == role.getId()) {
 				monster.setAttackObject(null);
 			}
