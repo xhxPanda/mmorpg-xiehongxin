@@ -83,7 +83,7 @@ public class Friend {
 		public Friend build(ResultSet result) throws SQLException {
 			// TODO Auto-generated method stub
 			int roleId = result.getInt("roleId");
-			int friendId = result.getInt("friendId");
+			int friendId = result.getInt("friendRoleId");
 			long time = result.getLong("time");
 			return new Friend(roleId, friendId, time);
 		}

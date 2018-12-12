@@ -44,4 +44,5 @@ public class ResultCode {
 	public static final String NOT_IN_TEAM = "不在队伍中";
 	public static final String NOT_IN_GUILD = "不在公会中";
 	public static final String HAS_COMFIRM = "已经确认了";
+	public static final String IS_FRIEND = "已经是好友了";
 }

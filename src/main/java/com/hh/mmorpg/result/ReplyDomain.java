@@ -50,6 +50,7 @@ public class ReplyDomain {
 	public static final ReplyDomain NOT_IN_TEAM = new ReplyDomain(ResultCode.NOT_IN_TEAM);
 	public static final ReplyDomain NOT_IN_GUILD = new ReplyDomain(ResultCode.NOT_IN_GUILD);
 	public static final ReplyDomain HAS_COMFIRM = new ReplyDomain(ResultCode.HAS_COMFIRM);
+	public static final ReplyDomain IS_FRIEND = new ReplyDomain(ResultCode.IS_FRIEND);
 	
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

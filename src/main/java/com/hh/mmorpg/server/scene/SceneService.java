@@ -157,6 +157,8 @@ public class SceneService {
 
 		SceneUserCache sceneUserCache = new SceneUserCache(role.getUserId(), role);
 		scene.userEnterScene(sceneUserCache);
+		
+		role.setSceneId(scene.getId());
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("场景名称", scene.getName());
@@ -187,6 +189,8 @@ public class SceneService {
 
 		// 获取副本属性
 		SceneDomain scenedomain = sceneDomainMap.get(sceneTypeId);
+		if (!scenedomain.isCopy())
+			return ReplyDomain.FAILE;
 
 		Scene newScene = null;
 		// 单人进入
@@ -656,13 +660,13 @@ public class SceneService {
 		role.setSceneId(0);
 		scene.userLeaveScene(userLostData.getUser().getUserId());
 		judgeScene(scene);
-		
-		for(Monster monster : scene.getMonsterMap().values()) {
-			if(monster.getAttackObject().getId() == role.getId()) {
+
+		for (Monster monster : scene.getMonsterMap().values()) {
+			if (monster.getAttackObject().getId() == role.getId()) {
 				monster.setAttackObject(null);
 			}
 		}
-		
+
 		System.out.println("用户下线了");
 	}
 

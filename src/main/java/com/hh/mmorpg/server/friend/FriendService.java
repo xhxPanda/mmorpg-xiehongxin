@@ -47,7 +47,7 @@ public class FriendService {
 	public ReplyDomain getRoleFriends(User user) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
-		Map<Integer, Friend> map = cache.get(role.getId());
+		Map<Integer, Friend> map = getUserAllFriend(role.getId());
 
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setListDomain("好友列表", map.values());
@@ -66,20 +66,30 @@ public class FriendService {
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
-		Map<Integer, Friend> friendMap = cache.get(role.getId());
+		Map<Integer, Friend> friendMap = getUserAllFriend(role.getId());
 
+		// 判断好友是否已经满了
 		if (friendMap != null && friendMap.size() >= FRIEND_LIMIT_NUM) {
 			return ReplyDomain.FRIEND_FULL;
 		}
 
-		if (getFriendApply(role.getId()).containsKey(roleId)) {
+		// 判断两者是否已经是好友
+		if (friendMap != null && friendMap.containsKey(roleId)) {
+			return ReplyDomain.IS_FRIEND;
+		}
+
+		Map<Integer, FriendApply> map = getFriendApply(roleId);
+		
+		// 判断是否已经发送过请求了
+		if (map.containsKey(role.getId())) {
 			return ReplyDomain.HAS_SENT_APPLY;
 		}
 
 		FriendApply apply = new FriendApply(roleId, role.getId(), role.getName(), role.getLevel(), content,
 				user.getUserId());
 
-		addApply(roleId, apply);
+		map.put(apply.getRoleId(), apply);
+
 		// 持久化申请的信息
 		FriendDao.INSTANCE.insertFriendApply(apply);
 
@@ -190,12 +200,6 @@ public class FriendService {
 		return ReplyDomain.SUCCESS;
 	}
 
-	private void addApply(int roleId, FriendApply friendApply) {
-		Map<Integer, FriendApply> map = friendApplyMap.get(roleId);
-
-		map.put(friendApply.getRoleId(), friendApply);
-	}
-
 	/**
 	 * 删除好友
 	 * 
@@ -241,7 +245,7 @@ public class FriendService {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		ReplyDomain replyDomain = new ReplyDomain();
-		replyDomain.setListDomain("好友申请列表", friendApplyMap.get(role.getId()).values());
+		replyDomain.setListDomain("好友申请列表", getFriendApply(role.getId()).values());
 
 		return replyDomain;
 	}
@@ -272,6 +276,7 @@ public class FriendService {
 
 	/**
 	 * 获取好友请求，如果缓存中没有就从数据库中获取
+	 * 
 	 * @param roleId
 	 * @return
 	 */
@@ -282,10 +287,12 @@ public class FriendService {
 			map = new HashMap<>();
 			friendApplyMap.put(roleId, map);
 		}
-		
+
 		List<FriendApply> friendApplies = FriendDao.INSTANCE.getRoleFriendsApply(roleId);
-		for(FriendApply friendApply : friendApplies) {
-			map.put(friendApply.getApplyRoleId(), friendApply);
+		if (friendApplies != null) {
+			for (FriendApply friendApply : friendApplies) {
+				map.put(friendApply.getApplyRoleId(), friendApply);
+			}
 		}
 		
 		return map;
@@ -308,7 +315,7 @@ public class FriendService {
 			if (friends == null || friends.size() == 0) {
 				return map;
 			} else {
-				map = friends.stream().collect(Collectors.toMap(Friend::getRoleId, a -> a));
+				map = friends.stream().collect(Collectors.toMap(Friend::getFriendId, a -> a));
 			}
 		}
 
