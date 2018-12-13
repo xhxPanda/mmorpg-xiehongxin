@@ -25,7 +25,7 @@ public class NpcRole {
 
 	@Override
 	public String toString() {
-		return "npc角色:[name=" + name + "]";
+		return "Npc [id=" + id + ", name=" + name + "]";
 	}
 
 }

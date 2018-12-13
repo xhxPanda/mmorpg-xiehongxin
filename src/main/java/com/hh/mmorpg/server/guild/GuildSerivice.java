@@ -137,7 +137,6 @@ public class GuildSerivice {
 	 */
 	public ReplyDomain creatGuild(User user, String name, String declaration) {
 
-
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		if (name == null) {
@@ -729,6 +728,8 @@ public class GuildSerivice {
 		UserLostData userLostData = data.getData();
 
 		Role role = userLostData.getRole();
+		if (role == null)
+			return;
 
 		if (role.getGuildId() == 0) {
 			return;

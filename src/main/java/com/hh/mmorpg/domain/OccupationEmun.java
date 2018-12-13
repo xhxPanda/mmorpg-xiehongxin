@@ -31,5 +31,5 @@ public enum OccupationEmun {
 	public String getName() {
 		return name;
 	}
-
+	
 }

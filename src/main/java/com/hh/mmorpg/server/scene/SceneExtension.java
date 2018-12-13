@@ -49,10 +49,9 @@ public class SceneExtension {
 
 	@CmdService(cmd = JOIN_SCENE)
 	public void joinScene(User user, CmdDomain cmdDomain) {
-		int sceneTypeId = cmdDomain.getIntParam(2);
-		int sceneId = cmdDomain.getIntParam(3);
+		int sceneId = cmdDomain.getIntParam(2);
 
-		ReplyDomain replyDomain = service.userJoinScene(user, sceneTypeId, sceneId);
+		ReplyDomain replyDomain = service.userJoinScene(user, sceneId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
@@ -117,8 +116,7 @@ public class SceneExtension {
 	@CmdService(cmd = JOIN_COPY_SCENE)
 	public void joinCopyScene(User user, CmdDomain cmdDomain) {
 		int sceneTypeId = cmdDomain.getIntParam(2);
-		int sceneId = cmdDomain.getIntParam(3);
-		ReplyDomain replyDomain = service.joinCopyScene(user, sceneTypeId, sceneId);
+		ReplyDomain replyDomain = service.joinCopyScene(user, sceneTypeId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

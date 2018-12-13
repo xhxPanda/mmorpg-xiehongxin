@@ -82,7 +82,7 @@ public class SceneService {
 	 * @return
 	 */
 	public ReplyDomain getNearScene(User user) {
-		
+
 		int userId = user.getUserId();
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
@@ -113,7 +113,7 @@ public class SceneService {
 	 * @param sceneId
 	 * @return
 	 */
-	public ReplyDomain userJoinScene(User user, int sceneTypeId, int sceneId) {
+	public ReplyDomain userJoinScene(User user, int sceneId) {
 		int userId = user.getUserId();
 
 		SceneUserCache sceneUserCache = null;
@@ -134,11 +134,11 @@ public class SceneService {
 		int oldSceneId = role.getSceneId();
 
 		if (oldSceneId != 0) {
-			if (oldSceneId == sceneTypeId) {
+			if (oldSceneId == sceneId) {
 				return ReplyDomain.SUCCESS;
 			}
 			Scene scene = sceneMap.get(oldSceneId);
-			if (!scene.isCanEnter(sceneTypeId)) {
+			if (!scene.isCanEnter(sceneId)) {
 				return new ReplyDomain(ResultCode.CAN_NOT_ENTER);
 			}
 			sceneUserCache = scene.getSceneUserCache(userId);
@@ -147,7 +147,7 @@ public class SceneService {
 			sceneUserCache = new SceneUserCache(userId, role);
 		}
 
-		SceneDomain scenedomain = sceneDomainMap.get(sceneTypeId);
+		SceneDomain scenedomain = sceneDomainMap.get(sceneId);
 		if (scenedomain == null) {
 			return ReplyDomain.FAILE;
 		}
@@ -187,16 +187,16 @@ public class SceneService {
 
 		User user = UserService.INSTANCE.getUser(role.getUserId());
 
-		// 不是副本就不需要强制进入
-		if (scene == null || !scene.isCopy() || scene.isCopyFinish()) {
-			role.setLastJoinScene(0);
-			return;
-		}
-
 		SceneUserCache sceneUserCache = new SceneUserCache(role.getUserId(), role);
-		scene.userEnterScene(sceneUserCache);
-
-		role.setSceneId(scene.getId());
+		// 如果之前没进过场景，或者副本已经结束了，直接传送到新手村
+		if (scene == null || scene.isCopyFinish()) {
+			scene = sceneMap.get(1);
+			scene.userEnterScene(sceneUserCache);
+			role.setSceneId(scene.getId());
+		} else {
+			// 如果不是就送到上一次的场景中
+			scene.userEnterScene(sceneUserCache);
+		}
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("场景名称", scene.getName());
@@ -213,8 +213,7 @@ public class SceneService {
 	 * @param user
 	 * @return
 	 */
-	public ReplyDomain joinCopyScene(User user, int sceneTypeId, int sceneId) {
-		
+	public ReplyDomain joinCopyScene(User user, int sceneTypeId) {
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
@@ -334,7 +333,7 @@ public class SceneService {
 
 			@Override
 			public void run() {
-				
+
 				userForceLeaveCopy(sceneId);
 			}
 		}, 60, TimeUnit.MINUTES);
@@ -347,7 +346,7 @@ public class SceneService {
 	 * @return
 	 */
 	public ReplyDomain getSeceneUser(User user) {
-		
+
 		int userId = user.getUserId();
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
@@ -370,7 +369,7 @@ public class SceneService {
 	}
 
 	public ReplyDomain attackMonster(User user, int skillId, int monsterId) {
-		
+
 		int userId = user.getUserId();
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
@@ -818,7 +817,7 @@ public class SceneService {
 		for (SceneUserCache sceneUserCache : scene.getUserMap().values()) {
 
 			User user = UserService.INSTANCE.getUser(sceneUserCache.getUserId());
-			userJoinScene(user, scene.getSceneTypeId(), sceneUserCache.getLastSceneId());
+			userJoinScene(user, sceneUserCache.getLastSceneId());
 		}
 	}
 

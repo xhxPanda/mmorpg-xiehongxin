@@ -2,6 +2,7 @@ package com.hh.mmorpg.service.user;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
@@ -45,12 +46,16 @@ public class UserService {
 	}
 
 	private void doRegister(CmdDomain cmdDomain) {
-		int userId = cmdDomain.getIntParam(1);
+		int userId = IncrementManager.INSTANCE.increase("userId");
+		String name = cmdDomain.getStringParam(1);
 		String password = cmdDomain.getStringParam(2);
-		User user = new User(userId, password);
+		User user = new User(userId, name, password);
 
 		doLogin(user, cmdDomain.getChannel());
 		UserDao.INSTANCE.insertUser(user);
+		ReplyDomain replyDomain = new ReplyDomain("注册" + ResultCode.SUCCESS);
+		replyDomain.setIntDomain("用户id", userId);
+		UserExtension.notify(cmdDomain.getChannel(), replyDomain);
 	}
 
 	private void doLogin(CmdDomain cmdDomain) {
@@ -60,12 +65,15 @@ public class UserService {
 
 		User user = UserDao.INSTANCE.selectUser(userId, password);
 		if (user == null) {
-			UserExtension.notifyLogin(cmdDomain.getChannel(), ReplyDomain.PASSWORD_OR_USERID_WORONG);
+			UserExtension.notify(cmdDomain.getChannel(), ReplyDomain.PASSWORD_OR_USERID_WORONG);
 		} else {
 			doLogin(user, cmdDomain.getChannel());
 
 			ReplyDomain replyDomain = new ReplyDomain("登录" + ResultCode.SUCCESS);
-			UserExtension.notifyLogin(cmdDomain.getChannel(), replyDomain);
+			
+			ReplyDomain allRoleDomain = RoleService.INSTANCE.getAllRole(user);
+			UserExtension.notify(cmdDomain.getChannel(), replyDomain);
+			UserExtension.notify(cmdDomain.getChannel(), allRoleDomain);
 		}
 	}
 

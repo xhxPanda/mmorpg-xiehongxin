@@ -82,7 +82,7 @@ public class RoleService {
 		int userId = user.getUserId();
 
 		Map<Integer, Role> map = getUserAllRole(userId);
-		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
+		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setListDomain("角色列表", map.values());
 		return replyDomain;
 	}
@@ -212,7 +212,9 @@ public class RoleService {
 		assemblingRole(role);
 		// 更新缓存
 		getUserAllRole(user.getUserId()).put(role.getId(), role);
-		return ReplyDomain.SUCCESS;
+
+		// 创建角色以后显示用户所拥有的所有角色
+		return getAllRole(user);
 	}
 
 	/**
