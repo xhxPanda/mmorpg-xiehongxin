@@ -242,7 +242,7 @@ public class FriendService {
 	 * @return
 	 */
 	public ReplyDomain getFriendsApplication(User user) {
-		// TODO Auto-generated method stub
+		
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		ReplyDomain replyDomain = new ReplyDomain();
@@ -306,7 +306,7 @@ public class FriendService {
 	 * @return
 	 */
 	private Map<Integer, Friend> getUserAllFriend(Integer roleId) {
-		// TODO Auto-generated method stub
+		
 
 		Map<Integer, Friend> map = new HashMap<>();
 		if (cache.containsKey(roleId)) {

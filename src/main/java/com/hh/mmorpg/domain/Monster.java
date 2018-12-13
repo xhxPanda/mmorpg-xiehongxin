@@ -46,7 +46,6 @@ public class Monster extends LivingThing {
 
 	@Override
 	public void afterDead() {
-		// TODO Auto-generated method stub
 		setStatus(false);
 		setBeKilledTime(System.currentTimeMillis());
 
@@ -79,7 +78,6 @@ public class Monster extends LivingThing {
 
 	@Override
 	public void notifyAttributeChange(Attribute attribute, String reason) {
-		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getSceneMap().get(getSceneId());
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_ATTRIBUATE_CHANGE);
@@ -92,7 +90,6 @@ public class Monster extends LivingThing {
 
 	@Override
 	public void afterBuffAdd(RoleBuff roleBuff) {
-		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getSceneMap().get(getSceneId());
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_MONSTER_BUFF_ADD);

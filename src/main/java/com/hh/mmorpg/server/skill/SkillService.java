@@ -233,7 +233,6 @@ public class SkillService {
 	 * @return
 	 */
 	public ReplyDomain getCanLearnSkill(User user) {
-		// TODO Auto-generated method stub
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 

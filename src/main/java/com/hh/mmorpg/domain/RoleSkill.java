@@ -58,7 +58,6 @@ public class RoleSkill {
 
 		@Override
 		public RoleSkill build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int roleId = result.getInt("roleId");
 			int skillId = result.getInt("skillId");
 			long lastUsedTime = result.getLong("lastUsedTime");

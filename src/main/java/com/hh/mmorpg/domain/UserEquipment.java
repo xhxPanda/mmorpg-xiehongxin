@@ -129,7 +129,6 @@ public class UserEquipment {
 
 		@Override
 		public UserEquipment build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 
 			int roleId = result.getInt("roleId");
 			int equimentId = result.getInt("equimentId");

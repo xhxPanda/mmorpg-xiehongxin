@@ -2,7 +2,7 @@ package com.hh.mmorpg.service.user;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.Event;
@@ -30,38 +30,38 @@ public class UserService {
 		EventHandlerManager.INSATNCE.register(this);
 	}
 
-	public void doLoginOrRegister(CMDdomain cmddomain) {
-		if (cmddomain.getStringParam(0).equals(UserExtension.LOGIN)) {
-			doLogin(cmddomain);
+	public void doLoginOrRegister(CmdDomain cmdDomain) {
+		if (cmdDomain.getStringParam(0).equals(UserExtension.LOGIN)) {
+			doLogin(cmdDomain);
 		} else {
-			doRegister(cmddomain);
+			doRegister(cmdDomain);
 		}
 	}
 
-	private void doRegister(CMDdomain cmddomain) {
-		int userId = cmddomain.getIntParam(1);
-		String password = cmddomain.getStringParam(2);
+	private void doRegister(CmdDomain cmdDomain) {
+		int userId = cmdDomain.getIntParam(1);
+		String password = cmdDomain.getStringParam(2);
 		User user = new User(userId, password);
 
 		int result = UserDao.INSTANCE.insertUser(user);
 		if (result > 0) {
-			doLogin(user, cmddomain.getChannel());
+			doLogin(user, cmdDomain.getChannel());
 		}
 	}
 
-	private void doLogin(CMDdomain cmddomain) {
+	private void doLogin(CmdDomain cmdDomain) {
 
-		int userId = cmddomain.getIntParam(1);
-		String password = cmddomain.getStringParam(2);
+		int userId = cmdDomain.getIntParam(1);
+		String password = cmdDomain.getStringParam(2);
 
 		User user = UserDao.INSTANCE.selectUser(userId, password);
 		if (user == null) {
-			UserExtension.notifyLogin(cmddomain.getChannel(), ReplyDomain.FAILE);
+			UserExtension.notifyLogin(cmdDomain.getChannel(), ReplyDomain.FAILE);
 		} else {
-			doLogin(user, cmddomain.getChannel());
+			doLogin(user, cmdDomain.getChannel());
 
 			ReplyDomain replyDomain = new ReplyDomain("登录" + ResultCode.SUCCESS);
-			UserExtension.notifyLogin(cmddomain.getChannel(), replyDomain);
+			UserExtension.notifyLogin(cmdDomain.getChannel(), replyDomain);
 		}
 	}
 
@@ -83,7 +83,6 @@ public class UserService {
 	}
 
 	public User getUser(Integer userId) {
-		// TODO Auto-generated method stub
 		return userChannelMap.get(userId);
 	}
 

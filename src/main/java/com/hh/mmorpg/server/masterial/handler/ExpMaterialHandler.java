@@ -34,7 +34,7 @@ public class ExpMaterialHandler extends AbstractMaterialHandler {
 
 	@Override
 	public ReplyDomain gainMaterial(Role role, String[] material) {
-		// TODO Auto-generated method stub
+		
 
 		int num = Integer.parseInt(material[2]);
 		int level = role.getLevel();
@@ -79,7 +79,7 @@ public class ExpMaterialHandler extends AbstractMaterialHandler {
 
 	@Override
 	public ReplyDomain decMasterial(Role role, String[] material) {
-		// TODO Auto-generated method stub
+		
 		return ReplyDomain.FAILE;
 	}
 
@@ -90,7 +90,7 @@ public class ExpMaterialHandler extends AbstractMaterialHandler {
 
 	@Override
 	public ReplyDomain useMaterial(Role role, int uniqueId) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 }

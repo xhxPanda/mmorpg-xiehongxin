@@ -21,7 +21,6 @@ public class UserDao {
 			user = (User) JDBCManager.INSTANCE.getConn("part" + dbIndex)
 					.excuteObject(String.format(SELECT_USER, dbIndex), new Object[] { userId, password }, User.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

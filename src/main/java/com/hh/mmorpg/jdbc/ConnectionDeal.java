@@ -27,7 +27,7 @@ public class ConnectionDeal {
 
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -45,7 +45,7 @@ public class ConnectionDeal {
 
 			result = pstmt.executeQuery();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -66,7 +66,7 @@ public class ConnectionDeal {
 			
 			result = pstmt.executeQuery();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		List<Object> list = new ArrayList<Object>();
@@ -84,7 +84,7 @@ public class ConnectionDeal {
 				object = builder.build(result);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -100,7 +100,7 @@ public class ConnectionDeal {
 				list.add(object);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 

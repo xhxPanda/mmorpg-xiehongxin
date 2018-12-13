@@ -23,7 +23,6 @@ public class MissionXmlResolution {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\mission.xml");
 
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

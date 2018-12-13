@@ -28,7 +28,7 @@ public class UserEquimentService {
 	}
 
 	public ReplyDomain showEquiment(User user) {
-		// TODO Auto-generated method stub
+		
 		int userId = user.getUserId();
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
@@ -39,7 +39,7 @@ public class UserEquimentService {
 	}
 
 	public ReplyDomain takeOffEquiment(User user, int equimentType) {
-		// TODO Auto-generated method stub
+		
 		int userId = user.getUserId();
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);

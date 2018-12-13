@@ -188,7 +188,6 @@ public class Transaction {
 	 * 获取另一个角色对象
 	 */
 	public Role getAnotherRole(int roleId) {
-		// TODO Auto-generated method stub
 		if (oneRole.getId() == roleId) {
 			return twoRole;
 		}

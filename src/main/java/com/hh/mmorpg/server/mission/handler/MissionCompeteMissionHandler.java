@@ -10,7 +10,6 @@ public class MissionCompeteMissionHandler extends AbstractMissionHandler<Mission
 
 	@Override
 	public void dealMission(MissionCompeteData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
 		int missionId = eventData.getMission();

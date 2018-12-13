@@ -2,7 +2,7 @@ package com.hh.mmorpg.server.scene;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -12,7 +12,8 @@ public class SceneExtension {
 
 	private static SceneService service = SceneService.INSTANCE;
 
-	private static final String JOIN_SCENE = "joinScene";
+	private static final String JOIN_SCENE = "joinScene"; // 进入场景
+	private static final String GET_NEAR_SCENE = "getNearScene"; // 获取可以进入的场景及副本
 	private static final String GET_SCENE_USER = "getSceneUser";
 	private static final String ATTACK_MONSTER = "attackMonster"; // 攻击怪物
 	private static final String ATTACK_ROLE = "attackRole"; // 攻击角色
@@ -36,7 +37,7 @@ public class SceneExtension {
 	public static final String NOTIFY_MONSTER_ENTRE = "刷新怪物";
 
 	@CmdService(cmd = JOIN_SCENE)
-	public void joinScene(User user, CMDdomain cmdDomain) {
+	public void joinScene(User user, CmdDomain cmdDomain) {
 		int sceneTypeId = cmdDomain.getIntParam(2);
 		int sceneId = cmdDomain.getIntParam(3);
 
@@ -44,15 +45,21 @@ public class SceneExtension {
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
+	@CmdService(cmd = GET_NEAR_SCENE)
+	public void getNearScene(User user, CmdDomain cmdDomain) {
+		ReplyDomain replyDomain = service.getNearScene(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+
 	@CmdService(cmd = GET_SCENE_USER)
-	public void getSceneUser(User user, CMDdomain cmdDomain) {
+	public void getSceneUser(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = service.getSeceneUser(user);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = ATTACK_MONSTER)
-	public void attackMonster(User user, CMDdomain cmdDomain) {
+	public void attackMonster(User user, CmdDomain cmdDomain) {
 		int skillId = cmdDomain.getIntParam(2);
 		int monsterId = cmdDomain.getIntParam(3);
 
@@ -62,7 +69,7 @@ public class SceneExtension {
 	}
 
 	@CmdService(cmd = ATTACK_ROLE)
-	public void attackRole(User user, CMDdomain cmdDomain) {
+	public void attackRole(User user, CmdDomain cmdDomain) {
 		int skillId = cmdDomain.getIntParam(2);
 		int otherUserId = cmdDomain.getIntParam(3);
 
@@ -73,13 +80,13 @@ public class SceneExtension {
 	}
 
 	@CmdService(cmd = GET_ROLE_KILL_MONSTER_BONUS_INFO)
-	public void getRoleKillMonsterBonusInfo(User user, CMDdomain cmdDomain) {
+	public void getRoleKillMonsterBonusInfo(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = service.getRoleKillMonsterBonusInfo(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = GET_ROLE_KILL_MONSTER_BONUS)
-	public void getRoleKillMonster(User user, CMDdomain cmdDomain) {
+	public void getRoleKillMonster(User user, CmdDomain cmdDomain) {
 		int bonusId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.getRoleKillMonsterBonus(user, bonusId);
@@ -88,7 +95,7 @@ public class SceneExtension {
 	}
 
 	@CmdService(cmd = TALK_TO_NPC)
-	public void takeToNpc(User user, CMDdomain cmdDomain) {
+	public void takeToNpc(User user, CmdDomain cmdDomain) {
 		int npcId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.taklToNpc(user, npcId);
@@ -97,7 +104,7 @@ public class SceneExtension {
 	}
 
 	@CmdService(cmd = JOIN_COPY_SCENE)
-	public void joinCopyScene(User user, CMDdomain cmdDomain) {
+	public void joinCopyScene(User user, CmdDomain cmdDomain) {
 		int sceneTypeId = cmdDomain.getIntParam(2);
 		int sceneId = cmdDomain.getIntParam(3);
 		ReplyDomain replyDomain = service.joinCopyScene(user, sceneTypeId, sceneId);

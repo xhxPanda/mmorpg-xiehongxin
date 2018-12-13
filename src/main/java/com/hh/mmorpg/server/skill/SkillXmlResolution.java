@@ -25,7 +25,7 @@ public class SkillXmlResolution {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\skill.xml");
 
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -87,7 +87,7 @@ public class SkillXmlResolution {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\buff.xml");
 
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -119,7 +119,7 @@ public class SkillXmlResolution {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\summon.xml");
 
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		Element rootElm = document.getRootElement();

@@ -15,7 +15,7 @@ public class MissionDao {
 	public static final String SELECT_MISSION = "SELECT * FROM `rolemission0` WHERE `roleId` = ?";
 
 	public void insertMission(Collection<RoleMission> list) {
-		// TODO Auto-generated method stub
+		
 		for (RoleMission mission : list) {
 			JDBCManager.INSTANCE.getConn("part0").excuteObject(INSTERT_MISSION,
 					new Object[] { mission.getRoleId(), mission.getMissionId(), mission.getName(), mission.getStatus(),
@@ -30,7 +30,6 @@ public class MissionDao {
 			list = (List<RoleMission>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_MISSION,
 					new Object[] { roleId }, RoleMission.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return list;

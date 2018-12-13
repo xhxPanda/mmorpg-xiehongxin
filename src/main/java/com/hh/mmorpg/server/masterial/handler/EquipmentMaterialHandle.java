@@ -30,7 +30,6 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 	 */
 	@Override
 	public ReplyDomain gainMaterial(Role role, String[] materialStr) {
-		// TODO Auto-generated method stub
 		int id = Integer.parseInt(materialStr[1]);
 		EquimentDomain equimentDomain = equimentDomainMap.get(id);
 
@@ -39,6 +38,7 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 		int uniqueId = IncrementManager.INSTANCE.increase("uniqueMaterial");
 
 		// 在装备列表中新增一个新装备
+		// 由于装备特殊，每新增一个装备都配备一个新的装备独立的id
 		UserEquipment userEquipment = new UserEquipment(role.getId(), uniqueId, equimentDomain.getId(),
 				equimentDomain.getName(), equimentDomain.getSellPrice(), equimentDomain.getEquimentLevel(),
 				equimentDomain.getEquimentSource(), equimentDomain.getMaxDurability(),
@@ -60,20 +60,16 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 
 	@Override
 	public ReplyDomain decMasterial(Role role, String[] materialStr) {
-		// TODO Auto-generated method stub
 		return ReplyDomain.FAILE;
 	}
 
 	@Override
 	public int getPileNum(int materialId) {
-		// TODO Auto-generated method stub
 		return 1;
 	}
 
 	@Override
 	public ReplyDomain useMaterial(Role role, int uniqueId) {
-		// TODO Auto-generated method stub
-
 		UserEquipment equipment = UserEquimentService.INSTANCE.getUserEquiment(uniqueId);
 
 		role.setEquipment(equipment);

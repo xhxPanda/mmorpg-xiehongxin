@@ -25,19 +25,16 @@ public class SummonMonster extends LivingThing {
 
 	@Override
 	public void afterDead() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void notifyAttributeChange(Attribute attribute, String reason) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void afterBuffAdd(RoleBuff roleBuff) {
-		// TODO Auto-generated method stub
 
 	}
 

@@ -2,7 +2,7 @@ package com.hh.mmorpg.server.masterial;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -26,13 +26,13 @@ public class MaterialExtension {
 	private static final String NOTIFY_USER_DEC_MATERIAL = "物品减少";
 
 	@CmdService(cmd = SHOW_GOODS)
-	public void showGoods(User user, CMDdomain cmDdomain) {
+	public void showGoods(User user, CmdDomain cmDdomain) {
 		ReplyDomain replyDomain = MaterialService.INSTANCE.showGoods(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = BUY_GOODS)
-	public void buyGoods(User user, CMDdomain cmDdomain) {
+	public void buyGoods(User user, CmdDomain cmDdomain) {
 		int goodsId = cmDdomain.getIntParam(2);
 		String numStr = cmDdomain.getStringParam(3);
 
@@ -49,7 +49,7 @@ public class MaterialExtension {
 	}
 
 	@CmdService(cmd = SELL_GOODS)
-	public void sellGoods(User user, CMDdomain cmDdomain) {
+	public void sellGoods(User user, CmdDomain cmDdomain) {
 		String materialStr = cmDdomain.getStringParam(2);
 
 		ReplyDomain replyDomain = MaterialService.INSTANCE.sellGoods(user, materialStr);
@@ -57,30 +57,30 @@ public class MaterialExtension {
 	}
 
 	@CmdService(cmd = SHOW_ALL_MATERIAL)
-	public void showAllMaterial(User user, CMDdomain cmDdomain) {
+	public void showAllMaterial(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = MaterialService.INSTANCE.showAllMaterial(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = USE_MATERIAL)
-	public void useMaterial(User user, CMDdomain cmDdomain) {
+	public void useMaterial(User user, CmdDomain cmdDomain) {
 
-		int index = cmDdomain.getIntParam(2);
+		int index = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = MaterialService.INSTANCE.useMaterial(user, index);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = ARRANGE_BAG)
-	public void arrangeBag(User user, CMDdomain cmDdomain) {
+	public void arrangeBag(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = MaterialService.INSTANCE.arrangeBag(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = SORT_BAG)
-	public void sortBag(User user, CMDdomain cmDdomain) {
-		int fromIndex = cmDdomain.getIntParam(2);
-		int toIndex = cmDdomain.getIntParam(3);
+	public void sortBag(User user, CmdDomain cmdDomain) {
+		int fromIndex = cmdDomain.getIntParam(2);
+		int toIndex = cmdDomain.getIntParam(3);
 		ReplyDomain replyDomain = MaterialService.INSTANCE.sortBag(user, fromIndex, toIndex);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

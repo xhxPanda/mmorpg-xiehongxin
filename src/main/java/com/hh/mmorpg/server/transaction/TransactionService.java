@@ -198,7 +198,7 @@ public class TransactionService {
 	 * @return
 	 */
 	public ReplyDomain setTreasure(User user, int id, int num) {
-		// TODO Auto-generated method stub
+		
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		Transaction transaction = transactionMap.get(role.getTransactionPerson());
@@ -274,8 +274,13 @@ public class TransactionService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 确认交易
+	 * @param user
+	 * @return
+	 */
 	public ReplyDomain checkConfirm(User user) {
-		// TODO Auto-generated method stub
+		
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		Transaction transaction = transactionMap.get(role.getTransactionPerson());

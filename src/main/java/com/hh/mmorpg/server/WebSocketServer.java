@@ -54,7 +54,6 @@ public class WebSocketServer implements Server {
 	}
 
 	public void shutdown() {
-		// TODO Auto-generated method stub
 		bossGroup.shutdownGracefully();
 		workGroup.shutdownGracefully();
 	}

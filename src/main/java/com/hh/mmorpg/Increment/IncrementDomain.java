@@ -33,7 +33,6 @@ public class IncrementDomain {
 	public static final ResultBuilder<IncrementDomain> BUILDER = new ResultBuilder<IncrementDomain>() {
 		@Override
 		public IncrementDomain build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			String name = result.getString(1);
 			int step = result.getInt(2);
 			int now = result.getInt(3);

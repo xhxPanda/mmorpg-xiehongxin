@@ -37,7 +37,7 @@ public class MaterialDao {
 			list = (List<UserTreasure>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_TREASURE,
 					new Object[] { roleId }, UserTreasure.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return list;
@@ -50,7 +50,7 @@ public class MaterialDao {
 			list = (List<UserItem>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_ITEM,
 					new Object[] { roleId }, UserItem.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return list;
@@ -63,7 +63,7 @@ public class MaterialDao {
 			list = (List<UserEquipment>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_EQUIMENT,
 					new Object[] {}, UserEquipment.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return list;
@@ -93,13 +93,12 @@ public class MaterialDao {
 
 	@SuppressWarnings("unchecked")
 	public List<BagMaterial> getallUserBagMaterial(int roleId) {
-		// TODO Auto-generated method stub
 		List<BagMaterial> list = null;
 		try {
 			list = (List<BagMaterial>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_USER_MATERIAL,
 					new Object[] { roleId }, BagMaterial.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return list;
@@ -112,7 +111,7 @@ public class MaterialDao {
 			list = (List<UserEquipment>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_EQUIMENT,
 					new Object[] { roleId }, UserEquipment.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return list;

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.Email;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -24,7 +24,7 @@ public class EmailExtension {
 	private static final String NOTIFY_RECIPIENT_EMAIL = "notifyReipientEmail";
 
 	@CmdService(cmd = GET_EMAIL_INFO)
-	public void getEmailInfo(User user, CMDdomain cmdDomain) {
+	public void getEmailInfo(User user, CmdDomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 		Map<Integer, Email> emailMap = service.getRoleEmail(roleId);
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
@@ -34,7 +34,7 @@ public class EmailExtension {
 	}
 
 	@CmdService(cmd = SEND_EMAIL)
-	public void sendEmail(User user, CMDdomain cmdDomain) {
+	public void sendEmail(User user, CmdDomain cmdDomain) {
 		int recipientRoleId = cmdDomain.getIntParam(2);
 		String bonusStr = cmdDomain.getStringParam(3);
 		String content = cmdDomain.getStringParam(4);
@@ -46,7 +46,7 @@ public class EmailExtension {
 	}
 
 	@CmdService(cmd = READ_EMAIL)
-	public void readEmail(User user, CMDdomain cmdDomain) {
+	public void readEmail(User user, CmdDomain cmdDomain) {
 		int emailId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.readEmail(user, emailId);
@@ -54,7 +54,7 @@ public class EmailExtension {
 	}
 
 	@CmdService(cmd = GET_EMAIL_BONUS)
-	public void getEmailBonus(User user, CMDdomain cmdDomain) {
+	public void getEmailBonus(User user, CmdDomain cmdDomain) {
 		int emailId = cmdDomain.getIntParam(2);
 		ReplyDomain replyDomain = service.getEmailBonus(user, emailId);
 

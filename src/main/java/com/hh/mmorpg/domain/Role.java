@@ -124,7 +124,6 @@ public class Role extends LivingThing {
 
 		@Override
 		public Role build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int userId = result.getInt("userId");
 			int id = result.getInt("id");
 			String name = result.getString("name");
@@ -151,7 +150,6 @@ public class Role extends LivingThing {
 
 	@Override
 	public void afterDead() {
-		// TODO Auto-generated method stub
 
 		// 是pk致死的，原地复活，抛出pk事件
 		if (pkRoleId != 0) {
@@ -470,7 +468,6 @@ public class Role extends LivingThing {
 	 * @return
 	 */
 	public boolean isMaterialEnough(int materialId, int num) {
-		// TODO Auto-generated method stub
 
 		if (materialId < 100001) {
 			return getRoleTreasure(materialId).getQuantity() > num;
@@ -562,7 +559,6 @@ public class Role extends LivingThing {
 
 	@Override
 	public void notifyAttributeChange(Attribute attribute, String reason) {
-		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getUserScene(userId);
 		if (scene == null) {
 			return;
@@ -577,7 +573,6 @@ public class Role extends LivingThing {
 
 	@Override
 	public void afterBuffAdd(RoleBuff roleBuff) {
-		// TODO Auto-generated method stub
 		Scene scene = SceneService.INSTANCE.getUserScene(userId);
 		if (scene != null) {
 			ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);

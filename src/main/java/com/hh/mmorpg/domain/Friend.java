@@ -81,7 +81,6 @@ public class Friend {
 
 		@Override
 		public Friend build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int roleId = result.getInt("roleId");
 			int friendId = result.getInt("friendRoleId");
 			long time = result.getLong("time");

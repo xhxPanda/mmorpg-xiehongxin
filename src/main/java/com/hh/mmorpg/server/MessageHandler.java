@@ -1,7 +1,7 @@
 package com.hh.mmorpg.server;
 
-import com.hh.mmorpg.domain.CMDdomain;
-import com.hh.mmorpg.manager.CMDmanager;
+import com.hh.mmorpg.domain.CmdDomain;
+import com.hh.mmorpg.manager.CmdManager;
 import com.hh.mmorpg.service.user.UserService;
 
 import io.netty.channel.Channel;
@@ -18,7 +18,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<TextWebSocketFra
 		Channel channel = ctx.channel();
 		String cmdData = msg.text();
 
-		CMDmanager.INSTANCE.dealCMD(new CMDdomain(channel, cmdData));
+		CmdManager.INSTANCE.dealCMD(new CmdDomain(channel, cmdData));
 	}
 
 	@Override

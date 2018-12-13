@@ -75,6 +75,44 @@ public class SceneService {
 		EventHandlerManager.INSATNCE.register(this);
 	}
 
+	/**
+	 * 获取可进入的场景
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public ReplyDomain getNearScene(User user) {
+		
+		int userId = user.getUserId();
+
+		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
+
+		ReplyDomain replyDomain = new ReplyDomain();
+		if (role.getSceneId() == 0) {
+			return replyDomain;
+		}
+
+		Scene scene = sceneMap.get(role.getSceneId());
+
+		List<Integer> sceneIds = scene.getNeighborSceneIds();
+		List<SceneDomain> scenes = new ArrayList<>();
+		for (Integer sceneId : sceneIds) {
+			SceneDomain nearScene = sceneDomainMap.get(sceneId);
+			scenes.add(nearScene);
+		}
+
+		replyDomain.setListDomain("可进入的场景", scenes);
+		return replyDomain;
+	}
+
+	/**
+	 * 用户进入场景
+	 * 
+	 * @param user
+	 * @param sceneTypeId
+	 * @param sceneId
+	 * @return
+	 */
 	public ReplyDomain userJoinScene(User user, int sceneTypeId, int sceneId) {
 		int userId = user.getUserId();
 
@@ -157,7 +195,7 @@ public class SceneService {
 
 		SceneUserCache sceneUserCache = new SceneUserCache(role.getUserId(), role);
 		scene.userEnterScene(sceneUserCache);
-		
+
 		role.setSceneId(scene.getId());
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
@@ -176,7 +214,7 @@ public class SceneService {
 	 * @return
 	 */
 	public ReplyDomain joinCopyScene(User user, int sceneTypeId, int sceneId) {
-		// TODO Auto-generated method stub
+		
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
@@ -285,20 +323,31 @@ public class SceneService {
 		return scene;
 	}
 
+	/**
+	 * 踢人
+	 * 
+	 * @param sceneId
+	 */
 	public void finishScene(int sceneId) {
 		// 生成副本后，60分钟就把人踢出来（不管有无完成）
 		executorService.schedule(new Runnable() {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				
 				userForceLeaveCopy(sceneId);
 			}
 		}, 60, TimeUnit.MINUTES);
 	}
 
+	/**
+	 * 获取场景中所有用户
+	 * 
+	 * @param user
+	 * @return
+	 */
 	public ReplyDomain getSeceneUser(User user) {
-		// TODO Auto-generated method stub
+		
 		int userId = user.getUserId();
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
@@ -321,7 +370,7 @@ public class SceneService {
 	}
 
 	public ReplyDomain attackMonster(User user, int skillId, int monsterId) {
-		// TODO Auto-generated method stub
+		
 		int userId = user.getUserId();
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
@@ -662,7 +711,7 @@ public class SceneService {
 		judgeScene(scene);
 
 		for (Monster monster : scene.getMonsterMap().values()) {
-			if(monster.getAttackObject() ==null)
+			if (monster.getAttackObject() == null)
 				continue;
 			if (monster.getAttackObject().getId() == role.getId()) {
 				monster.setAttackObject(null);

@@ -13,7 +13,6 @@ public class PKMissionHandler extends AbstractMissionHandler<PKData> {
 
 	@Override
 	public void dealMission(PKData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		int winRoleId = eventData.getWinRoleId();
 
 		Role role = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(winRoleId), winRoleId);

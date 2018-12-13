@@ -23,7 +23,6 @@ public class GoodsXmlResolutionManager {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\goods.xml");
 
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

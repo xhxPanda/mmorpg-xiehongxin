@@ -236,7 +236,7 @@ public class TeamService {
 	}
 
 	public ReplyDomain transferCaptain(User user, int roleId) {
-		// TODO Auto-generated method stub
+		
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
@@ -261,7 +261,7 @@ public class TeamService {
 	}
 
 	public ReplyDomain tickTeamMate(User user, int roleId) {
-		// TODO Auto-generated method stub
+		
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		if (role.getTeamId() == 0) {

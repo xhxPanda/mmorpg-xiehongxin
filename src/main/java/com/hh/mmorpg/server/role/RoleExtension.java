@@ -2,7 +2,7 @@ package com.hh.mmorpg.server.role;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -21,7 +21,7 @@ public class RoleExtension {
 	public static final String NOTIFY_LEVEL_UP = "升级";
 
 	@CmdService(cmd = GET_ALL_ROLE)
-	public void getAllRole(User user, CMDdomain cmdDomain) {
+	public void getAllRole(User user, CmdDomain cmdDomain) {
 
 		ReplyDomain replyDomain = service.getAllRole(user);
 
@@ -29,7 +29,7 @@ public class RoleExtension {
 	}
 
 	@CmdService(cmd = CREATE_ROLE)
-	public void creatRole(User user, CMDdomain cmdDomain) {
+	public void creatRole(User user, CmdDomain cmdDomain) {
 		int occupationId = cmdDomain.getIntParam(2);
 		String name = cmdDomain.getStringParam(3);
 
@@ -38,20 +38,20 @@ public class RoleExtension {
 	}
 
 	@CmdService(cmd = USE_ROLE)
-	public void useRole(User user, CMDdomain cmdDomain) {
+	public void useRole(User user, CmdDomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 		ReplyDomain reply = service.userUseRole(user, roleId);
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
 
 	@CmdService(cmd = GET_USER_NOW_ROLE)
-	public void getUserNowRolet(User user, CMDdomain cmdDomain) {
+	public void getUserNowRolet(User user, CmdDomain cmdDomain) {
 		ReplyDomain reply = service.getUserUsingRole(user);
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
 
 	@CmdService(cmd = TRANSFER_OCCUPATION)
-	public void transferOccupation(User user, CMDdomain cmdDomain) {
+	public void transferOccupation(User user, CmdDomain cmdDomain) {
 		int occupationId = cmdDomain.getIntParam(2);
 
 		ReplyDomain reply = service.transferOccupation(user, occupationId);

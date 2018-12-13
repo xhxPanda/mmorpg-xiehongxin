@@ -59,7 +59,6 @@ public class FriendApply {
 
 		@Override
 		public FriendApply build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int roleId = result.getInt("friendId");
 			int applyId = result.getInt("roleId");
 			String roleName = result.getString("roleName");

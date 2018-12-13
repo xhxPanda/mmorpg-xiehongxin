@@ -37,7 +37,6 @@ public class User {
 	public static final ResultBuilder<User> BUILDER = new ResultBuilder<User>() {
 		@Override
 		public User build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int userId = result.getInt(1);
 			String password = result.getString(2);
 			return new User(userId, password);

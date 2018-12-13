@@ -12,7 +12,6 @@ public class AddFriendMissionHandler extends AbstractMissionHandler<FriendData> 
 
 	@Override
 	public void dealMission(FriendData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
 		if (missions.size() == 0) {

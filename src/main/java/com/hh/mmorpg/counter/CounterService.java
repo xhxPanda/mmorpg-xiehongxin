@@ -1,7 +1,7 @@
 package com.hh.mmorpg.counter;
 
 /**
- * 数据库计数器
+ * 数据库计数器，暂时没有用到，这个包可以忽略先
  * 
  * @author xhx
  *

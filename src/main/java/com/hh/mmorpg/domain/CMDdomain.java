@@ -2,12 +2,12 @@ package com.hh.mmorpg.domain;
 
 import io.netty.channel.Channel;
 
-public class CMDdomain {
+public class CmdDomain {
 
 	private String[] domainStringArry;
 	private Channel channel;
 
-	public CMDdomain(Channel channel, String str) {
+	public CmdDomain(Channel channel, String str) {
 		this.domainStringArry = str.split(" ");
 		this.channel = channel;
 	}

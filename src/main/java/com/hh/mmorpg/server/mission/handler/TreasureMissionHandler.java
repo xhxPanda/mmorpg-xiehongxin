@@ -10,7 +10,6 @@ public class TreasureMissionHandler extends AbstractMissionHandler<GainTreasureD
 
 	@Override
 	public void dealMission(GainTreasureData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 		if (missions.size() == 0) {
 			return;

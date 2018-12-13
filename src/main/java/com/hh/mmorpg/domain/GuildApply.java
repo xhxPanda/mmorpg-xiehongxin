@@ -50,7 +50,6 @@ public class GuildApply {
 
 		@Override
 		public GuildApply build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int roleId = result.getInt("roleId");
 			int userId = result.getInt("userId");
 			String name = result.getString("name");

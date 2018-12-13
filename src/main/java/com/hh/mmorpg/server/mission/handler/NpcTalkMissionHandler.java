@@ -2,7 +2,6 @@ package com.hh.mmorpg.server.mission.handler;
 
 import java.util.List;
 
-import com.hh.mmorpg.domain.MissionAttribute;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.event.data.NpcTalkData;
@@ -20,7 +19,6 @@ public class NpcTalkMissionHandler extends AbstractMissionHandler<NpcTalkData> {
 	 */
 	@Override
 	public void dealMission(NpcTalkData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
 		int npcId = eventData.getNpcId();

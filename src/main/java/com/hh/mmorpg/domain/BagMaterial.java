@@ -28,7 +28,6 @@ public class BagMaterial extends Material {
 
 	public BagMaterial(int uniqueId, int roleId, int id, String name,int typeId, int quantity, int index, String sellPrice) {
 		super(roleId, id, name, typeId);
-		// TODO Auto-generated constructor stub
 		this.uniqueId = uniqueId;
 		this.index = index;
 		this.sellPrice = sellPrice;
@@ -67,7 +66,6 @@ public class BagMaterial extends Material {
 
 		@Override
 		public BagMaterial build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			
 			int uniqueId = result.getInt("uniqueId");
 			int id = result.getInt("id");

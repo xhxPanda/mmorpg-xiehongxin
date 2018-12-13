@@ -110,7 +110,6 @@ public class GuildMemberAuthority {
 	public static final ResultBuilder<GuildMemberAuthority> BUILDER = new ResultBuilder<GuildMemberAuthority>() {
 		@Override
 		public GuildMemberAuthority build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int guildId = result.getInt("guildId");
 			int guildMemberIdentityId = result.getInt("guildMemberIdentityId");
 			boolean canTickMember = result.getBoolean("canTickMember");

@@ -45,6 +45,11 @@ import com.hh.mmorpg.server.mission.handler.TranscationMissionHandler;
 import com.hh.mmorpg.server.mission.handler.TreasureMissionHandler;
 import com.hh.mmorpg.server.role.RoleService;
 
+/**
+ * 任务的处理类
+ * @author xhx
+ *
+ */
 public class MissionService {
 
 	public static final MissionService INSTANCE = new MissionService();
@@ -157,7 +162,6 @@ public class MissionService {
 	 * @return
 	 */
 	public ReplyDomain showMissionAccept(User user) {
-		// TODO Auto-generated method stub
 		int userId = user.getUserId();
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
@@ -185,7 +189,6 @@ public class MissionService {
 	 * @return
 	 */
 	public ReplyDomain showMissionCanAccept(User user) {
-		// TODO Auto-generated method stub
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 		ReplyDomain replyDomain = new ReplyDomain();
 
@@ -336,6 +339,10 @@ public class MissionService {
 				getRoleMissionByType(passCopyData.getRole(), MissionType.TREASURE));
 	}
 
+	/**
+	 * 处理pk的任务
+	 * @param data
+	 */
 	@SuppressWarnings("unchecked")
 	@Event(eventType = EventType.PK)
 	public void handleUserPK(EventDealData<PKData> data) {
@@ -345,6 +352,10 @@ public class MissionService {
 		handlerMap.get(MissionType.PK).dealMission(pkData, getRoleMissionByType(winRole, MissionType.PK));
 	}
 
+	/**
+	 * 处理交易的任务
+	 * @param data
+	 */
 	@SuppressWarnings("unchecked")
 	@Event(eventType = EventType.TRANSACTION)
 	public void handleUserTransaction(EventDealData<TransactionData> data) {
@@ -354,6 +365,12 @@ public class MissionService {
 				getRoleMissionByType(transactionData.getRole(), MissionType.TRANSCATION));
 	}
 
+	/**
+	 * 根据任务类型获取玩家的已接受任务列表
+	 * @param role
+	 * @param type
+	 * @return
+	 */
 	private List<RoleMission> getRoleMissionByType(Role role, int type) {
 		List<RoleMission> missionList = new ArrayList<>();
 

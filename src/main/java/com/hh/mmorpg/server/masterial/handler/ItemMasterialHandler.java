@@ -18,7 +18,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 
 	@Override
 	public ReplyDomain gainMaterial(Role role, String[] materialStr) {
-		// TODO Auto-generated method stub
+		
 
 		int id = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
@@ -30,7 +30,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 
 	@Override
 	public ReplyDomain decMasterial(Role role, String[] materialStr) {
-		// TODO Auto-generated method stub
+		
 		int id = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
 
@@ -67,7 +67,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 
 	@Override
 	public int getPileNum(int itemId) {
-		// TODO Auto-generated method stub
+		
 		ItemDomain itemDomain = ItemService.INSTANCE.getItemDomain(itemId);
 		return itemDomain.getPileNum();
 	}

@@ -48,15 +48,27 @@ public class MaterialService {
 		goodsMap = GoodsXmlResolutionManager.INSTANCE.resolution();
 	}
 
+	/**
+	 * 展示商品
+	 * 
+	 * @param user
+	 * @return
+	 */
 	public ReplyDomain showGoods(User user) {
-		// TODO Auto-generated method stub
+		
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setListDomain("商品列表", goodsMap.values());
 		return replyDomain;
 	}
 
+	/**
+	 * 展示背包
+	 * 
+	 * @param user
+	 * @return
+	 */
 	public ReplyDomain showAllMaterial(User user) {
-		// TODO Auto-generated method stub
+		
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		ReplyDomain replyDomain = new ReplyDomain();
@@ -72,8 +84,8 @@ public class MaterialService {
 			} else {
 				bagMaterialStr.append("(").append("名称：").append(materialEntry.getValue().getName()).append(",")
 						.append("类型：")
-						.append(MaterialType.getMaterialType(materialEntry.getValue().getTypeId()).getName()).append(",")
-						.append("数量：").append(materialEntry.getValue().getQuantity()).append(")");
+						.append(MaterialType.getMaterialType(materialEntry.getValue().getTypeId()).getName())
+						.append(",").append("数量：").append(materialEntry.getValue().getQuantity()).append(")");
 			}
 
 		}
@@ -92,8 +104,16 @@ public class MaterialService {
 		return replyDomain;
 	}
 
+	/**
+	 * 购买商品
+	 * 
+	 * @param user
+	 * @param goodsId
+	 * @param num
+	 * @return
+	 */
 	public ReplyDomain buyGoods(User user, int goodsId, int num) {
-		// TODO Auto-generated method stub
+		
 		if (num < 0) {
 			return ReplyDomain.FAILE;
 		}
@@ -117,6 +137,13 @@ public class MaterialService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 拼凑商品信息
+	 * 
+	 * @param materialStr
+	 * @param num
+	 * @return
+	 */
 	private String concatenationGoods(String materialStr, int num) {
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < num; i++) {
@@ -129,6 +156,14 @@ public class MaterialService {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 增加商品
+	 * 
+	 * @param user
+	 * @param role
+	 * @param material
+	 * @return
+	 */
 	public ReplyDomain gainMasteral(User user, Role role, String material) {
 
 		String strs[] = material.split("#");
@@ -154,6 +189,14 @@ public class MaterialService {
 		return replyDomain;
 	}
 
+	/**
+	 * 减少商品
+	 * 
+	 * @param user
+	 * @param role
+	 * @param material
+	 * @return
+	 */
 	public ReplyDomain decMasterial(User user, Role role, String material) {
 		String[] materials = material.split("#");
 		ReplyDomain checkReply = checkDecMaterial(role, material);
@@ -178,10 +221,10 @@ public class MaterialService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	// 检查是否能够扣除所有物品，进行事务处理
 	public ReplyDomain checkDecMaterial(Role role, String material) {
 		String[] materials = material.split("#");
 
-		// 检查是否能够扣除所有物品，进行事务处理
 		for (String m : materials) {
 			String strs[] = m.split(":");
 			int type = Integer.parseInt(strs[0]);
@@ -194,6 +237,13 @@ public class MaterialService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 使用背包中的物品
+	 * 
+	 * @param user
+	 * @param index
+	 * @return
+	 */
 	public ReplyDomain useMaterial(User user, int index) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
@@ -204,9 +254,15 @@ public class MaterialService {
 
 		return handlerMap.get(material.getTypeId()).useMaterial(role, material.getUniqueId());
 	}
-
+	
+	/**
+	 * 出售商品
+	 * @param user
+	 * @param materialStr
+	 * @return
+	 */
 	public ReplyDomain sellGoods(User user, String materialStr) {
-		// TODO Auto-generated method stub
+		
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		String strs[] = materialStr.split(":");
@@ -232,6 +288,12 @@ public class MaterialService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 获取商品的堆叠数量
+	 * @param type
+	 * @param materialId
+	 * @return
+	 */
 	public int getMaterialPileNum(int type, int materialId) {
 		return handlerMap.get(type).getPileNum(materialId);
 	}
@@ -272,7 +334,7 @@ public class MaterialService {
 	 * @return
 	 */
 	public ReplyDomain arrangeBag(User user) {
-		// TODO Auto-generated method stub
+		
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 		role.arrangeBag();
 		return showAllMaterial(user);
@@ -287,7 +349,7 @@ public class MaterialService {
 	 * @return
 	 */
 	public ReplyDomain sortBag(User user, int fromIndex, int toIndex) {
-		// TODO Auto-generated method stub
+		
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		return role.sortBag(fromIndex, toIndex);

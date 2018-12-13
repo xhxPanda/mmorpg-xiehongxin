@@ -17,7 +17,6 @@ public class MaterialMissionHandler extends AbstractMissionHandler<GetMaterialDa
 
 	@Override
 	public void dealMission(GetMaterialData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
 		BagMaterial bagMaterial = eventData.getBagMaterial();

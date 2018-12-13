@@ -19,7 +19,6 @@ public class MessageService {
 	 * 
 	 */
 	public ReplyDomain sendWorldMessage(String content) {
-		// TODO Auto-generated method stub
 		Map<Integer, Scene> sceneMap = SceneService.INSTANCE.getSceneMap();
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setStringDomain("cmd", MessageExtension.NOTIFY_USER_WORLD_MESSAGE);

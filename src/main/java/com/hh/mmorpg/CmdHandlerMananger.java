@@ -11,7 +11,7 @@ import java.util.Map;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.ServiceHandler;
 import com.hh.mmorpg.domain.User;
 
@@ -28,7 +28,7 @@ public class CmdHandlerMananger {
 
 	}
 
-	public void invokeHandler(User user, CMDdomain cmdDomain) {
+	public void invokeHandler(User user, CmdDomain cmdDomain) {
 
 		ServiceHandler handler = methodMap.get(cmdDomain.getStringParam(0));
 		if (handler == null) {
@@ -37,13 +37,10 @@ public class CmdHandlerMananger {
 		try {
 			handler.getMethod().invoke(handler.getClassInstance(), user, cmdDomain);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -58,7 +55,6 @@ public class CmdHandlerMananger {
 			try {
 				c = Class.forName(name);
 			} catch (ClassNotFoundException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -78,10 +74,8 @@ public class CmdHandlerMananger {
 				try {
 					handler = new ServiceHandler(extension.id(), c.newInstance(), method);
 				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				methodMap.put(annotation.cmd(), handler);

@@ -2,7 +2,7 @@ package com.hh.mmorpg.server.guild;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -41,34 +41,34 @@ public class GuildExtension {
 	public static final String NOTIFY_PRESIDENT_CHANGE = "会长变更";
 
 	@CmdService(cmd = SHOW_GUILD_INFO)
-	public void SHOW_GUILD_INFO(User user, CMDdomain cmdDomain) {
+	public void SHOW_GUILD_INFO(User user, CmdDomain cmdDomain) {
 
 		ReplyDomain replyDomain = serivice.showGuildInfo(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = SHOW_GUILD_MEMBER)
-	public void showGuildMember(User user, CMDdomain cmdDomain) {
+	public void showGuildMember(User user, CmdDomain cmdDomain) {
 
 		ReplyDomain replyDomain = serivice.showGuildMember(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = SHOW_GUILD_BANK)
-	public void showGuildBank(User user, CMDdomain cmdDomain) {
+	public void showGuildBank(User user, CmdDomain cmdDomain) {
 
 		ReplyDomain replyDomain = serivice.showGuildBank(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = SHOW_GUILD_APPLY)
-	public void showGuildApply(User user, CMDdomain cmdDomain) {
+	public void showGuildApply(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = serivice.showGuildApply(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = CREAT_GUILD)
-	public void creatGuild(User user, CMDdomain cmdDomain) {
+	public void creatGuild(User user, CmdDomain cmdDomain) {
 		String name = cmdDomain.getStringParam(2);
 		String declaration = cmdDomain.getStringParam(3);
 
@@ -78,7 +78,7 @@ public class GuildExtension {
 	}
 
 	@CmdService(cmd = SEND_GUILD_APPLY)
-	public void sendGuildApply(User user, CMDdomain cmdDomain) {
+	public void sendGuildApply(User user, CmdDomain cmdDomain) {
 		int guildId = cmdDomain.getIntParam(2);
 		String content = cmdDomain.getStringParam(3);
 
@@ -88,7 +88,7 @@ public class GuildExtension {
 	}
 
 	@CmdService(cmd = EXAMINATION_APPLY)
-	public void eaminationApply(User user, CMDdomain cmdDomain) {
+	public void eaminationApply(User user, CmdDomain cmdDomain) {
 		int applyId = cmdDomain.getIntParam(2);
 		boolean isAggre = cmdDomain.getBooleanParam(3);
 
@@ -98,7 +98,7 @@ public class GuildExtension {
 	}
 
 	@CmdService(cmd = TICK_OUT_MEMBER)
-	public void tickOutMember(User user, CMDdomain cmdDomain) {
+	public void tickOutMember(User user, CmdDomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = serivice.tickOutRole(user, roleId);
@@ -107,7 +107,7 @@ public class GuildExtension {
 	}
 
 	@CmdService(cmd = DONATE_MATERIAL)
-	public void donateMaterial(User user, CMDdomain cmdDomain) {
+	public void donateMaterial(User user, CmdDomain cmdDomain) {
 		int index = cmdDomain.getIntParam(2);
 		int num = cmdDomain.getIntParam(3);
 
@@ -116,7 +116,7 @@ public class GuildExtension {
 	}
 
 	@CmdService(cmd = DONATE_TREASURE)
-	public void donateTreasure(User user, CMDdomain cmdDomain) {
+	public void donateTreasure(User user, CmdDomain cmdDomain) {
 		int id = cmdDomain.getIntParam(2);
 		int num = cmdDomain.getIntParam(3);
 
@@ -125,7 +125,7 @@ public class GuildExtension {
 	}
 
 	@CmdService(cmd = EXTRACT_MATERIAL)
-	public void extractMaterial(User user, CMDdomain cmdDomain) {
+	public void extractMaterial(User user, CmdDomain cmdDomain) {
 		int index = cmdDomain.getIntParam(2);
 		int num = cmdDomain.getIntParam(3);
 
@@ -134,7 +134,7 @@ public class GuildExtension {
 	}
 
 	@CmdService(cmd = EXTRACT_TREASURE)
-	public void extractTreasure(User user, CMDdomain cmdDomain) {
+	public void extractTreasure(User user, CmdDomain cmdDomain) {
 		int id = cmdDomain.getIntParam(2);
 		int num = cmdDomain.getIntParam(3);
 
@@ -143,14 +143,14 @@ public class GuildExtension {
 	}
 
 	@CmdService(cmd = LEAVE_GUILD)
-	public void leaveGuild(User user, CMDdomain cmdDomain) {
+	public void leaveGuild(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = serivice.leaveGuild(user);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = TRANSFER_GUILD)
-	public void transferGuild(User user, CMDdomain cmdDomain) {
+	public void transferGuild(User user, CmdDomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 		ReplyDomain replyDomain = serivice.transferGuild(user, roleId);
 

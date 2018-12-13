@@ -244,7 +244,6 @@ public class Scene {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				sceneHeartBeat();
 			}
 		}, 0, 1, TimeUnit.SECONDS);
@@ -363,18 +362,16 @@ public class Scene {
 		Random skillRandom = new Random();
 		int randomSkillIndex = skillRandom.nextInt(monsterSkillList.size());
 
-		
 		// 在副本中有可能会没有指定目标
-		if(isCopy && monster.getAttackObject() == null) {
+		if (isCopy && monster.getAttackObject() == null) {
 			Random attackRandom = new Random();
 			int randomIndex = attackRandom.nextInt(attackDistance.size());
 			monster.setAttackObject(attackDistance.get(randomIndex));
 		}
-		
+
 		SkillService.INSTANCE.dealSkillEffect(monsterSkillList.get(randomSkillIndex), monster, attackDistance,
 				System.currentTimeMillis());
 	}
-
 
 	/**
 	 * 获取所有的场景角色
@@ -483,4 +480,10 @@ public class Scene {
 			}
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Scene [id=" + id + ", name=" + name + "]";
+	}
+
 }

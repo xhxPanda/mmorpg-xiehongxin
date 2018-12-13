@@ -63,10 +63,10 @@ public class PKService {
 		}
 
 		ReplyDomain notify = new ReplyDomain();
-		notify.setStringDomain("cmd", pkExtension.NOTIFY_ROLE_INVITED_PK);
+		notify.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_INVITED_PK);
 		notify.setStringDomain("对方名称", role.getName());
 		notify.setIntDomain("对方等级", role.getLevel());
-		pkExtension.notifyUserMessage(otherUser, notify);
+		PKExtension.notifyUserMessage(otherUser, notify);
 
 		return ReplyDomain.SUCCESS;
 	}
@@ -114,11 +114,10 @@ public class PKService {
 			otherRole.setPkRoleId(role.getId());
 
 			ReplyDomain replyDomain = new ReplyDomain();
-			replyDomain.setStringDomain("cmd", pkExtension.NOTIFY_ROLE_JOIN_PK);
+			replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_JOIN_PK);
 			replyDomain.setStringDomain("对方名称", role.getName());
 			replyDomain.setIntDomain("对方等级", role.getLevel());
-			pkExtension.notifyUserMessage(otherUser, replyDomain);
-
+			PKExtension.notifyUserMessage(otherUser, replyDomain);
 		} finally {
 			lock.unlock();
 		}
@@ -148,15 +147,15 @@ public class PKService {
 		if (RoleService.INSTANCE.isOnline(winRoleId)) {
 			User winUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(winRoleId));
 			ReplyDomain replyDomain = new ReplyDomain();
-			replyDomain.setStringDomain("cmd", pkExtension.NOTIFY_ROLE_PK_WIN);
-			pkExtension.notifyUserMessage(winUser, replyDomain);
+			replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_PK_WIN);
+			PKExtension.notifyUserMessage(winUser, replyDomain);
 		}
 		
 		if (RoleService.INSTANCE.isOnline(loseRoleId)) {
 			User loseUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(loseRoleId));
 			ReplyDomain replyDomain = new ReplyDomain();
-			replyDomain.setStringDomain("cmd", pkExtension.NOTIFY_ROLE_PK_LOSE);
-			pkExtension.notifyUserMessage(loseUser, replyDomain);
+			replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_PK_LOSE);
+			PKExtension.notifyUserMessage(loseUser, replyDomain);
 		}
 	}
 }

@@ -2,7 +2,7 @@ package com.hh.mmorpg.server.message;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -24,7 +24,7 @@ public class MessageExtension {
 	private static final String NOTIFY_USER_MESSAGE = "私聊信息";
 
 	@CmdService(cmd = SEND_WORLD_MESSAGE)
-	public void sendWorldMessage(User user, CMDdomain cmDdomain) {
+	public void sendWorldMessage(User user, CmdDomain cmDdomain) {
 		String content = cmDdomain.getStringParam(2);
 
 		ReplyDomain replyDomain = service.sendWorldMessage(content);
@@ -32,9 +32,9 @@ public class MessageExtension {
 	}
 
 	@CmdService(cmd = SEND_TO_USER)
-	public void sendToUser(User user, CMDdomain cmDdomain) {
-		String content = cmDdomain.getStringParam(2);
-		int userId = cmDdomain.getIntParam(3);
+	public void sendToUser(User user, CmdDomain cmdDomain) {
+		String content = cmdDomain.getStringParam(2);
+		int userId = cmdDomain.getIntParam(3);
 		
 		ReplyDomain replyDomain = service.sendMessageToUser(user, userId, content);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

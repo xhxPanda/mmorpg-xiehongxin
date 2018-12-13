@@ -23,7 +23,6 @@ public class EquimentXmlResolutionManager {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\equiment.xml");
 
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Map<Integer, EquimentDomain> map = new HashMap<>();

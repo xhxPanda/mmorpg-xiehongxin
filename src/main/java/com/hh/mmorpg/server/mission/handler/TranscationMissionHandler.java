@@ -12,7 +12,6 @@ public class TranscationMissionHandler extends AbstractMissionHandler<Transactio
 
 	@Override
 	public void dealMission(TransactionData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
 		if (missions.size() == 0) {

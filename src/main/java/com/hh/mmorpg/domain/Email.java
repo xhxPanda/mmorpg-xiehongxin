@@ -68,7 +68,6 @@ public class Email {
 
 		@Override
 		public Email build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int roleId = result.getInt("roleId");
 			int id = result.getInt("emailId");
 			String content = result.getString("content");

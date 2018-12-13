@@ -26,7 +26,6 @@ public class EmailDao {
 			return (List<Email>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(GET_ROLE_EMAIL,
 					new Object[] { roleId }, Email.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return new ArrayList<Email>();

@@ -85,7 +85,6 @@ public class GuildMember {
 
 		@Override
 		public GuildMember build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int roleId = result.getInt("RoleId");
 			int level = result.getInt("level");
 			int userId = result.getInt("UserId");

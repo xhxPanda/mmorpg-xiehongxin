@@ -21,7 +21,6 @@ public class EquimentMissionHandler extends AbstractMissionHandler<UserEquimentD
 
 	@Override
 	public void dealMission(UserEquimentData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 
 		if (missions.size() == 0) {
 			return;

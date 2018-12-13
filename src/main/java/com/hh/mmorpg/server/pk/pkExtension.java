@@ -2,7 +2,7 @@ package com.hh.mmorpg.server.pk;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -14,7 +14,7 @@ import com.hh.mmorpg.server.ExtensionSender;
  *
  */
 @Extension(id = 13)
-public class pkExtension {
+public class PKExtension {
 
 	private PKService service = PKService.INSATNCE;
 
@@ -27,7 +27,7 @@ public class pkExtension {
 	public static final String NOTIFY_ROLE_PK_LOSE = "pk落败";
 
 	@CmdService(cmd = INVITE_ROLE_PK)
-	public void inviteRolePK(User user, CMDdomain cmDdomain) {
+	public void inviteRolePK(User user, CmdDomain cmDdomain) {
 		int roleId = cmDdomain.getIntParam(2);
 		ReplyDomain domain = service.invitePK(user, roleId);
 
@@ -35,7 +35,7 @@ public class pkExtension {
 	}
 
 	@CmdService(cmd = DEAL_PK_APPLICATION)
-	public void dealPKApplication(User user, CMDdomain cmDdomain) {
+	public void dealPKApplication(User user, CmdDomain cmDdomain) {
 		int roleId = cmDdomain.getIntParam(2);
 		ReplyDomain domain = service.dealPKApply(user, roleId);
 

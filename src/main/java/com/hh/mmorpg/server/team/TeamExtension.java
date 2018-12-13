@@ -2,7 +2,7 @@ package com.hh.mmorpg.server.team;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -24,13 +24,13 @@ public class TeamExtension {
 	public static final String NOTIFY_TEAM_MATE_QUIT = "退出队伍";
 
 	@CmdService(cmd = GET_TEAM_INFO)
-	public void getTeamInfo(User user, CMDdomain cmdDomain) {
+	public void getTeamInfo(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = service.getTeamInfo(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = INVITE_ROLE_ORGANIZE_TEAM)
-	public void inviteRoleOrganizeTeam(User user, CMDdomain cmdDomain) {
+	public void inviteRoleOrganizeTeam(User user, CmdDomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 		ReplyDomain replyDomain = service.inviteRoleOrganizeTeam(user, roleId);
 
@@ -38,7 +38,7 @@ public class TeamExtension {
 	}
 
 	@CmdService(cmd = DEAL_TEAM_APPLY)
-	public void dealTeamApply(User user, CMDdomain cmdDomain) {
+	public void dealTeamApply(User user, CmdDomain cmdDomain) {
 
 		int roleId = cmdDomain.getIntParam(2);
 		boolean isAgree = cmdDomain.getBooleanParam(3);
@@ -49,13 +49,13 @@ public class TeamExtension {
 	}
 
 	@CmdService(cmd = QUIT_TEAM)
-	public void quitTeam(User user, CMDdomain cmdDomain) {
+	public void quitTeam(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = service.quitTeam(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = TRANSFER_CHAPION)
-	public void transferCaptain(User user, CMDdomain cmdDomain) {
+	public void transferCaptain(User user, CmdDomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 		ReplyDomain replyDomain = service.transferCaptain(user, roleId);
 
@@ -63,7 +63,7 @@ public class TeamExtension {
 	}
 
 	@CmdService(cmd = TICK_TEAM_MATE)
-	public void tickTeamMate(User user, CMDdomain cmdDomain) {
+	public void tickTeamMate(User user, CmdDomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 		ReplyDomain replyDomain = service.tickTeamMate(user, roleId);
 

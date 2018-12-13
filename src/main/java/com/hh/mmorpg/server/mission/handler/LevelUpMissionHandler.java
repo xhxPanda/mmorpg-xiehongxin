@@ -21,7 +21,6 @@ public class LevelUpMissionHandler extends AbstractMissionHandler<UpdateLevelDat
 	 */
 	@Override
 	public void dealMission(UpdateLevelData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
 		int upLevel = eventData.getNewLevel() - eventData.getOldLevel();

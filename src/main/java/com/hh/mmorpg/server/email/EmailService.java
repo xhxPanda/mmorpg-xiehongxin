@@ -58,7 +58,7 @@ public class EmailService {
 		try {
 			emailMap = cache.get(roleId);
 		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return emailMap;
@@ -121,7 +121,6 @@ public class EmailService {
 	}
 
 	private Map<Integer, Email> getRoleAllEmailFromDB(Integer roleId) {
-		// TODO Auto-generated method stub
 
 		List<Email> roles = EmailDao.INSTANCE.getRoleEmail(roleId);
 		Map<Integer, Email> map = roles.stream().collect(Collectors.toMap(Email::getId, a -> a));

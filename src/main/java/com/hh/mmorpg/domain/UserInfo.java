@@ -33,7 +33,6 @@ public class UserInfo {
 
 		@Override
 		public UserInfo build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			return new UserInfo(result.getInt("userId"), result.getString("nickName"), result.getInt("sex"));
 		}
 	};

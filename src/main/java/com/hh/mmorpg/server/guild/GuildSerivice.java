@@ -136,7 +136,7 @@ public class GuildSerivice {
 	 * @return
 	 */
 	public ReplyDomain creatGuild(User user, String name, String declaration) {
-		// TODO Auto-generated method stub
+
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
@@ -438,7 +438,7 @@ public class GuildSerivice {
 	 * @return
 	 */
 	public ReplyDomain donateMaterial(User user, int index, int num) {
-		// TODO Auto-generated method stub
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		if (role.getGuildId() == 0) {
@@ -520,7 +520,7 @@ public class GuildSerivice {
 	 * @return
 	 */
 	public ReplyDomain extractMaterial(User user, int index, int num) {
-		// TODO Auto-generated method stub
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		if (role.getGuildId() == 0) {
@@ -627,7 +627,7 @@ public class GuildSerivice {
 	 * @return
 	 */
 	public ReplyDomain showGuildBank(User user) {
-		// TODO Auto-generated method stub
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		if (role.getGuildId() == 0) {

@@ -324,7 +324,6 @@ public class Guild {
 	public static final ResultBuilder<Guild> BUILDER = new ResultBuilder<Guild>() {
 		@Override
 		public Guild build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int id = result.getInt("id");
 			String name = result.getString("name");
 			int level = result.getInt("level");

@@ -2,7 +2,7 @@ package com.hh.mmorpg.server.transaction;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -26,7 +26,7 @@ public class TransactionExtension {
 	public static final String NOTIFY_TRANSACTION_SHUTDOWN = "对方中断交易";
 
 	@CmdService(cmd = REQUEST_DELL)
-	public void requestTransaction(User user, CMDdomain cmdDomain) {
+	public void requestTransaction(User user, CmdDomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.requestTransaction(user, roleId);
@@ -34,7 +34,7 @@ public class TransactionExtension {
 	}
 
 	@CmdService(cmd = DEAL_DELL_REQUEST)
-	public void dealTransactionRequest(User user, CMDdomain cmdDomain) {
+	public void dealTransactionRequest(User user, CmdDomain cmdDomain) {
 		int roleId = cmdDomain.getIntParam(2);
 		boolean isAccept = cmdDomain.getBooleanParam(3);
 
@@ -43,7 +43,7 @@ public class TransactionExtension {
 	}
 
 	@CmdService(cmd = SET_MATERIAL)
-	public void setMaterial(User user, CMDdomain cmdDomain) {
+	public void setMaterial(User user, CmdDomain cmdDomain) {
 		int index = cmdDomain.getIntParam(2);
 		int num = cmdDomain.getIntParam(3);
 
@@ -52,7 +52,7 @@ public class TransactionExtension {
 	}
 
 	@CmdService(cmd = SET_TREASURE)
-	public void setTreasure(User user, CMDdomain cmdDomain) {
+	public void setTreasure(User user, CmdDomain cmdDomain) {
 		int id = cmdDomain.getIntParam(2);
 		int num = cmdDomain.getIntParam(2);
 
@@ -61,13 +61,13 @@ public class TransactionExtension {
 	}
 
 	@CmdService(cmd = CHECK_CONFIRM)
-	public void checkConfirm(User user, CMDdomain cmdDomain) {
+	public void checkConfirm(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = service.checkConfirm(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = STOP_TRANSACTION)
-	public void stopTransaction(User user, CMDdomain cmdDomain) {
+	public void stopTransaction(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = service.stopTransaction(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

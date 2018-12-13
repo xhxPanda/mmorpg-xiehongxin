@@ -159,7 +159,6 @@ public class RoleMission {
 
 		@Override
 		public RoleMission build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 			int missionId = result.getInt("missionId");
 			int roleId = result.getInt("roleId");
 			int type = result.getInt("type");

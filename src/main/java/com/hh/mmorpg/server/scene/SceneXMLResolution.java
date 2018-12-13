@@ -27,7 +27,6 @@ public class SceneXMLResolution {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\scene.xml");
 
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -116,7 +115,6 @@ public class SceneXMLResolution {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\monster.xml");
 
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

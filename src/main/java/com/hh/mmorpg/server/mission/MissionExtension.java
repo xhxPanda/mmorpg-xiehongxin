@@ -2,7 +2,7 @@ package com.hh.mmorpg.server.mission;
 
 import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
-import com.hh.mmorpg.domain.CMDdomain;
+import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -22,20 +22,20 @@ public class MissionExtension {
 	public static final String NOTIFT_MISSION_PROCESS_CHANGE = "任务状态变化";
 
 	@CmdService(cmd = SHOW_MISSION_CAN_ACCEPT)
-	public void showMissionCanAccept(User user, CMDdomain cmdDomain) {
+	public void showMissionCanAccept(User user, CmdDomain cmdDomain) {
 		ReplyDomain replyDomain = service.showMissionCanAccept(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = SHOW_MISSION_ACCEPTED)
-	public void showMissionAccept(User user, CMDdomain cmdDomain) {
+	public void showMissionAccept(User user, CmdDomain cmdDomain) {
 
 		ReplyDomain replyDomain = service.showMissionAccept(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = ACCEPT_MISSION)
-	public void acceptMission(User user, CMDdomain cmdDomain) {
+	public void acceptMission(User user, CmdDomain cmdDomain) {
 		int missionId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.accpetMission(user, missionId);
@@ -43,7 +43,7 @@ public class MissionExtension {
 	}
 
 	@CmdService(cmd = MISSION_COMPETE)
-	public void missionCompete(User user, CMDdomain cmdDomain) {
+	public void missionCompete(User user, CmdDomain cmdDomain) {
 		int missionId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.missionCompete(user, missionId);
@@ -51,7 +51,7 @@ public class MissionExtension {
 	}
 
 	@CmdService(cmd = GIVE_UP_MISSION)
-	public void giveUpMission(User user, CMDdomain cmdDomain) {
+	public void giveUpMission(User user, CmdDomain cmdDomain) {
 		int missionId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.giveUpMission(user, missionId);

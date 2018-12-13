@@ -12,7 +12,6 @@ public class JoinTeamMission extends AbstractMissionHandler<JoinTeamData> {
 
 	@Override
 	public void dealMission(JoinTeamData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
 		if (missions.size() == 0) {

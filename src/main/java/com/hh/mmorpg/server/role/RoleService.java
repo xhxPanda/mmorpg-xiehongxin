@@ -58,7 +58,6 @@ public class RoleService {
 				public Map<Integer, Role> load(Integer appKey) {
 					return getUserAllRole(appKey);
 				}
-
 			});
 
 	private ConcurrentHashMap<Integer, Role> userRoleMap;
@@ -72,8 +71,14 @@ public class RoleService {
 		EventHandlerManager.INSATNCE.register(this);
 	}
 
+	/**
+	 * 获取用户所有的角色
+	 * 
+	 * @param user
+	 * @return
+	 */
 	public ReplyDomain getAllRole(User user) {
-		// TODO Auto-generated method stub
+	
 		int userId = user.getUserId();
 
 		Map<Integer, Role> map = getUserAllRole(userId);
@@ -90,7 +95,7 @@ public class RoleService {
 	 * @return
 	 */
 	public ReplyDomain transferOccupation(User user, int occupationId) {
-		// TODO Auto-generated method stub
+	
 		OccupationEmun occupationEmun = OccupationEmun.getOccupationEmun(occupationId);
 		if (occupationEmun == null || occupationEmun.getId() == OccupationEmun.NONE.getId()) {
 			return ReplyDomain.FAILE;
@@ -195,7 +200,7 @@ public class RoleService {
 	 * @return
 	 */
 	public ReplyDomain creatRole(User user, int occupationId, String name) {
-		// TODO Auto-generated method stub
+	
 		int id = IncrementManager.INSTANCE.increase("role");
 
 		RoleDomain domain = roleDomainMap.get(occupationId);
@@ -261,7 +266,7 @@ public class RoleService {
 		}
 
 		// 如果队伍没了的话就设置队伍为空
-		if(role.getTeamId() != 0 && TeamService.INSTANCE.getTeam(role.getTeamId()) == null) {
+		if (role.getTeamId() != 0 && TeamService.INSTANCE.getTeam(role.getTeamId()) == null) {
 			role.setTeamId(0);
 		}
 
@@ -295,7 +300,6 @@ public class RoleService {
 			Role role = cache.get(userId).get(roleId);
 			return role;
 		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

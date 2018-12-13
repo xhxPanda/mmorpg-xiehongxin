@@ -21,7 +21,6 @@ public class GuildJoinMissionHandler extends AbstractMissionHandler<GuildJoinDat
 	 */
 	@Override
 	public void dealMission(GuildJoinData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 		Role role = eventData.getRole();
 
 		if (missions.size() == 0) {

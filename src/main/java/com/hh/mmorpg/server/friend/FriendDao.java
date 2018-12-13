@@ -40,7 +40,7 @@ public class FriendDao {
 			list = (List<Friend>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_FRIENDS,
 					new Object[] { roleId }, Friend.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return list;
@@ -57,7 +57,7 @@ public class FriendDao {
 			list = (List<FriendApply>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_FRIEND_APPLY,
 					new Object[] { roleId }, FriendApply.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return list;

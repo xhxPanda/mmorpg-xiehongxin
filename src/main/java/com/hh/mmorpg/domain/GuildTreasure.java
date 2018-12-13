@@ -34,7 +34,6 @@ public class GuildTreasure {
 
 		@Override
 		public GuildTreasure build(ResultSet result) throws SQLException {
-			// TODO Auto-generated method stub
 
 			int guildId = result.getInt("guildId");
 			long quantity = result.getLong("quantity");

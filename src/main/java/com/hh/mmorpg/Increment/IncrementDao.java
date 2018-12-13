@@ -23,7 +23,6 @@ public class IncrementDao {
 			return (List<IncrementDomain>) JDBCManager.INSTANCE.getConn("work").excuteObjectList(GET_INCREMENT_DOMAIN,
 					new Object[] {}, IncrementDomain.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

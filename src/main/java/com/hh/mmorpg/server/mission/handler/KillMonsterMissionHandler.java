@@ -11,7 +11,6 @@ public class KillMonsterMissionHandler extends AbstractMissionHandler<MonsterDea
 
 	@Override
 	public void dealMission(MonsterDeadData eventData, List<RoleMission> missions) {
-		// TODO Auto-generated method stub
 
 		Role role = eventData.getKillRole();
 

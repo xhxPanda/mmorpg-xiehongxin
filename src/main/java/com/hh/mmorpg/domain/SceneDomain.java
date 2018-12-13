@@ -74,4 +74,9 @@ public class SceneDomain {
 		return entreNumLimit;
 	}
 
+	@Override
+	public String toString() {
+		return "SceneDomain [id=" + id + ", name=" + name + "]";
+	}
+
 }
