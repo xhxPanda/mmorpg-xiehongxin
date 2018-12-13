@@ -43,10 +43,8 @@ public class UserService {
 		String password = cmdDomain.getStringParam(2);
 		User user = new User(userId, password);
 
-		int result = UserDao.INSTANCE.insertUser(user);
-		if (result > 0) {
-			doLogin(user, cmdDomain.getChannel());
-		}
+		doLogin(user, cmdDomain.getChannel());
+		UserDao.INSTANCE.insertUser(user);
 	}
 
 	private void doLogin(CmdDomain cmdDomain) {

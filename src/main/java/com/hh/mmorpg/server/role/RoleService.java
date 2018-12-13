@@ -78,7 +78,7 @@ public class RoleService {
 	 * @return
 	 */
 	public ReplyDomain getAllRole(User user) {
-	
+
 		int userId = user.getUserId();
 
 		Map<Integer, Role> map = getUserAllRole(userId);
@@ -95,7 +95,7 @@ public class RoleService {
 	 * @return
 	 */
 	public ReplyDomain transferOccupation(User user, int occupationId) {
-	
+
 		OccupationEmun occupationEmun = OccupationEmun.getOccupationEmun(occupationId);
 		if (occupationEmun == null || occupationEmun.getId() == OccupationEmun.NONE.getId()) {
 			return ReplyDomain.FAILE;
@@ -200,18 +200,17 @@ public class RoleService {
 	 * @return
 	 */
 	public ReplyDomain creatRole(User user, int occupationId, String name) {
-	
+
 		int id = IncrementManager.INSTANCE.increase("role");
 
 		RoleDomain domain = roleDomainMap.get(occupationId);
 
 		Role role = new Role(user.getUserId(), id, name, occupationId, DEFAULT_CAPACITY, 1, 0, 0, 0,
 				domain.getAttributeStr(), 0);
-		int i = RoleDao.INSTANCE.insertRole(role);
-		if (i < 0) {
-			return ReplyDomain.FAILE;
-		}
+		RoleDao.INSTANCE.insertRole(role);
+
 		assemblingRole(role);
+		// 更新缓存
 		getUserAllRole(user.getUserId()).put(role.getId(), role);
 		return ReplyDomain.SUCCESS;
 	}

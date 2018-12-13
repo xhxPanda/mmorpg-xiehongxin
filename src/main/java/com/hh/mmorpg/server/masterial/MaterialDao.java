@@ -37,7 +37,7 @@ public class MaterialDao {
 			list = (List<UserTreasure>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_TREASURE,
 					new Object[] { roleId }, UserTreasure.BUILDER);
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return list;
@@ -50,7 +50,7 @@ public class MaterialDao {
 			list = (List<UserItem>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_ITEM,
 					new Object[] { roleId }, UserItem.BUILDER);
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return list;
@@ -63,32 +63,32 @@ public class MaterialDao {
 			list = (List<UserEquipment>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_EQUIMENT,
 					new Object[] {}, UserEquipment.BUILDER);
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return list;
 	}
 
-	public int updateRoleTreasure(UserTreasure treasure) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_TREASURE,
+	public void updateRoleTreasure(UserTreasure treasure) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_TREASURE,
 				new Object[] { treasure.getRoleId(), treasure.getId(), treasure.getName(), treasure.getQuantity() });
 	}
 
-	public int updateRoleItem(UserItem userItem) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ITEM,
+	public void updateRoleItem(UserItem userItem) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ITEM,
 				new Object[] { userItem.getRoleId(), userItem.getMaterialId(), userItem.getLastUsedTime() });
 	}
 
-	public int updateRoleEquiment(UserEquipment equipment) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_EQUIMENT,
+	public void updateRoleEquiment(UserEquipment equipment) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_EQUIMENT,
 				new Object[] { equipment.getUniqueId(), equipment.getRoleId(), equipment.getMaterialId(),
 						equipment.getName(), equipment.getAttributeStr(), equipment.getEquimentType(),
 						equipment.getMaxDurability(), equipment.getDurability(), equipment.getSellPrice(),
 						equipment.getEquimentLevel(), equipment.getEquimentSource(), equipment.isInUsed() });
 	}
 
-	public int deleteMaterial(int typeId, int roleId, int index) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_MATERIAL, new Object[] { roleId, index });
+	public void deleteMaterial(int typeId, int roleId, int index) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_MATERIAL, new Object[] { roleId, index });
 	}
 
 	@SuppressWarnings("unchecked")
@@ -98,7 +98,7 @@ public class MaterialDao {
 			list = (List<BagMaterial>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_USER_MATERIAL,
 					new Object[] { roleId }, BagMaterial.BUILDER);
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return list;
@@ -111,16 +111,16 @@ public class MaterialDao {
 			list = (List<UserEquipment>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_EQUIMENT,
 					new Object[] { roleId }, UserEquipment.BUILDER);
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return list;
 	}
 
-	public int updateRoleMaterial(BagMaterial bagMaterial) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_BAGMATERIAL,
+	public void updateRoleMaterial(BagMaterial bagMaterial) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_BAGMATERIAL,
 				new Object[] { bagMaterial.getRoleId(), bagMaterial.getUniqueId(), bagMaterial.getIndex(),
-						bagMaterial.getId(), bagMaterial.getQuantity(),
-						bagMaterial.getSellPrice(), bagMaterial.getName(), bagMaterial.getTypeId() });
+						bagMaterial.getId(), bagMaterial.getQuantity(), bagMaterial.getSellPrice(),
+						bagMaterial.getName(), bagMaterial.getTypeId() });
 	}
 }

@@ -10,12 +10,12 @@ public class CounterDao {
 	
 	private static final String UPDATE_RECORD = "INSERT INTO `counter` (`key`, `roleId`, `record`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE record = ?";
 
-	public int getRecord(int roleId, String key) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(SELECT_COUNT, new Object[] { roleId, key });
+	public void getRecord(int roleId, String key) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(SELECT_COUNT, new Object[] { roleId, key });
 	}
 	
-	public int updateRecord(String key, int roleId, int record) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_RECORD, new Object[] { key, roleId, record });
+	public void updateRecord(String key, int roleId, int record) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_RECORD, new Object[] { key, roleId, record });
 	}
 
 }

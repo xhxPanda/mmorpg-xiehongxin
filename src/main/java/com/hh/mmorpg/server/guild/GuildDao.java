@@ -43,8 +43,8 @@ public class GuildDao {
 	 * @param guild
 	 * @return
 	 */
-	public int creatGuild(Guild guild) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(CREAT_GUILD,
+	public void creatGuild(Guild guild) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(CREAT_GUILD,
 				new Object[] { guild.getId(), guild.getName(), guild.getGuildDeclaration(), guild.getGuildDonatePoint(),
 						guild.getLevel(), guild.getGuildWarehouseCapasity() });
 	}
@@ -60,7 +60,7 @@ public class GuildDao {
 			return (List<Guild>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(GET_ALL_GUILD, new Object[] {},
 					Guild.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return new ArrayList<Guild>();
@@ -72,8 +72,8 @@ public class GuildDao {
 	 * @param apply
 	 * @return
 	 */
-	public int insertApply(GuildApply apply) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(INSERT_APPLY, new Object[] { apply.getGuildId(),
+	public void insertApply(GuildApply apply) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(INSERT_APPLY, new Object[] { apply.getGuildId(),
 				apply.getRoleId(), apply.getUserId(), apply.getName(), apply.getContent() });
 	}
 
@@ -89,7 +89,7 @@ public class GuildDao {
 			return (List<GuildApply>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_APPLY,
 					new Object[] { guildId }, GuildApply.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return new ArrayList<GuildApply>();
@@ -102,8 +102,8 @@ public class GuildDao {
 	 * @param guildId
 	 * @return
 	 */
-	public int deleteApply(int roleId, int guildId) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_APPLY, new Object[] { roleId, guildId });
+	public void deleteApply(int roleId, int guildId) {
+		 JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_APPLY, new Object[] { roleId, guildId });
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class GuildDao {
 			return (List<GuildMember>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_GUILD_MEMBER,
 					new Object[] { guildId }, GuildMember.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return new ArrayList<GuildMember>();
@@ -131,8 +131,8 @@ public class GuildDao {
 	 * @param guildId
 	 * @return
 	 */
-	public int deleteMember(int roleId, int guildId) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_MEMBER, new Object[] { roleId, guildId });
+	public void deleteMember(int roleId, int guildId) {
+		 JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_MEMBER, new Object[] { roleId, guildId });
 	}
 
 	/**
@@ -141,8 +141,8 @@ public class GuildDao {
 	 * @param guildMember
 	 * @return
 	 */
-	public int insertGuildMember(GuildMember guildMember) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(INSERT_GUILD_MEMBER,
+	public void insertGuildMember(GuildMember guildMember) {
+		 JDBCManager.INSTANCE.getConn("part0").excuteObject(INSERT_GUILD_MEMBER,
 				new Object[] { guildMember.getRoleId(), guildMember.getGuildId(), guildMember.getUserId(),
 						guildMember.getRoleName(), guildMember.getLevel(), guildMember.getMemberIdentityId(),
 						guildMember.getContributionPoint() });
@@ -156,8 +156,8 @@ public class GuildDao {
 	 * @param bagMaterial
 	 * @return
 	 */
-	public int insertGuildMaterial(int guildId, int index, BagMaterial bagMaterial) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_GUILD_MATERIAL,
+	public void insertGuildMaterial(int guildId, int index, BagMaterial bagMaterial) {
+		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_GUILD_MATERIAL,
 				new Object[] { guildId, bagMaterial.getUniqueId(), index, bagMaterial.getId(), bagMaterial.getTypeId(),
 						bagMaterial.getName(), bagMaterial.getQuantity(), bagMaterial.getSellPrice(),
 						bagMaterial.getRoleId(), bagMaterial.getTypeId() });
@@ -170,8 +170,8 @@ public class GuildDao {
 	 * @param index
 	 * @return
 	 */
-	public int deleteGuildMaterialIndex(int guildId, int index) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_GUILD_MATERIAL,
+	public void deleteGuildMaterialIndex(int guildId, int index) {
+		 JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_GUILD_MATERIAL,
 				new Object[] { guildId, index });
 	}
 
@@ -181,8 +181,8 @@ public class GuildDao {
 	 * @param authority
 	 * @return
 	 */
-	public int updateGuildMemberAuthority(GuildMemberAuthority authority) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_GUILD_AUTHORITY,
+	public void updateGuildMemberAuthority(GuildMemberAuthority authority) {
+		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_GUILD_AUTHORITY,
 				new Object[] { authority.getGuildId(), authority.getGuildMemberIdentityId(),
 						authority.isCanTickMember(), authority.isCanSeeBank(), authority.isCanSendPublicMessage(),
 						authority.getCanUseGold() });
@@ -200,7 +200,7 @@ public class GuildDao {
 			return (List<GuildMemberAuthority>) JDBCManager.INSTANCE.getConn("part0")
 					.excuteObjectList(SELECT_GUILD_AUTHORITY, new Object[] { guildId }, Guild.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return new ArrayList<GuildMemberAuthority>();
@@ -218,7 +218,7 @@ public class GuildDao {
 			return (List<BagMaterial>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_GUILD_MATERIAL,
 					new Object[] { guildId }, BagMaterial.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return new ArrayList<BagMaterial>();
@@ -237,14 +237,14 @@ public class GuildDao {
 			return (List<GuildTreasure>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_GUILD_TREASURE,
 					new Object[] { guildId }, GuildTreasure.BUILDER);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return new ArrayList<GuildTreasure>();
 	}
 
-	public int updateGuildTreasure(int guildId, int id, long quantity) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_GUILD_TREASURE,
+	public void updateGuildTreasure(int guildId, int id, long quantity) {
+		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_GUILD_TREASURE,
 				new Object[] { guildId, id, quantity });
 	}
 }

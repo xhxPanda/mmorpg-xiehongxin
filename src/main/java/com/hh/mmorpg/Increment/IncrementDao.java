@@ -28,8 +28,8 @@ public class IncrementDao {
 		return null;
 	}
 
-	public int updateIncrementDomain(int now, String name) {
-		return JDBCManager.INSTANCE.getConn("work").excuteObject(UPDATE_INCREMENT_DOMAIN, new Object[] { now, name });
+	public void updateIncrementDomain(int now, String name) {
+		JDBCManager.INSTANCE.getConn("work").excuteObject(UPDATE_INCREMENT_DOMAIN, new Object[] { now, name });
 	}
 
 }

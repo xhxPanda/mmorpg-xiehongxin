@@ -22,13 +22,13 @@ public class FriendDao {
 	private static final String SELECT_FRIEND_APPLY = "SELECT * FROM friend where friendRoleId = ?";
 	private static final String DELETE_FRIEND_APPLY = "DELETE FROM friendApply where friendId = ? AND roleId = ?";
 
-	public int insertFriend(Friend friend) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(ADD_FRIEND,
+	public void insertFriend(Friend friend) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(ADD_FRIEND,
 				new Object[] { friend.getRoleId(), friend.getFriendId(), friend.getTime() });
 	}
 
-	public int insertFriendApply(FriendApply friendApply) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(ADD_APPLICATION,
+	public void insertFriendApply(FriendApply friendApply) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(ADD_APPLICATION,
 				new Object[] { friendApply.getApplyRoleId(), friendApply.getRoleId(), friendApply.getRoleName(),
 						friendApply.getUserId(), friendApply.getRoleLevel(), friendApply.getContent() });
 	}
@@ -40,14 +40,14 @@ public class FriendDao {
 			list = (List<Friend>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_FRIENDS,
 					new Object[] { roleId }, Friend.BUILDER);
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return list;
 	}
 
-	public int deleteFriend(int roleId, int friendId) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_FRIENDS, new Object[] { roleId, friendId });
+	public void deleteFriend(int roleId, int friendId) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_FRIENDS, new Object[] { roleId, friendId });
 	}
 
 	@SuppressWarnings("unchecked")
@@ -57,13 +57,13 @@ public class FriendDao {
 			list = (List<FriendApply>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_FRIEND_APPLY,
 					new Object[] { roleId }, FriendApply.BUILDER);
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return list;
 	}
 
-	public int deleteFriendApply(int roleId, int appId) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_FRIEND_APPLY, new Object[] { roleId, appId });
+	public void deleteFriendApply(int roleId, int appId) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_FRIEND_APPLY, new Object[] { roleId, appId });
 	}
 }

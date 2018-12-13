@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 生成全局唯一id的类
+ * @author 37
+ *
+ */
 public class IncrementManager {
 	
 	public static final IncrementManager INSTANCE = new IncrementManager();

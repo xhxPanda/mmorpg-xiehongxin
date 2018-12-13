@@ -14,8 +14,8 @@ public class EmailDao {
 	private static final String GET_ROLE_EMAIL = "SELECT * FROM `useremail0` WHERE `roleId` = ?";
 	private static final String UPDATE_EMAIL_STATUS = "UPDATE `useremail0` set `read` = ?  WHERE  `roleId`=? AND `emailId`=?;";
 
-	public int sendEmail(Email email) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(SEND_EMAIL,
+	public void sendEmail(Email email) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(SEND_EMAIL,
 				new Object[] { email.getRoleId(), email.getId(), email.getContent(), email.getBonus(), email.isRead(),
 						email.getSenderRoleId(), email.getSenderRoleName() });
 	}
@@ -31,8 +31,8 @@ public class EmailDao {
 		return new ArrayList<Email>();
 	}
 
-	public int updateEmail(Email email) {
-		return JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_EMAIL_STATUS,
+	public void updateEmail(Email email) {
+		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_EMAIL_STATUS,
 				new Object[] { email.isRead(), email.getRoleId(), email.getId() });
 	}
 }

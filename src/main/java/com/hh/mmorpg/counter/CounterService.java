@@ -10,8 +10,8 @@ public class CounterService {
 
 	public static final CounterService INSTANCE = new CounterService();
 
-	public int getRoleCounterRecord(int roleId, String key) {
-		return CounterDao.INSTANCE.getRecord(roleId, key);
+	public void getRoleCounterRecord(int roleId, String key) {
+		CounterDao.INSTANCE.getRecord(roleId, key);
 	}
 
 	public void updateRoleCounter(int roleId, String key, int record) {
