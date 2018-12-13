@@ -4,6 +4,7 @@ import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
@@ -36,9 +37,15 @@ public class GuildExtension {
 	private static final String SHOW_GUILD_BANK = "showGuildBank"; // 展示公会仓库
 	private static final String SHOW_GUILD_APPLY = "showGuildApply"; // 展示公会申请
 
-	public static final String NOTIFY_USER_JOIN_GUILD = "公会申请通过";
-	public static final String NOTIFY_USER_TICK_OUT = "踢出公会";
-	public static final String NOTIFY_PRESIDENT_CHANGE = "会长变更";
+	/**
+	 * notify
+	 */
+	public static final String NOTIFY_USER_JOIN_GUILD = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_USER_JOIN_GUILD");
+	public static final String NOTIFY_USER_TICK_OUT = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_USER_TICK_OUT");
+	public static final String NOTIFY_PRESIDENT_CHANGE = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_PRESIDENT_CHANGE");
 
 	@CmdService(cmd = SHOW_GUILD_INFO)
 	public void SHOW_GUILD_INFO(User user, CmdDomain cmdDomain) {

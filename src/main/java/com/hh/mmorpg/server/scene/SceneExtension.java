@@ -4,6 +4,7 @@ import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
@@ -23,18 +24,28 @@ public class SceneExtension {
 
 	private static final String TALK_TO_NPC = "talkToNpc"; // 与npc交谈
 
-	public static final String NOTIFY_USER_ENTER = "用户进入场景";
-	public static final String NOTIFY_USER_LEAVE = "用户离开场景";
-	public static final String NOTIFT_USER_ATTRIBUATE_CHANGE = "角色属性变化";
-	public static final String NOTIFY_MONSTER_BE_ATTACK = "场景中怪物被攻击";
-	public static final String NOTIFY_ROLE_MONSTER_BONUS_FALL = "怪物掉落生成";
-	public static final String NOTIFY_MONSTER_RESURRECTION = "怪物复活";
-	public static final String NOTIFY_MONSTER_ATTRIBUATE_CHANGE = "怪物属性变化";
-	public static final String NOTIFY_USER_BUFF_ADD = "角色挂上buff";
-	public static final String NOTIFY_MONSTER_BUFF_ADD = "怪物挂上buff";
-	public static final String NOTIFY_USER_COPY_BEYOND_TIME = "副本超时";
-	public static final String NOTIFY_USER_COPY_FINISH = "完成副本";
-	public static final String NOTIFY_MONSTER_ENTRE = "刷新怪物";
+	public static final String NOTIFY_USER_ENTER = NotifiesWarehouse.INSTANCE.getNotifyContent("NOTIFY_USER_ENTER");
+	public static final String NOTIFY_USER_LEAVE = NotifiesWarehouse.INSTANCE.getNotifyContent("NOTIFY_USER_LEAVE");
+	public static final String NOTIFT_USER_ATTRIBUATE_CHANGE = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFT_USER_ATTRIBUATE_CHANGE");
+	public static final String NOTIFY_MONSTER_BE_ATTACK = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_MONSTER_BE_ATTACK");
+	public static final String NOTIFY_ROLE_MONSTER_BONUS_FALL = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_ROLE_MONSTER_BONUS_FALL");
+	public static final String NOTIFY_MONSTER_RESURRECTION = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_MONSTER_RESURRECTION");
+	public static final String NOTIFY_MONSTER_ATTRIBUATE_CHANGE = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_MONSTER_ATTRIBUATE_CHANGE");
+	public static final String NOTIFY_USER_BUFF_ADD = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_USER_BUFF_ADD");
+	public static final String NOTIFY_MONSTER_BUFF_ADD = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_MONSTER_BUFF_ADD");
+	public static final String NOTIFY_USER_COPY_BEYOND_TIME = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_USER_COPY_BEYOND_TIME");
+	public static final String NOTIFY_USER_COPY_FINISH = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_USER_COPY_FINISH");
+	public static final String NOTIFY_MONSTER_ENTRE = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_MONSTER_ENTRE");
 
 	@CmdService(cmd = JOIN_SCENE)
 	public void joinScene(User user, CmdDomain cmdDomain) {

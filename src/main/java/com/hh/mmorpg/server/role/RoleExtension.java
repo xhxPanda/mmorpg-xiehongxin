@@ -4,6 +4,7 @@ import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
@@ -18,7 +19,7 @@ public class RoleExtension {
 	private static final String GET_USER_NOW_ROLE = "getUserNowRole"; // 获取用户当前角色的信息
 	private static final String TRANSFER_OCCUPATION = "transferOccupation"; // 转职
 	
-	public static final String NOTIFY_LEVEL_UP = "升级";
+	public static final String NOTIFY_LEVEL_UP = NotifiesWarehouse.INSTANCE.getNotifyContent("NOTIFY_LEVEL_UP");
 
 	@CmdService(cmd = GET_ALL_ROLE)
 	public void getAllRole(User user, CmdDomain cmdDomain) {

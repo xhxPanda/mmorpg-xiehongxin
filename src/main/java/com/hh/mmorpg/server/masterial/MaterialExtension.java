@@ -4,6 +4,7 @@ import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
@@ -22,8 +23,10 @@ public class MaterialExtension {
 
 	private static final String SORT_BAG = "sortBag";
 
-	private static final String NOTIFY_USER_GAIN_MATERIAL = "物品新增";
-	private static final String NOTIFY_USER_DEC_MATERIAL = "物品减少";
+	private static final String NOTIFY_USER_GAIN_MATERIAL = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_USER_GAIN_MATERIAL");
+	private static final String NOTIFY_USER_DEC_MATERIAL = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_USER_DEC_MATERIAL");
 
 	@CmdService(cmd = SHOW_GOODS)
 	public void showGoods(User user, CmdDomain cmDdomain) {

@@ -11,6 +11,10 @@ public class CmdManager {
 
 	public static final CmdManager INSTANCE = new CmdManager();
 
+	private CmdManager() {
+
+	}
+
 	public void dealCMD(CmdDomain cmdDomain) {
 		// 获取模块
 		String cmd = cmdDomain.getStringParam(0);
@@ -27,5 +31,4 @@ public class CmdManager {
 			}
 		}
 	}
-
 }

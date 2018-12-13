@@ -4,6 +4,7 @@ import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
@@ -19,11 +20,16 @@ public class TransactionExtension {
 	private static final String CHECK_CONFIRM = "checkConfirm"; // 确认交易
 	private static final String STOP_TRANSACTION = "stopTransaction"; // 取消交易
 
-	public static final String NOTIFY_ROLE_REQUEST_TRANSACTION = "通知有人请求交易";
-	public static final String NOTIFY_ROLE_REJECT_TRANSACTION = "拒绝交易";
-	public static final String NOTIFY_TRANSACTION_START = "开始交易";
-	public static final String NOTIFY_TRANSACTION_CONFIRM = "对方确认交易内容";
-	public static final String NOTIFY_TRANSACTION_SHUTDOWN = "对方中断交易";
+	public static final String NOTIFY_ROLE_REQUEST_TRANSACTION = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_ROLE_REQUEST_TRANSACTION");
+	public static final String NOTIFY_ROLE_REJECT_TRANSACTION = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_ROLE_REJECT_TRANSACTION");
+	public static final String NOTIFY_TRANSACTION_START = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_TRANSACTION_START");
+	public static final String NOTIFY_TRANSACTION_CONFIRM = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_TRANSACTION_CONFIRM");
+	public static final String NOTIFY_TRANSACTION_SHUTDOWN = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_TRANSACTION_SHUTDOWN");
 
 	@CmdService(cmd = REQUEST_DELL)
 	public void requestTransaction(User user, CmdDomain cmdDomain) {

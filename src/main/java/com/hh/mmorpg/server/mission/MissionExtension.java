@@ -4,6 +4,7 @@ import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
@@ -18,8 +19,10 @@ public class MissionExtension {
 	private static final String SHOW_MISSION_CAN_ACCEPT = "showMissionCanAccept"; // 显示可接任务
 	private static final String SHOW_MISSION_ACCEPTED = "showMissionAccept"; // 显示已接任务
 
-	public static final String NOTIFY_MISSION_COMPETE = "任务已完成";
-	public static final String NOTIFT_MISSION_PROCESS_CHANGE = "任务状态变化";
+	public static final String NOTIFY_MISSION_COMPETE = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_MISSION_COMPETE");
+	public static final String NOTIFT_MISSION_PROCESS_CHANGE = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFT_MISSION_PROCESS_CHANGE");
 
 	@CmdService(cmd = SHOW_MISSION_CAN_ACCEPT)
 	public void showMissionCanAccept(User user, CmdDomain cmdDomain) {

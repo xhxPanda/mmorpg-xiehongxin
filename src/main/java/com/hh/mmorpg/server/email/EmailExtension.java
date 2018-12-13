@@ -7,6 +7,7 @@ import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.Email;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.ExtensionSender;
@@ -21,7 +22,8 @@ public class EmailExtension {
 	private static final String READ_EMAIL = "readEmail";
 	private static final String GET_EMAIL_BONUS = "getEmailBonus";
 
-	private static final String NOTIFY_RECIPIENT_EMAIL = "notifyReipientEmail";
+	private static final String NOTIFY_RECIPIENT_EMAIL = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_RECIPIENT_EMAIL");
 
 	@CmdService(cmd = GET_EMAIL_INFO)
 	public void getEmailInfo(User user, CmdDomain cmdDomain) {

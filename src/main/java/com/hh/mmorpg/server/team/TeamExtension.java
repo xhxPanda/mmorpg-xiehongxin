@@ -4,6 +4,7 @@ import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
+import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
@@ -19,9 +20,13 @@ public class TeamExtension {
 	private static final String TRANSFER_CHAPION = "transferCaptain"; // 转让队长
 	private static final String TICK_TEAM_MATE = "tickTeamMate"; // 踢人
 
-	public static final String NOTIFY_TEAM_INVITE = "队伍邀请";
-	public static final String NOTIFY_BE_TICKED = "被踢出队伍";
-	public static final String NOTIFY_TEAM_MATE_QUIT = "退出队伍";
+	/**
+	 * notify
+	 */
+	public static final String NOTIFY_TEAM_INVITE = NotifiesWarehouse.INSTANCE.getNotifyContent("NOTIFY_TEAM_INVITE");
+	public static final String NOTIFY_BE_TICKED = NotifiesWarehouse.INSTANCE.getNotifyContent("NOTIFY_BE_TICKED");
+	public static final String NOTIFY_TEAM_MATE_QUIT = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("NOTIFY_TEAM_MATE_QUIT");
 
 	@CmdService(cmd = GET_TEAM_INFO)
 	public void getTeamInfo(User user, CmdDomain cmdDomain) {
