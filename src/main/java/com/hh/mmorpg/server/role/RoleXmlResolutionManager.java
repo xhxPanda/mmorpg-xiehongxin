@@ -11,6 +11,13 @@ import org.dom4j.io.SAXReader;
 
 import com.hh.mmorpg.domain.RoleDomain;
 
+/**
+ * 有关角色信息的xml解析类
+ * 
+ * @author 37
+ *
+ */
+
 public class RoleXmlResolutionManager {
 
 	public static final RoleXmlResolutionManager INSTANCE = new RoleXmlResolutionManager();

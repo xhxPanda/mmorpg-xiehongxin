@@ -6,6 +6,11 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 
+/**
+ * 携带返回信息的类
+ * @author xhx
+ *
+ */
 public class ReplyDomain {
 	private Map<String, Object> domainMap;
 
@@ -50,6 +55,7 @@ public class ReplyDomain {
 	public static final ReplyDomain NOT_IN_GUILD = new ReplyDomain(ResultCode.NOT_IN_GUILD);
 	public static final ReplyDomain HAS_COMFIRM = new ReplyDomain(ResultCode.HAS_COMFIRM);
 	public static final ReplyDomain IS_FRIEND = new ReplyDomain(ResultCode.IS_FRIEND);
+	public static final ReplyDomain PASSWORD_OR_USERID_WORONG = new ReplyDomain(ResultCode.PASSWORD_OR_USERID_WORONG);
 	
 	public ReplyDomain() {
 		domainMap = new HashMap<String, Object>();

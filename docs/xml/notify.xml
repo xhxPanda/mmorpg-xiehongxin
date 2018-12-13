@@ -75,5 +75,6 @@
 	<notify name="NOTIFY_ROLE_JOIN_PK" content="进入pk" />
 	<notify name="NOTIFY_ROLE_PK_WIN" content="pk胜出" />
 	<notify name="NOTIFY_ROLE_PK_LOSE" content="pk落败" />
+	<notify name="PASSWORD_OR_USERID_WORONG" content="用户名或密码错误" />
 	
 </notifies>

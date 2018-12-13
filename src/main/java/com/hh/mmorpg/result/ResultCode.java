@@ -1,5 +1,11 @@
 package com.hh.mmorpg.result;
 
+/**
+ * 错误码
+ * 
+ * @author xhx
+ *
+ */
 public class ResultCode {
 
 	public static final String SUCCESS = NotifiesWarehouse.INSTANCE.getNotifyContent("SUCCESS");
@@ -48,4 +54,7 @@ public class ResultCode {
 	public static final String NOT_IN_GUILD = NotifiesWarehouse.INSTANCE.getNotifyContent("NOT_IN_GUILD");
 	public static final String HAS_COMFIRM = NotifiesWarehouse.INSTANCE.getNotifyContent("HAS_COMFIRM");
 	public static final String IS_FRIEND = NotifiesWarehouse.INSTANCE.getNotifyContent("IS_FRIEND");
+	public static final String PASSWORD_OR_USERID_WORONG = NotifiesWarehouse.INSTANCE
+			.getNotifyContent("PASSWORD_OR_USERID_WORONG");
+
 }

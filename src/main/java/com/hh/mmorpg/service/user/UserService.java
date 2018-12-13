@@ -16,6 +16,12 @@ import com.hh.mmorpg.server.role.RoleService;
 
 import io.netty.channel.Channel;
 
+/**
+ * 处理登录或注册的处理类
+ * 
+ * @author xhx
+ *
+ */
 public class UserService {
 
 	public static final UserService INSTANCE = new UserService();
@@ -54,7 +60,7 @@ public class UserService {
 
 		User user = UserDao.INSTANCE.selectUser(userId, password);
 		if (user == null) {
-			UserExtension.notifyLogin(cmdDomain.getChannel(), ReplyDomain.FAILE);
+			UserExtension.notifyLogin(cmdDomain.getChannel(), ReplyDomain.PASSWORD_OR_USERID_WORONG);
 		} else {
 			doLogin(user, cmdDomain.getChannel());
 

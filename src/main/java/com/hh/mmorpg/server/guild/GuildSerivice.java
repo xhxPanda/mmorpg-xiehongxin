@@ -407,7 +407,7 @@ public class GuildSerivice {
 
 			GuildMember guildMember = guild.getGuildMember(role.getId());
 			if (guildMember.getMemberIdentityId() != GuildMemberIdentity.PRESIDENT.getId()) {
-				return ReplyDomain.GUILD_AUTHORITY;
+				return ReplyDomain.LACK_OF_GUILD_JURISDICTION;
 			}
 
 			// 只能转给公会中的人
