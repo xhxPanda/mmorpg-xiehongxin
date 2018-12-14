@@ -76,6 +76,10 @@ public class SceneDomain {
 		return entreNumLimit;
 	}
 
+	public int getNeedLevel() {
+		return needLevel;
+	}
+
 	@Override
 	public String toString() {
 		return "SceneDomain [id=" + id + ", name=" + name + "]";

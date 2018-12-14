@@ -25,7 +25,7 @@ public class SkillXmlResolution {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\skill.xml");
 
 		} catch (DocumentException e) {
-			
+
 			e.printStackTrace();
 		}
 
@@ -37,6 +37,7 @@ public class SkillXmlResolution {
 		for (Element skillTopEle : skills) {
 			int id = Integer.parseInt(skillTopEle.attributeValue("id"));
 			String name = skillTopEle.attributeValue("name");
+			String dec = skillTopEle.attributeValue("dec");
 			int needMp = Integer.parseInt(skillTopEle.attributeValue("needMp"));
 			int cd = Integer.parseInt(skillTopEle.attributeValue("cd"));
 			int needLevel = Integer.parseInt(skillTopEle.attributeValue("needLevel"));
@@ -72,7 +73,7 @@ public class SkillXmlResolution {
 				}
 			}
 
-			SkillDomain skillDomain = new SkillDomain(id, name, cd, magicSkill, needLevel, occupationId,
+			SkillDomain skillDomain = new SkillDomain(id, name, dec, cd, magicSkill, needLevel, occupationId,
 					effectAttributeMap, selfEffectAttributeMap, buffprobabilityMap, needMp, skillType, summon);
 			map.put(skillDomain.getId(), skillDomain);
 		}
@@ -87,7 +88,7 @@ public class SkillXmlResolution {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\buff.xml");
 
 		} catch (DocumentException e) {
-			
+
 			e.printStackTrace();
 		}
 
@@ -111,20 +112,20 @@ public class SkillXmlResolution {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Map<Integer, SummonDomain> getSummonMonsterMap(){
-		
+	public Map<Integer, SummonDomain> getSummonMonsterMap() {
+
 		Document document = null;
 		SAXReader saxReader = new SAXReader();
 		try {
 			document = saxReader.read("..\\mmorpg\\docs\\xml\\summon.xml");
 
 		} catch (DocumentException e) {
-			
+
 			e.printStackTrace();
 		}
 		Element rootElm = document.getRootElement();
 		List<Element> summon = rootElm.elements("summon");
-		
+
 		Map<Integer, SummonDomain> map = new HashMap<>();
 		for (Element element : summon) {
 			int id = Integer.parseInt(element.attributeValue("id"));
@@ -135,7 +136,7 @@ public class SkillXmlResolution {
 			SummonDomain summonMonster = new SummonDomain(id, name, terminalTime, skillsStr, attributeStr);
 			map.put(id, summonMonster);
 		}
-		
+
 		return map;
 	}
 

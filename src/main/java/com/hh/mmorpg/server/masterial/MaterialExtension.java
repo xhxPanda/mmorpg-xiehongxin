@@ -4,7 +4,6 @@ import com.hh.mmorpg.annotation.CmdService;
 import com.hh.mmorpg.annotation.Extension;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
-import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
@@ -22,12 +21,6 @@ public class MaterialExtension {
 	private static final String ARRANGE_BAG = "arrangeBag";
 
 	private static final String SORT_BAG = "sortBag";
-
-	private static final String NOTIFY_USER_GAIN_MATERIAL = NotifiesWarehouse.INSTANCE
-			.getNotifyContent("NOTIFY_USER_GAIN_MATERIAL");
-	private static final String NOTIFY_USER_DEC_MATERIAL = NotifiesWarehouse.INSTANCE
-			.getNotifyContent("NOTIFY_USER_DEC_MATERIAL");
-
 	@CmdService(cmd = SHOW_GOODS)
 	public void showGoods(User user, CmdDomain cmDdomain) {
 		ReplyDomain replyDomain = MaterialService.INSTANCE.showGoods(user);
@@ -92,12 +85,13 @@ public class MaterialExtension {
 		// 如果不在线就算了不用通知了
 		if (user == null)
 			return;
-		replyDomain.setStringDomain("cmd", NOTIFY_USER_GAIN_MATERIAL);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	public static void notifyMaterialDec(User user, ReplyDomain replyDomain) {
-		replyDomain.setStringDomain("cmd", NOTIFY_USER_DEC_MATERIAL);
+		// 如果不在线就算了不用通知了
+				if (user == null)
+					return;
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 }

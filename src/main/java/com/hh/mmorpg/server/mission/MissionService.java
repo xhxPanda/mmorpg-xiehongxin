@@ -24,6 +24,7 @@ import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.NpcTalkData;
 import com.hh.mmorpg.event.data.PKData;
 import com.hh.mmorpg.event.data.PassCopyData;
+import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.TransactionData;
 import com.hh.mmorpg.event.data.UpdateLevelData;
 import com.hh.mmorpg.event.data.UserEquimentData;
@@ -44,9 +45,11 @@ import com.hh.mmorpg.server.mission.handler.PKMissionHandler;
 import com.hh.mmorpg.server.mission.handler.TranscationMissionHandler;
 import com.hh.mmorpg.server.mission.handler.TreasureMissionHandler;
 import com.hh.mmorpg.server.role.RoleService;
+import com.hh.mmorpg.service.user.UserService;
 
 /**
  * 任务的处理类
+ * 
  * @author xhx
  *
  */
@@ -341,6 +344,7 @@ public class MissionService {
 
 	/**
 	 * 处理pk的任务
+	 * 
 	 * @param data
 	 */
 	@SuppressWarnings("unchecked")
@@ -354,6 +358,7 @@ public class MissionService {
 
 	/**
 	 * 处理交易的任务
+	 * 
 	 * @param data
 	 */
 	@SuppressWarnings("unchecked")
@@ -366,7 +371,25 @@ public class MissionService {
 	}
 
 	/**
+	 * 监听角色上线事件
+	 * 
+	 * @param data
+	 */
+	@Event(eventType = EventType.ROLE_CHANGE)
+	public void handleRoleChange(EventDealData<RoleChangeData> data) {
+		RoleChangeData roleChangeData = data.getData();
+
+		Role newRole = roleChangeData.getNewRole();
+		User user = UserService.INSTANCE.getUser(newRole.getId());
+		// 换角色后，应该提醒角色还有什么任务可以接
+		ReplyDomain replyDomain = showMissionCanAccept(user);
+		MissionExtension.notifyRoleMissionInfo(user, replyDomain);
+
+	}
+
+	/**
 	 * 根据任务类型获取玩家的已接受任务列表
+	 * 
 	 * @param role
 	 * @param type
 	 * @return

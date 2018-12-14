@@ -211,9 +211,6 @@ public class MaterialService {
 			handlerMap.get(type).decMasterial(user, role, strs);
 		}
 
-		ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
-		notify.setStringDomain("m", material);
-		MaterialExtension.notifyMaterialDec(user, notify);
 
 		return ReplyDomain.SUCCESS;
 	}

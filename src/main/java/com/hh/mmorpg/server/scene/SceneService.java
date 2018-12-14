@@ -129,6 +129,12 @@ public class SceneService {
 			return ReplyDomain.IN_TRANSACTION;
 		}
 
+		// 进入新场景
+		Scene newScene = sceneMap.get(sceneId);
+		if (newScene.getNeedLevel() > role.getLevel()) {
+			return ReplyDomain.LEVEL_NOT_ENOUGH;
+		}
+
 		// 获取之前用户的场景
 		int oldSceneId = role.getSceneId();
 
@@ -151,8 +157,6 @@ public class SceneService {
 			return ReplyDomain.FAILE;
 		}
 
-		// 进入新场景
-		Scene newScene = sceneMap.get(sceneId);
 		if (newScene.userEnterScene(sceneUserCache).isSuccess()) {
 			role.setSceneId(sceneId);
 		}
@@ -229,6 +233,10 @@ public class SceneService {
 		SceneDomain scenedomain = sceneDomainMap.get(sceneTypeId);
 		if (!scenedomain.isCopy())
 			return ReplyDomain.FAILE;
+
+		if (scenedomain.getNeedLevel() > role.getLevel()) {
+			return ReplyDomain.LEVEL_NOT_ENOUGH;
+		}
 
 		Scene newScene = null;
 		// 单人进入
@@ -400,7 +408,11 @@ public class SceneService {
 		}
 
 		UserEquipment userEquipment = role.getEquipmentMap().get(EquimentType.ARMS);
-		if (userEquipment == null || !userEquipment.dropDurability().isSuccess()) {
+		if (userEquipment == null) {
+			
+		}
+		
+		if(!userEquipment.dropDurability().isSuccess()) {
 			return ReplyDomain.EQUIMENT_DURABILITY_HARM;
 		}
 

@@ -18,6 +18,12 @@ import com.hh.mmorpg.server.item.ItemService;
 import com.hh.mmorpg.server.masterial.MaterialExtension;
 import com.hh.mmorpg.server.skill.SkillService;
 
+/**
+ * 处理道具类的物品的类
+ * 
+ * @author xhx
+ *
+ */
 public class ItemMasterialHandler extends AbstractMaterialHandler {
 
 	public ItemMasterialHandler() {
@@ -34,12 +40,6 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 				MaterialType.ITEM_TYPE.getId(), needNum, 0, itemDomain.getSellPrice());
 		ReplyDomain replyDomain = role.addMaterial(bagMaterial);
 
-		if (replyDomain.isSuccess()) {
-			ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
-			notify.setStringDomain("cmd", "新增道具" + itemDomain.getName());
-			MaterialExtension.notifyMaterialGain(user, notify);
-		}
-
 		// 抛出获得物品的事件
 		GetMaterialData data = new GetMaterialData(role, bagMaterial, 1);
 		EventHandlerManager.INSATNCE.methodInvoke(EventType.GET_MATERIAL, new EventDealData<GetMaterialData>(data));
@@ -53,7 +53,15 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 		int id = Integer.parseInt(materialStr[1]);
 		int needNum = Integer.parseInt(materialStr[2]);
 
-		role.decMaterial(id, needNum);
+		ReplyDomain replyDomain = role.decMaterial(id, needNum);
+
+		if (replyDomain.isSuccess()) {
+			ItemDomain itemDomain = ItemService.INSTANCE.getItemDomain(id);
+
+			ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
+			notify.setStringDomain("cmd", "减少" + needNum + itemDomain.getName());
+			MaterialExtension.notifyMaterialDec(user, notify);
+		}
 
 		return ReplyDomain.SUCCESS;
 	}

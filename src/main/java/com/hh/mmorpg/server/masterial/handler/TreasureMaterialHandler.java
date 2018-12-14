@@ -61,8 +61,8 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler {
 
 		ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
 		notify.setStringDomain("cmd", "减少" + needNum + treasure.getName());
-		MaterialExtension.notifyMaterialGain(user, notify);
-		
+		MaterialExtension.notifyMaterialDec(user, notify);
+
 		return ReplyDomain.SUCCESS;
 	}
 

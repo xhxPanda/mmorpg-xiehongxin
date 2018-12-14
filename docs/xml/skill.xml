@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <skills>
 	<skill id="1" name="普攻" skillType="0" cd="1000" needLevel="1"
-		occupationId="-1" isMagicSkill="false" effectAttribute="3:-200"
-		selfEffectAttribute="" needMp="20" summon="">
+		dec="就是一个普通的普通攻击" occupationId="-1" isMagicSkill="false"
+		effectAttribute="3:-200" selfEffectAttribute="" needMp="20" summon="">
 	</skill>
 	<skill id="2" name="坚如磐石" skillType="0" cd="2000" needLevel="2"
-		occupationId="-1" isMagicSkill="true" effectAttribute=""
-		selfEffectAttribute="1:20" needMp="20" summon="">
+		dec="给自身加上护甲效果，提升防御力30，维持20秒" occupationId="-1" isMagicSkill="true"
+		effectAttribute="" selfEffectAttribute="1:20" needMp="20" summon="">
 		<buff id="3" probability="100" />
 	</skill>
 	<skill id="3" name="毒牙" skillType="0" cd="120000" needLevel="3"
-		occupationId="1" isMagicSkill="true" effectAttribute="3:-200"
-		selfEffectAttribute="3:20" needMp="20" summon="">
+		dec="对对方造成200点伤害，并附上中毒效果，持续20秒" occupationId="1" isMagicSkill="true"
+		effectAttribute="3:-200" selfEffectAttribute="3:20" needMp="20"
+		summon="">
 		<buff id="4" probability="100" />
 	</skill>
 	<skill id="4" name="怪物普攻" skillType="0" cd="60000" needLevel="1"
-		occupationId="-2" isMagicSkill="false" effectAttribute="3:-50"
-		selfEffectAttribute="" needMp="0" summon="">
+		dec="就是一个普通的普通攻击" occupationId="-2" isMagicSkill="false"
+		effectAttribute="3:-50" selfEffectAttribute="" needMp="0" summon="">
 	</skill>
 	<skill id="5" name="死灵召唤" skillType="0" cd="60000" needLevel="2"
-		occupationId="2" isMagicSkill="true" effectAttribute=""
-		selfEffectAttribute="" needMp="0" summon="5:7000">
+		dec="召唤1只死灵于场上帮助战斗" occupationId="2" isMagicSkill="true"
+		effectAttribute="" selfEffectAttribute="" needMp="0" summon="5:7000">
 	</skill>
 	<skill id="6" name="惊涛骇浪" skillType="1" cd="120000" needLevel="4"
-		occupationId="1" isMagicSkill="true" effectAttribute="3:-200"
-		selfEffectAttribute="3:20" needMp="20" summon="">
+		dec="发出巨浪，对场景上攻击目标群体伤害" occupationId="1" isMagicSkill="true"
+		effectAttribute="3:-200" selfEffectAttribute="3:20" needMp="20"
+		summon="">
 	</skill>
 </skills>

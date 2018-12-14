@@ -12,6 +12,7 @@ public class SkillDomain {
 	private int id;
 	private int cd;
 	private String name;
+	private String dec;
 	private int needMp;
 	private boolean magicSkill;
 	private int needLevel;
@@ -25,12 +26,13 @@ public class SkillDomain {
 	private Map<Integer, Integer> selfEffectAttribute;
 	private Map<Integer, Integer> buffprobabilityMap;
 
-	public SkillDomain(int id, String name, int cd, boolean magicSkill, int needLevel, int occupationId,
+	public SkillDomain(int id, String name, String dec, int cd, boolean magicSkill, int needLevel, int occupationId,
 			Map<Integer, Integer> effectAttribute, Map<Integer, Integer> selfEffectAttribute,
 			Map<Integer, Integer> buffprobabilityMap, int needMp, int skillType, String summon) {
 		this.id = id;
 		this.name = name;
 		this.cd = cd;
+		this.dec = dec;
 		this.magicSkill = magicSkill;
 		this.needLevel = needLevel;
 		this.occupationId = occupationId;
@@ -90,9 +92,13 @@ public class SkillDomain {
 		return summon;
 	}
 
+	public String getDec() {
+		return dec;
+	}
+
 	@Override
 	public String toString() {
-		return "SkillDomain [id=" + id + ", name=" + name + "]";
+		return "技能 [id=" + id + ", 名称=" + name + ", 技能描述=" + dec + "]";
 	}
 
 }

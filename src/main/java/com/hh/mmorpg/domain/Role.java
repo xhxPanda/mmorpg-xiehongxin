@@ -214,7 +214,7 @@ public class Role extends LivingThing {
 			}
 		}
 
-		// 如果经过了上一步都没有吧数量归零证明超过了堆叠的个数，剩下的就需要寻找新的格子
+		// 如果经过了上一步都没有把数量归零证明超过了堆叠的个数，剩下的就需要寻找新的格子
 		while (needQuantity > 0) {
 
 			int index = findFreeBox();
@@ -249,9 +249,9 @@ public class Role extends LivingThing {
 		if (addNum > 0) {
 			GetMaterialData data = new GetMaterialData(this, material, addNum);
 			EventHandlerManager.INSATNCE.methodInvoke(EventType.GET_MATERIAL, new EventDealData<GetMaterialData>(data));
-			
+
 			ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
-			notify.setStringDomain("cmd", "新增物品" + material.getName());
+			notify.setStringDomain("cmd", "获得" + material.getName());
 			MaterialExtension.notifyMaterialGain(UserService.INSTANCE.getUser(userId), notify);
 		}
 

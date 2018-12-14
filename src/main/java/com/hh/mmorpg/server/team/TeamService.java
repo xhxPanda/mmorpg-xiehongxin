@@ -84,12 +84,13 @@ public class TeamService {
 			return ReplyDomain.NOT_IN_SCENE;
 		}
 
-		// 别人已经有队伍了
+		// 别人已在队伍中
 		Role people = RoleService.INSTANCE.getUserUsingRole(peopleUser.getUserId());
 		if (people.getTeamId() != 0) {
 			return ReplyDomain.HAS_IN_TEAM;
 		}
 
+		// 已经发过邀请了
 		Set<Integer> applySet = applyCache.get(people.getId());
 		if (applySet != null && applySet.size() > 0) {
 			if (applySet.contains(role.getId())) {
@@ -115,12 +116,12 @@ public class TeamService {
 	 */
 	private void addApply(int roleId, int beRoleId) {
 
-		Set<Integer> set = applyCache.get(roleId);
+		Set<Integer> set = applyCache.get(beRoleId);
 		if (set == null) {
 			set = new HashSet<>();
-			applyCache.put(roleId, set);
+			applyCache.put(beRoleId, set);
 		}
-		set.add(beRoleId);
+		set.add(roleId);
 	}
 
 	/**
@@ -133,8 +134,12 @@ public class TeamService {
 	 */
 	public ReplyDomain dealTeamApply(User user, int roleId, boolean isAgree) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		// 无论怎样都先移除申请缓存
+		removeTeamInvition(role.getId(), roleId);
+
 		if (!isAgree) {
-			removeTeamInvition(role.getId(), roleId);
+			return ReplyDomain.SUCCESS;
 		}
 
 		Set<Integer> applySet = applyCache.get(roleId);
@@ -145,7 +150,6 @@ public class TeamService {
 
 		// 对方不在线就当拒绝了
 		if (!RoleService.INSTANCE.isOnline(roleId)) {
-			removeTeamInvition(role.getId(), roleId);
 			return ReplyDomain.OTHER_NOT_ONLINE;
 		}
 
@@ -165,7 +169,7 @@ public class TeamService {
 			teamMate.put(peopleRole.getId(), new TeamMate(peopleRole.getId(), peopleRole.getUserId(),
 					peopleRole.getName(), OccupationEmun.getOccupationEmun(peopleRole.getOccupationId()), true, true));
 
-			// 成为队员
+			// 被邀请人成为队员
 			teamMate.put(role.getId(), new TeamMate(role.getId(), role.getUserId(), role.getName(),
 					OccupationEmun.getOccupationEmun(role.getOccupationId()), true, false));
 
@@ -197,7 +201,7 @@ public class TeamService {
 	}
 
 	/**
-	 * 退出队伍
+	 * 主动退出队伍
 	 * 
 	 * @param user
 	 * @return
@@ -217,7 +221,7 @@ public class TeamService {
 			return ReplyDomain.FAILE;
 		}
 
-		// 移除用户
+		// 重置队伍状态
 		role.setTeamId(0);
 
 		team.remove(role.getUniqueId());
@@ -235,8 +239,14 @@ public class TeamService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 转让队长权限
+	 * 
+	 * @param user
+	 * @param roleId
+	 * @return
+	 */
 	public ReplyDomain transferCaptain(User user, int roleId) {
-		
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
@@ -260,8 +270,15 @@ public class TeamService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 踢人
+	 * 
+	 * @param user
+	 * @param roleId
+	 * @return
+	 */
 	public ReplyDomain tickTeamMate(User user, int roleId) {
-		
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		if (role.getTeamId() == 0) {
@@ -298,10 +315,22 @@ public class TeamService {
 		return ReplyDomain.SUCCESS;
 	}
 
+	/**
+	 * 获取团队信息
+	 * 
+	 * @param teamId
+	 * @return
+	 */
 	public Map<Integer, TeamMate> getTeam(int teamId) {
 		return teamsMap.get(teamId);
 	}
 
+	/**
+	 * 移除申请
+	 * 
+	 * @param roleId
+	 * @param inviteId
+	 */
 	private void removeTeamInvition(int roleId, int inviteId) {
 		Set<Integer> applySet = applyCache.get(roleId);
 		if (applySet == null || applySet.size() == 0) {
@@ -311,6 +340,12 @@ public class TeamService {
 			applySet.remove(inviteId);
 	}
 
+	/**
+	 * 向队伍广播信息
+	 * 
+	 * @param team
+	 * @param replyDomain
+	 */
 	private void notifyAllTeamMate(Map<Integer, TeamMate> team, ReplyDomain replyDomain) {
 		for (TeamMate teamMate : team.values()) {
 			if (!RoleService.INSTANCE.isOnline(teamMate.getRoleId())) {

@@ -1,5 +1,7 @@
 package com.hh.mmorpg.server.transaction;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -28,6 +30,9 @@ public class TransactionService {
 	public static final TransactionService INSTANCE = new TransactionService();
 
 	private ConcurrentHashMap<Integer, Transaction> transactionMap;
+
+	// 邀请列表（就不持久化了）
+	private ConcurrentHashMap<Integer, Set<Integer>> applyCache;
 
 	private AtomicInteger transactionId;
 
@@ -67,6 +72,14 @@ public class TransactionService {
 			return ReplyDomain.OTHER_NOT_IN_SCENE;
 		}
 
+		// 已经发过邀请了
+		Set<Integer> applySet = applyCache.get(roleId);
+		if (applySet != null && applySet.size() > 0) {
+			if (applySet.contains(role.getId())) {
+				return ReplyDomain.HAS_SENT_APPLY;
+			}
+		}
+
 		User otherUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(roleId));
 
 		ReplyDomain replyDomain = new ReplyDomain();
@@ -76,7 +89,25 @@ public class TransactionService {
 
 		TransactionExtension.notifyRole(otherUser, replyDomain);
 
+		addApply(role.getId(), roleId);
+
 		return ReplyDomain.SUCCESS;
+	}
+
+	/**
+	 * 添加交易申请缓存
+	 * 
+	 * @param roleId
+	 * @param beRoleId
+	 */
+	private void addApply(int roleId, int beRoleId) {
+
+		Set<Integer> set = applyCache.get(beRoleId);
+		if (set == null) {
+			set = new HashSet<>();
+			applyCache.put(beRoleId, set);
+		}
+		set.add(roleId);
 	}
 
 	/**
@@ -90,6 +121,8 @@ public class TransactionService {
 	public ReplyDomain dealDellRequest(User user, int roleId, boolean isAceept) {
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		removeTeamInvition(role.getId(), roleId);
 
 		// 对方不在线
 		if (!RoleService.INSTANCE.isOnline(roleId)) {
@@ -152,6 +185,21 @@ public class TransactionService {
 	}
 
 	/**
+	 * 移除申请
+	 * 
+	 * @param roleId
+	 * @param inviteId
+	 */
+	private void removeTeamInvition(int roleId, int inviteId) {
+		Set<Integer> applySet = applyCache.get(roleId);
+		if (applySet == null || applySet.size() == 0) {
+			return;
+		}
+		if (applySet.contains(inviteId))
+			applySet.remove(inviteId);
+	}
+
+	/**
 	 * 放入交易物品
 	 * 
 	 * @param user
@@ -198,7 +246,7 @@ public class TransactionService {
 	 * @return
 	 */
 	public ReplyDomain setTreasure(User user, int id, int num) {
-		
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		Transaction transaction = transactionMap.get(role.getTransactionPerson());
@@ -276,11 +324,12 @@ public class TransactionService {
 
 	/**
 	 * 确认交易
+	 * 
 	 * @param user
 	 * @return
 	 */
 	public ReplyDomain checkConfirm(User user) {
-		
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		Transaction transaction = transactionMap.get(role.getTransactionPerson());

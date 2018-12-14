@@ -65,6 +65,7 @@ public class Scene {
 		this.isCopy = domain.isCopy();
 		this.monsterSetMap = new HashMap<>(domain.getMonsterSetMap());
 		this.sceneTypeId = domain.getId();
+		this.needLevel = domain.getId();
 
 		this.buildTime = System.currentTimeMillis();
 
@@ -192,6 +193,10 @@ public class Scene {
 
 	public Map<Integer, MonsterBeKillBonus> getMonsterBeKillBonusmap() {
 		return monsterBeKillBonusmap;
+	}
+
+	public int getNeedLevel() {
+		return needLevel;
 	}
 
 	public void putMonster(Monster monster) {
