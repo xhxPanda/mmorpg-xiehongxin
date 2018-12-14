@@ -89,6 +89,9 @@ public class MaterialExtension {
 	}
 
 	public static void notifyMaterialGain(User user, ReplyDomain replyDomain) {
+		// 如果不在线就算了不用通知了
+		if (user == null)
+			return;
 		replyDomain.setStringDomain("cmd", NOTIFY_USER_GAIN_MATERIAL);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

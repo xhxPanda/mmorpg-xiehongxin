@@ -4,13 +4,14 @@ import java.util.List;
 
 import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.Role;
+import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 
 public abstract class AbstractMaterialHandler {
 
-	public abstract ReplyDomain gainMaterial(Role role, String[] material);
+	public abstract ReplyDomain gainMaterial(User user, Role role, String[] material);
 
-	public abstract ReplyDomain decMasterial(Role role, String[] material);
+	public abstract ReplyDomain decMasterial(User user, Role role, String[] material);
 
 	public abstract ReplyDomain useMaterial(Role role, int uniqueId);
 

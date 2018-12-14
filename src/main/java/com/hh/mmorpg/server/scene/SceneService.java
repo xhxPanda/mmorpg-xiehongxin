@@ -81,28 +81,27 @@ public class SceneService {
 	 * @param user
 	 * @return
 	 */
-	public ReplyDomain getNearScene(User user) {
+	private List<SceneDomain> getNearScene(User user) {
 
 		int userId = user.getUserId();
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(userId);
 
-		ReplyDomain replyDomain = new ReplyDomain();
+		List<SceneDomain> scenes = new ArrayList<>();
 		if (role.getSceneId() == 0) {
-			return replyDomain;
+			return scenes;
 		}
 
 		Scene scene = sceneMap.get(role.getSceneId());
 
 		List<Integer> sceneIds = scene.getNeighborSceneIds();
-		List<SceneDomain> scenes = new ArrayList<>();
+
 		for (Integer sceneId : sceneIds) {
 			SceneDomain nearScene = sceneDomainMap.get(sceneId);
 			scenes.add(nearScene);
 		}
 
-		replyDomain.setListDomain("可进入的场景", scenes);
-		return replyDomain;
+		return scenes;
 	}
 
 	/**
@@ -172,6 +171,7 @@ public class SceneService {
 		replyDomain.setListDomain("角色列表", newScene.getUserMap().values());
 		replyDomain.setListDomain("npc角色列表", newScene.getNpcRoleMap().values());
 		replyDomain.setListDomain("怪物列表", newScene.getMonsterMap().values());
+		replyDomain.setListDomain("可进入的场景", getNearScene(user));
 		return replyDomain;
 	}
 
@@ -204,6 +204,7 @@ public class SceneService {
 		replyDomain.setListDomain("角色列表", scene.getUserMap().values());
 		replyDomain.setListDomain("npc角色列表", scene.getNpcRoleMap().values());
 		replyDomain.setListDomain("怪物列表", scene.getMonsterMap().values());
+		replyDomain.setListDomain("附近的场景", getNearScene(user));
 		SceneExtension.notifyUser(user, replyDomain);
 	}
 
@@ -364,6 +365,7 @@ public class SceneService {
 		domain.setListDomain("u", scene.getUserMap().values());
 		domain.setListDomain("npc角色列表", scene.getNpcRoleMap().values());
 		domain.setListDomain("怪物列表", scene.getMonsterMap().values());
+		domain.setListDomain("附近的场景", getNearScene(user));
 
 		return domain;
 	}
@@ -683,10 +685,13 @@ public class SceneService {
 			return ReplyDomain.NPC_NOT_EXIT;
 		}
 
+		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setStringDomain(npcRole.getName() + "说", npcRole.getTalk());
+
 		NpcTalkData data = new NpcTalkData(role, npcId);
 		EventHandlerManager.INSATNCE.methodInvoke(EventType.TALK_TO_NPC, new EventDealData<NpcTalkData>(data));
 
-		return ReplyDomain.SUCCESS;
+		return replyDomain;
 	}
 
 	// 用户下线，把他的缓存删除
@@ -843,6 +848,27 @@ public class SceneService {
 		}
 
 		return builder.toString();
+	}
+
+	/**
+	 * 获取副本信息
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public ReplyDomain getCopyInfo(User user) {
+
+		List<SceneDomain> domains = new ArrayList<>();
+		for (SceneDomain sceneDomain : sceneDomainMap.values()) {
+			if (sceneDomain.isCopy()) {
+				domains.add(sceneDomain);
+			}
+
+		}
+
+		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setListDomain("副本列表", domains);
+		return replyDomain;
 	}
 
 }

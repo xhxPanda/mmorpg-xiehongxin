@@ -39,6 +39,8 @@ public class Scene {
 	private boolean isCanBattle;
 	private boolean isCopy;
 	private long buildTime; // 生成场景的时间
+	private int needLevel; // 场景等级限制
+
 	private Map<Integer, Map<Integer, Monster>> monsterSetMap;// monster初始配置的怪物生成序列
 
 	private Map<Integer, MonsterBeKillBonus> monsterBeKillBonusmap; // 每个角色的掉落的monster道具
@@ -71,9 +73,11 @@ public class Scene {
 
 		// 生成第一批怪物
 		this.monsterMap = new ConcurrentHashMap<>();
-		for (Monster monster : monsterSetMap.get(monsterRound.get()).values()) {
-			monster.setSceneId(id);
-			this.monsterMap.put(monster.getUniqueId(), monster);
+		if (monsterSetMap.size() != 0) {
+			for (Monster monster : monsterSetMap.get(monsterRound.get()).values()) {
+				monster.setSceneId(id);
+				this.monsterMap.put(monster.getUniqueId(), monster);
+			}
 		}
 
 		this.executorService = Executors.newSingleThreadScheduledExecutor();

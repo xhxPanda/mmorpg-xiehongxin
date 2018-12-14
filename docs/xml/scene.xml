@@ -1,45 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenes>
 	<scene id="1" name="新手村" neighborScenes="2,3" isCanBattle="false"
-		isCopy="false" entreNumLimit="-1">
-		<npcs>
-			<npc id="1" name="新手指导员"></npc>
-			<npc id="2" name="守城老人"></npc>
-			<npc id="3" name="小鱼儿"></npc>
-		</npcs>
+		needLevel="1" isCopy="false" entreNumLimit="-1">
+		<npcs npc="1,2,3" />
 		<monsters monster="" />
 	</scene>
 	<scene id="2" name="遗忘之地" neighborScenes="1,3" isCanBattle="true"
-		isCopy="false" entreNumLimit="-1">
-		<npcs>
-			<npc id="4" name="古尔丹"></npc>
-			<npc id="5" name="血煞女王"></npc>
-			<npc id="6" name="遗忘之城大将"></npc>
-		</npcs>
+		needLevel="2" isCopy="false" entreNumLimit="-1">
+		<npcs npc="4,5,6" />
 		<monsters monster="1:3,2:4" />
 	</scene>
 	<scene id="3" name="峡谷" neighborScenes="2" isCanBattle="false"
 		isCopy="false" entreNumLimit="-1">
-		<npcs>
-			<npc id="7" name="峡谷帝君"></npc>
-			<npc id="8" name="帝君部下"></npc>
-		</npcs>
+		<npcs npc="7,8" />
 		<monsters monster="5:5,6:4" />
 	</scene>
 	<scene id="100" name="龙穴" neighborScenes="1" isCanBattle="false"
 		isCopy="true" entreNumLimit="1">
-		<npcs>
-			<npc id="9" name="约翰"></npc>
-			<npc id="10" name="老将军"></npc>
-		</npcs>
+		<npcs npc="9,10" />
 		<monsters monster="4:1$3:1" />
 	</scene>
 	<scene id="101" name="伊利奥斯" neighborScenes="1"
 		isCanBattle="false" isCopy="true" entreNumLimit="2">
-		<npcs>
-			<npc id="11" name="猪猪战士"></npc>
-			<npc id="12" name="师父"></npc>
-		</npcs>
+		<npcs npc="11,12" />
 		<monsters monster="4:1$3:1" />
 	</scene>
 </scenes>

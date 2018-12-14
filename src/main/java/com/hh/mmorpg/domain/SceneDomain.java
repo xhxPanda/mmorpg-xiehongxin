@@ -13,13 +13,14 @@ public class SceneDomain {
 	private boolean canBattle;
 	private boolean copy;
 	private int entreNumLimit;
+	private int needLevel;
 
 	private Map<Integer, Map<Integer, Monster>> monsterSetMap;// monster初始配置的怪物生成序列
 
 	private Map<Integer, NpcRole> npcRoleMap;
 
 	public SceneDomain(int id, String name, String neighborScenestrs, boolean canBattle, boolean copy,
-			int entreNumLimit) {
+			int entreNumLimit, int needLevel) {
 		this.id = id;
 		this.name = name;
 		this.neighborSceneIds = new ArrayList<Integer>();
@@ -32,6 +33,7 @@ public class SceneDomain {
 		this.canBattle = canBattle;
 		this.copy = copy;
 		this.entreNumLimit = entreNumLimit;
+		this.needLevel = needLevel;
 	}
 
 	public int getId() {

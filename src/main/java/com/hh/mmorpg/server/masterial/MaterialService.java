@@ -55,7 +55,7 @@ public class MaterialService {
 	 * @return
 	 */
 	public ReplyDomain showGoods(User user) {
-		
+
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setListDomain("商品列表", goodsMap.values());
 		return replyDomain;
@@ -68,7 +68,7 @@ public class MaterialService {
 	 * @return
 	 */
 	public ReplyDomain showAllMaterial(User user) {
-		
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		ReplyDomain replyDomain = new ReplyDomain();
@@ -113,7 +113,7 @@ public class MaterialService {
 	 * @return
 	 */
 	public ReplyDomain buyGoods(User user, int goodsId, int num) {
-		
+
 		if (num < 0) {
 			return ReplyDomain.FAILE;
 		}
@@ -175,7 +175,7 @@ public class MaterialService {
 				return ReplyDomain.FAILE;
 			}
 
-			replyDomain = handlerMap.get(type).gainMaterial(role, materialList);
+			replyDomain = handlerMap.get(type).gainMaterial(user, role, materialList);
 			if (!replyDomain.isSuccess()) {
 				replyDomain.setStringDomain("worngMaterial", s);
 				return replyDomain;
@@ -183,9 +183,6 @@ public class MaterialService {
 
 		}
 
-		ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
-		notify.setStringDomain("m", material);
-		MaterialExtension.notifyMaterialGain(user, notify);
 		return replyDomain;
 	}
 
@@ -211,7 +208,7 @@ public class MaterialService {
 			if (handlerMap.get(type) == null) {
 				return ReplyDomain.FAILE;
 			}
-			handlerMap.get(type).decMasterial(role, strs);
+			handlerMap.get(type).decMasterial(user, role, strs);
 		}
 
 		ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
@@ -252,17 +249,25 @@ public class MaterialService {
 			return ReplyDomain.FAILE;
 		}
 
+		// 使用装备不能算损耗物品
+		if (material.getTypeId() != MaterialType.EQUIPMENT_TYPE.getId()) {
+			ReplyDomain notify = new ReplyDomain();
+			notify.setStringDomain("减少物品", material.getName() + "*" + 1);
+			MaterialExtension.notifyMaterialDec(user, notify);
+		}
+
 		return handlerMap.get(material.getTypeId()).useMaterial(role, material.getUniqueId());
 	}
-	
+
 	/**
 	 * 出售商品
+	 * 
 	 * @param user
 	 * @param materialStr
 	 * @return
 	 */
 	public ReplyDomain sellGoods(User user, String materialStr) {
-		
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		String strs[] = materialStr.split(":");
@@ -290,6 +295,7 @@ public class MaterialService {
 
 	/**
 	 * 获取商品的堆叠数量
+	 * 
 	 * @param type
 	 * @param materialId
 	 * @return
@@ -334,7 +340,7 @@ public class MaterialService {
 	 * @return
 	 */
 	public ReplyDomain arrangeBag(User user) {
-		
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 		role.arrangeBag();
 		return showAllMaterial(user);
@@ -349,7 +355,7 @@ public class MaterialService {
 	 * @return
 	 */
 	public ReplyDomain sortBag(User user, int fromIndex, int toIndex) {
-		
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		return role.sortBag(fromIndex, toIndex);

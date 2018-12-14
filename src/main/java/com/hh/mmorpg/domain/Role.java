@@ -19,10 +19,12 @@ import com.hh.mmorpg.jdbc.ResultBuilder;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.MaterialDao;
+import com.hh.mmorpg.server.masterial.MaterialExtension;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.role.RoleDao;
 import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.scene.SceneService;
+import com.hh.mmorpg.service.user.UserService;
 
 /**
  * 
@@ -170,13 +172,19 @@ public class Role extends LivingThing {
 		materialMap.put(material.getIndex(), material);
 	}
 
+	/**
+	 * 增加已经存在于系统中的物品
+	 * 
+	 * @param material
+	 * @return
+	 */
 	public ReplyDomain addMaterial(BagMaterial material) {
 
 		int pileNum = MaterialService.INSTANCE.getMaterialPileNum(material.getTypeId(), material.getId());
 		List<BagMaterial> materials = getMaterialById(material.getId());
 
 		int needQuantity = material.getQuantity();
-		
+
 		int addNum = 0;
 		// 旧格子(可堆叠的情况下
 		if (materials.size() > 0) {
@@ -211,8 +219,8 @@ public class Role extends LivingThing {
 
 			int index = findFreeBox();
 			if (index != -1) {
-				
-				if(needQuantity > pileNum) {
+
+				if (needQuantity > pileNum) {
 					BagMaterial newBbagMaterial = new BagMaterial(material, id, pileNum);
 					materialMap.put(index, newBbagMaterial);
 					newBbagMaterial.setIndex(index);
@@ -241,7 +249,12 @@ public class Role extends LivingThing {
 		if (addNum > 0) {
 			GetMaterialData data = new GetMaterialData(this, material, addNum);
 			EventHandlerManager.INSATNCE.methodInvoke(EventType.GET_MATERIAL, new EventDealData<GetMaterialData>(data));
+			
+			ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
+			notify.setStringDomain("cmd", "新增物品" + material.getName());
+			MaterialExtension.notifyMaterialGain(UserService.INSTANCE.getUser(userId), notify);
 		}
+
 		return replyDomain;
 	}
 
@@ -300,7 +313,7 @@ public class Role extends LivingThing {
 	 * @param quantity
 	 * @return
 	 */
-	public ReplyDomain decMaterial(int materialType, int id, int quantity) {
+	public ReplyDomain decMaterial(int id, int quantity) {
 		List<BagMaterial> materials = getMaterialById(id);
 
 		int totalNum = 0;

@@ -35,8 +35,9 @@ public class SceneXMLResolution {
 		Element rootElm = document.getRootElement();
 		List<Element> sences = rootElm.elements("scene");
 
-		// 生成怪物
+		// 怪物map
 		Map<Integer, MonsterDomain> monsterDomainMap = resolutionMonster();
+		Map<Integer, NpcRole> npcDomainMap = getResolutionNpc();
 
 		for (Element element : sences) {
 			String name = element.attributeValue("name");
@@ -50,54 +51,54 @@ public class SceneXMLResolution {
 			boolean copy = Boolean.parseBoolean(element.attributeValue("isCopy"));
 
 			int entreNumLimit = Integer.parseInt(element.attributeValue("entreNumLimit"));
-
-			SceneDomain scene = new SceneDomain(id, name, neighborScenes, canBattle, copy, entreNumLimit);
+			int needLevel = Integer.parseInt(element.attributeValue("needLevel"));
+			SceneDomain scene = new SceneDomain(id, name, neighborScenes, canBattle, copy, entreNumLimit, needLevel);
 			map.put(scene.getId(), scene);
 
 			// 生成npc
 			Map<Integer, NpcRole> npcMap = new HashMap<>();
 			Element npcEle = element.element("npcs");
-			List<Element> npcs = npcEle.elements("npc");
-			for (Element npc : npcs) {
-				String npcName = npc.attributeValue("name");
-				int npcId = Integer.parseInt(npc.attributeValue("id"));
-
-				NpcRole npcRole = new NpcRole(npcId, npcName);
-				npcMap.put(npcRole.getId(), npcRole);
+			if (!npcEle.attributeValue("npc").isEmpty()) {
+				String npcStr[] = npcEle.attributeValue("npc").split(",");
+				for (String npcId : npcStr) {
+					npcMap.put(Integer.parseInt(npcId), npcDomainMap.get(Integer.parseInt(npcId)));
+				}
 			}
 
+			// 生成场景中怪物
 			Map<Integer, Map<Integer, Monster>> monsterSetMap = new HashMap<>();
 
 			Element monstersEle = element.element("monsters");
-			String monsterStr[] = monstersEle.attributeValue("monster").split("\\$");
+			if (!monstersEle.attributeValue("monster").isEmpty()) {
+				int teamId = 0;
+				String monsterStr[] = monstersEle.attributeValue("monster").split("\\$");
+				for (String monsterTeam : monsterStr) {
 
-			int teamId = 0;
-			for (String monsterTeam : monsterStr) {
+					String monsterIds[] = monsterTeam.split(",");
 
-				String monsterIds[] = monsterTeam.split(",");
+					Map<Integer, Monster> monsterMap = new HashMap<>();
+					for (String monsterSet : monsterIds) {
+						String[] monsterNum = monsterSet.split(":");
+						int monsterId = Integer.parseInt(monsterNum[0]);
+						int num = Integer.parseInt(monsterNum[1]);
 
-				Map<Integer, Monster> monsterMap = new HashMap<>();
-				for (String monsterSet : monsterIds) {
-					String[] monsterNum = monsterSet.split(":");
-					int monsterId = Integer.parseInt(monsterNum[0]);
-					int num = Integer.parseInt(monsterNum[1]);
+						for (int i = 0; i < num; i++) {
+							MonsterDomain monsterDomain = monsterDomainMap.get(monsterId);
 
-					for (int i = 0; i < num; i++) {
-						MonsterDomain monsterDomain = monsterDomainMap.get(monsterId);
+							int uniqueId = IncrementManager.INSTANCE.increase("monster");
 
-						int uniqueId = IncrementManager.INSTANCE.increase("monster");
-
-						boolean isNeedAi = false;
-						if (copy) {
-							isNeedAi = true;
+							boolean isNeedAi = false;
+							if (copy) {
+								isNeedAi = true;
+							}
+							Monster monster = new Monster(uniqueId, id, monsterDomain, isNeedAi);
+							monsterMap.put(monster.getUniqueId(), monster);
 						}
-						Monster monster = new Monster(uniqueId, id, monsterDomain, isNeedAi);
-						monsterMap.put(monster.getUniqueId(), monster);
-					}
 
+					}
+					monsterSetMap.put(teamId, monsterMap);
+					teamId++;
 				}
-				monsterSetMap.put(teamId, monsterMap);
-				teamId++;
 			}
 
 			scene.setMonsterSetMap(monsterSetMap);
@@ -137,6 +138,31 @@ public class SceneXMLResolution {
 			map.put(id, monsterDomain);
 		}
 
+		return map;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<Integer, NpcRole> getResolutionNpc() {
+		Document document = null;
+		SAXReader saxReader = new SAXReader();
+		try {
+			document = saxReader.read("..\\mmorpg\\docs\\xml\\npc.xml");
+
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		Map<Integer, NpcRole> map = new HashMap<>();
+		Element rootElm = document.getRootElement();
+		List<Element> npcEle = rootElm.elements("npc");
+		for (Element element : npcEle) {
+			String name = element.attributeValue("name");
+			int id = Integer.parseInt(element.attributeValue("id"));
+			String talk = element.attributeValue("talk");
+			NpcRole npcRole = new NpcRole(id, name, talk);
+
+			map.put(id, npcRole);
+		}
 		return map;
 	}
 

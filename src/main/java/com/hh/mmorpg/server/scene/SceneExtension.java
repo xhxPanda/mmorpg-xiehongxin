@@ -14,14 +14,13 @@ public class SceneExtension {
 	private static SceneService service = SceneService.INSTANCE;
 
 	private static final String JOIN_SCENE = "joinScene"; // 进入场景
-	private static final String GET_NEAR_SCENE = "getNearScene"; // 获取可以进入的场景及副本
-	private static final String GET_SCENE_USER = "getSceneUser";
+	private static final String GET_SCENE_USER = "getSceneUser"; // 获取场景信息
 	private static final String ATTACK_MONSTER = "attackMonster"; // 攻击怪物
 	private static final String ATTACK_ROLE = "attackRole"; // 攻击角色
-	private static final String GET_ROLE_KILL_MONSTER_BONUS_INFO = "getRoleKillMonsterBonusInfo";
-	private static final String GET_ROLE_KILL_MONSTER_BONUS = "getRoleKillMonsterBonus";
+	private static final String GET_ROLE_KILL_MONSTER_BONUS_INFO = "getRoleKillMonsterBonusInfo"; // 获取场景中可以捡取的物品
+	private static final String GET_ROLE_KILL_MONSTER_BONUS = "getRoleKillMonsterBonus"; // 捡取掉落物品
+	private static final String GET_COPY_INFO = "getCopyInfo"; // 获取副本信息
 	private static final String JOIN_COPY_SCENE = "joinCopyScene"; // 进入副本
-
 	private static final String TALK_TO_NPC = "talkToNpc"; // 与npc交谈
 
 	public static final String NOTIFY_USER_ENTER = NotifiesWarehouse.INSTANCE.getNotifyContent("NOTIFY_USER_ENTER");
@@ -55,9 +54,9 @@ public class SceneExtension {
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
-	@CmdService(cmd = GET_NEAR_SCENE)
-	public void getNearScene(User user, CmdDomain cmdDomain) {
-		ReplyDomain replyDomain = service.getNearScene(user);
+	@CmdService(cmd = GET_COPY_INFO)
+	public void getCopyInfo(User user, CmdDomain cmdDomain) {
+		ReplyDomain replyDomain = service.getCopyInfo(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 

@@ -6,13 +6,14 @@ package com.hh.mmorpg.domain;
 
 public class NpcRole {
 
-	int id;
-	String name;
+	private int id;
+	private String name;
+	private String talk;
 
-	public NpcRole(int id, String name) {
-		super();
+	public NpcRole(int id, String name, String talk) {
 		this.id = id;
 		this.name = name;
+		this.talk = talk;
 	}
 
 	public int getId() {
@@ -21,6 +22,10 @@ public class NpcRole {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getTalk() {
+		return talk;
 	}
 
 	@Override

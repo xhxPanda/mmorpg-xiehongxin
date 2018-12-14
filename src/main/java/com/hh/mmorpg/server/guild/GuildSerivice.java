@@ -26,6 +26,7 @@ import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
+import com.hh.mmorpg.server.masterial.MaterialExtension;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.role.RoleDao;
 import com.hh.mmorpg.server.role.RoleService;
@@ -461,6 +462,9 @@ public class GuildSerivice {
 
 		BagMaterial guildMaterial = role.decMaterialIndex(index, num);
 		ReplyDomain domain = guild.accessMaterial(guildMaterial);
+		ReplyDomain notify = new ReplyDomain();
+		notify.setStringDomain("减少物品", guildMaterial.getName() + "*" + num);
+		MaterialExtension.notifyMaterialDec(user, notify);
 
 		return domain;
 	}
@@ -541,10 +545,18 @@ public class GuildSerivice {
 				return ReplyDomain.NOT_ENOUGH;
 			}
 			// 减去物品
-			guild.decBankMaterial(index, num);
+
 			BagMaterial bagMaterial = new BagMaterial(material, role.getId(), num);
 
-			role.addMaterial(bagMaterial);
+			ReplyDomain replyDomain = role.addMaterial(bagMaterial);
+
+			// 减去物品需要看这个人真实获取了多少物品
+			if (!replyDomain.isSuccess()) {
+				guild.decBankMaterial(index, (Integer) replyDomain.getDomain("真实插入的数量"));
+				return replyDomain;
+			} else {
+				guild.decBankMaterial(index, num);
+			}
 		} finally {
 			lock.unlock();
 		}
