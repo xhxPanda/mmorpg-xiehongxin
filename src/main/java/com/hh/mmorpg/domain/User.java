@@ -2,11 +2,19 @@ package com.hh.mmorpg.domain;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
 import io.netty.channel.Channel;
 
+/**
+ * user实体类
+ * 
+ * @author xhx
+ *
+ */
 public class User {
 
 	private int userId;
@@ -14,10 +22,15 @@ public class User {
 	private String password;
 	private Channel channel;
 
+	// 包
+	private BlockingQueue<Runnable> cmdDomains;
+
 	public User(int userId, String name, String password) {
 		this.password = password;
 		this.userId = userId;
 		this.name = name;
+
+		cmdDomains = new LinkedBlockingQueue<>();
 	}
 
 	public int getUserId() {
@@ -38,6 +51,19 @@ public class User {
 
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * 把包放进队列中
+	 * 
+	 * @param cmdDomain
+	 */
+	public void addCmdDomain(Runnable cmdDomain) {
+		cmdDomains.add(cmdDomain);
+	}
+
+	public BlockingQueue<Runnable> getCmdDomains() {
+		return cmdDomains;
 	}
 
 	public static final ResultBuilder<User> BUILDER = new ResultBuilder<User>() {

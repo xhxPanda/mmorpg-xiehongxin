@@ -41,6 +41,12 @@ import com.hh.mmorpg.server.skill.SkillService;
 import com.hh.mmorpg.server.team.TeamService;
 import com.hh.mmorpg.service.user.UserService;
 
+/**
+ * 处理场景业务
+ * 
+ * @author xhx
+ *
+ */
 public class SceneService {
 
 	public static final SceneService INSTANCE = new SceneService();
@@ -411,10 +417,10 @@ public class SceneService {
 
 		UserEquipment userEquipment = role.getEquipmentMap().get(EquimentType.ARMS);
 		if (userEquipment == null) {
-			
+
 		}
-		
-		if(!userEquipment.dropDurability().isSuccess()) {
+
+		if (!userEquipment.dropDurability().isSuccess()) {
 			return ReplyDomain.EQUIMENT_DURABILITY_HARM;
 		}
 
@@ -740,12 +746,13 @@ public class SceneService {
 			System.out.println("用户下线了");
 		}
 	};
-	
+
+	// 角色下线处理
 	private EventBuilder<RoleChangeData> roleChangeEvent = new EventBuilder<RoleChangeData>() {
 
 		@Override
 		public void handler(RoleChangeData userLostData) {
-			int userId =userLostData.getUserId();
+			int userId = userLostData.getUserId();
 
 			Role oldRole = userLostData.getOldRole();
 			if (oldRole == null)
@@ -759,7 +766,6 @@ public class SceneService {
 	};
 
 	// 监听怪兽死亡的事件，掉落物品
-	
 	private EventBuilder<MonsterDeadData> monsterDeadEvent = new EventBuilder<MonsterDeadData>() {
 
 		@Override

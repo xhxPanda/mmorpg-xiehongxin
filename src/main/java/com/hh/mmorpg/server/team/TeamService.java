@@ -27,6 +27,11 @@ import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.server.scene.SceneService;
 import com.hh.mmorpg.service.user.UserService;
 
+/**
+ * 处理队伍相关
+ * @author xhx
+ *
+ */
 public class TeamService {
 
 	public static final TeamService INSTANCE = new TeamService();
@@ -384,7 +389,7 @@ public class TeamService {
 		}
 	}
 
-	
+	// 处理队员离线的业务
 	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {
 
 		@Override

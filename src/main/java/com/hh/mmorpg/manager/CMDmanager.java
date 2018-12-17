@@ -3,7 +3,6 @@ package com.hh.mmorpg.manager;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.hh.mmorpg.CmdHandlerMananger;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -25,7 +24,7 @@ public class CmdManager {
 	private ExecutorService executorService;
 
 	private CmdManager() {
-		executorService = Executors.newFixedThreadPool(5);
+		executorService = Executors.newFixedThreadPool(6);
 	}
 
 	/**
@@ -35,23 +34,34 @@ public class CmdManager {
 	 */
 	public void dealCMD(Channel channel, CmdDomain cmdDomain) {
 
-		executorService.execute(new Runnable() {
-			@Override
-			public void run() {
-				String cmd = cmdDomain.getStringParam(0);
-				if (cmd.equals("doLogin") || cmd.equals("doRegister")) {
+		String cmd = cmdDomain.getStringParam(0);
+		if (cmd.equals("doLogin") || cmd.equals("doRegister")) {
+
+			addTask(new Runnable() {
+
+				@Override
+				public void run() {
 					UserService.INSTANCE.doLoginOrRegister(cmdDomain);
-				} else {
-					Integer userId = cmdDomain.getIntParam(1);
-					if (userId != null) {
-						User user = UserService.INSTANCE.getUserByChannelId(channel.id().asShortText());
-						if (user == null) {
-							ExtensionSender.INSTANCE.sendReply(cmdDomain.getChannel(), ReplyDomain.FAILE);
-						}
-						CmdHandlerMananger.INSATANCE.invokeHandler(user, cmdDomain);
-					}
 				}
+			});
+
+		} else {
+			Integer userId = cmdDomain.getIntParam(1);
+			if (userId != null) {
+				User user = UserService.INSTANCE.getUserByChannelId(channel.id().asShortText());
+				if (user == null) {
+					ExtensionSender.INSTANCE.sendReply(cmdDomain.getChannel(), ReplyDomain.FAILE);
+				}
+				user.addCmdDomain(new CmdRunner(user, cmdDomain));
 			}
-		});
+		}
 	}
+
+	/**
+	 * 线程进入队列
+	 */
+	public void addTask(Runnable runnable) {
+		executorService.execute(runnable);
+	}
+
 }

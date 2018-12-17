@@ -1,6 +1,9 @@
 package com.hh.mmorpg.service.user;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.CmdDomain;
@@ -10,6 +13,7 @@ import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.UserLostData;
+import com.hh.mmorpg.manager.CmdManager;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.role.RoleService;
@@ -30,11 +34,15 @@ public class UserService {
 	private ConcurrentHashMap<Integer, User> userChannelMap;
 	// channel与userId的map
 	private ConcurrentHashMap<String, Integer> channelUserMap;
+	
+	ScheduledExecutorService executorService;
 
 	private UserService() {
 		this.userChannelMap = new ConcurrentHashMap<Integer, User>();
 		this.channelUserMap = new ConcurrentHashMap<String, Integer>();
-
+		
+		executorService = Executors.newSingleThreadScheduledExecutor();
+		start();
 		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
 	}
 
@@ -128,6 +136,7 @@ public class UserService {
 
 	/**
 	 * 使用channle id获取User
+	 * 
 	 * @param channelId
 	 * @return
 	 */
@@ -170,4 +179,29 @@ public class UserService {
 		}
 	};
 	
+
+	public void start() {
+		
+		executorService.scheduleAtFixedRate(new Runnable() {
+
+			@Override
+			public void run() {
+				UserService.INSTANCE.runCmdDomain();
+			}
+		}, 0, 200, TimeUnit.MICROSECONDS);
+	}
+
+	/**
+	 * 分发命令执行，令每一个用户的命令能有序执行
+	 */
+	public void runCmdDomain() {
+		for (User user : userChannelMap.values()) {
+			try {
+				CmdManager.INSTANCE.addTask(user.getCmdDomains().take());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 }
