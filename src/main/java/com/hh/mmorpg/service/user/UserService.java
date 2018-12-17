@@ -6,9 +6,8 @@ import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -36,7 +35,7 @@ public class UserService {
 		this.userChannelMap = new ConcurrentHashMap<Integer, User>();
 		this.channelUserMap = new ConcurrentHashMap<String, Integer>();
 
-		EventHandlerManager.INSATNCE.register(this);
+		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
 	}
 
 	/**
@@ -158,14 +157,17 @@ public class UserService {
 
 		// 抛出用户离线事件
 		UserLostData data = new UserLostData(user, role);
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.USER_LOST, new EventDealData<UserLostData>(data));
+		EventHandler.INSTANCE.invodeMethod(EventType.USER_LOST, data);
 	}
 
-	@Event(eventType = EventType.USER_LOST)
-	public void handleUserLost(EventDealData<UserLostData> data) {
-		UserLostData userLostData = data.getData();
-		int userId = userLostData.getUser().getUserId();
+	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {
 
-		System.out.println("userId为：" + userId + "的用户下线了");
-	}
+		@Override
+		public void handler(UserLostData userLostData) {
+			int userId = userLostData.getUser().getUserId();
+
+			System.out.println("userId为：" + userId + "的用户下线了");
+		}
+	};
+	
 }

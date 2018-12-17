@@ -16,9 +16,8 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.TeamMate;
 import com.hh.mmorpg.domain.User;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.JoinTeamData;
 import com.hh.mmorpg.event.data.UserLostData;
@@ -52,6 +51,9 @@ public class TeamService {
 		this.teamId = new AtomicInteger(0);
 
 		this.lock = new ReentrantLock();
+		
+		// 注册事件
+		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
 	}
 
 	public ReplyDomain getTeamInfo(User user) {
@@ -201,8 +203,7 @@ public class TeamService {
 			role.setTeamId(peopleRole.getTeamId());
 
 			JoinTeamData joinTeamData = new JoinTeamData(role, new ArrayList<>(teamMate.values()));
-			EventHandlerManager.INSATNCE.methodInvoke(EventType.JOIN_TEAM,
-					new EventDealData<JoinTeamData>(joinTeamData));
+			EventHandler.INSTANCE.invodeMethod(EventType.JOIN_TEAM, joinTeamData);
 
 			// 提醒双方组队成功
 			TeamExtension.notifyRole(peopleUser, getTeamInfo(peopleUser));
@@ -383,40 +384,43 @@ public class TeamService {
 		}
 	}
 
-	// 用户下线，把他的状态设为下线
-	@Event(eventType = EventType.USER_LOST)
-	public void handleUserLost(EventDealData<UserLostData> data) {
-		UserLostData userLostData = data.getData();
+	
+	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {
 
-		Role role = userLostData.getRole();
+		@Override
+		public void handler(UserLostData userLostData) {
 
-		int teamId = role.getTeamId();
+			Role role = userLostData.getRole();
 
-		if (teamId == 0) {
-			return;
-		}
+			int teamId = role.getTeamId();
 
-		TeamMate teamMate = teamsMap.get(teamId).get(role.getId());
-
-		List<TeamMate> onlineTeamMate = new ArrayList<>();
-		for (TeamMate mate : teamsMap.get(teamId).values()) {
-			if (!mate.isOnline()) {
-				onlineTeamMate.add(mate);
+			if (teamId == 0) {
+				return;
 			}
-		}
-		// 队伍中没有人在线了，移除该队伍
-		if (onlineTeamMate.size() == 0) {
-			teamsMap.remove(teamId);
-			return;
-		}
 
-		// 如果他是队长，就需要转交队长角色给别人
-		if (teamMate.isTeamLeader()) {
-			teamMate.setTeamLeader(false);
-			onlineTeamMate.get(0).setOnline(true);
-		}
+			TeamMate teamMate = teamsMap.get(teamId).get(role.getId());
 
-		teamMate.setOnline(false);
-	}
+			List<TeamMate> onlineTeamMate = new ArrayList<>();
+			for (TeamMate mate : teamsMap.get(teamId).values()) {
+				if (!mate.isOnline()) {
+					onlineTeamMate.add(mate);
+				}
+			}
+			// 队伍中没有人在线了，移除该队伍
+			if (onlineTeamMate.size() == 0) {
+				teamsMap.remove(teamId);
+				return;
+			}
+
+			// 如果他是队长，就需要转交队长角色给别人
+			if (teamMate.isTeamLeader()) {
+				teamMate.setTeamLeader(false);
+				onlineTeamMate.get(0).setOnline(true);
+			}
+
+			teamMate.setOnline(false);
+		}
+	};
+	
 
 }

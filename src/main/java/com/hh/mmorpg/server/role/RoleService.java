@@ -21,9 +21,8 @@ import com.hh.mmorpg.domain.RoleSkill;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserTreasure;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UpdateLevelData;
@@ -68,7 +67,9 @@ public class RoleService {
 
 		this.roleToUser = new ConcurrentHashMap<>();
 
-		EventHandlerManager.INSATNCE.register(this);
+		// 注册事件
+		EventHandler.INSTANCE.addHandler(EventType.LEVEL_UP, levelUpEvent);
+		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
 	}
 
 	/**
@@ -143,7 +144,7 @@ public class RoleService {
 
 		// 抛出替换角色的事件
 		RoleChangeData data = new RoleChangeData(userId, oldRole, role);
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.ROLE_CHANGE, new EventDealData<RoleChangeData>(data));
+		EventHandler.INSTANCE.invodeMethod(EventType.ROLE_CHANGE, data);
 
 		roleToUser.put(roleId, userId);
 		ReplyDomain replyDomain = new ReplyDomain("使用角色" + ResultCode.SUCCESS);
@@ -323,40 +324,44 @@ public class RoleService {
 
 		return map;
 	}
+	
+	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {
 
-	// 用户下线，把他的缓存删除
-	@Event(eventType = EventType.USER_LOST)
-	public void handleUserLost(EventDealData<UserLostData> data) {
-		UserLostData userLostData = data.getData();
+		@Override
+		public void handler(UserLostData userLostData) {
 
-		int userId = userLostData.getUser().getUserId();
-		Role role = userRoleMap.remove(userId);
+			int userId = userLostData.getUser().getUserId();
+			Role role = userRoleMap.remove(userId);
 
-		if (role == null) {
-			return;
+			if (role == null) {
+				return;
+			}
+
+			RoleDao.INSTANCE.updateRole(role);
+
+			roleToUser.remove(role.getId());
+			MaterialService.INSTANCE.persistenceRoleMatetrial(role);
+			MissionDao.INSTANCE.insertMission(role.getRoleMissionMap().values());
+
+			System.out.println("删除用户缓存使用角色");
 		}
+	};
 
-		RoleDao.INSTANCE.updateRole(role);
+	// 处理升级任务
+	private EventBuilder<UpdateLevelData> levelUpEvent = new EventBuilder<UpdateLevelData>() {
 
-		roleToUser.remove(role.getId());
-		MaterialService.INSTANCE.persistenceRoleMatetrial(role);
-		MissionDao.INSTANCE.insertMission(role.getRoleMissionMap().values());
+		@Override
+		public void handler(UpdateLevelData updateLevelData) {
 
-		System.out.println("删除用户缓存使用角色");
-	}
+			Role role = updateLevelData.getRole();
+			if (isOnline(role.getId())) {
+				User user = UserService.INSTANCE.getUser(role.getUserId());
 
-	@Event(eventType = EventType.LEVEL_UP)
-	public void handleUserLevelUp(EventDealData<UpdateLevelData> data) {
-		UpdateLevelData updateLevelData = data.getData();
-
-		Role role = updateLevelData.getRole();
-		if (isOnline(role.getId())) {
-			User user = UserService.INSTANCE.getUser(role.getUserId());
-
-			ReplyDomain replyDomain = new ReplyDomain();
-			replyDomain.setIntDomain("恭喜你，等级达到了", updateLevelData.getNewLevel());
-			RoleExtension.notify(user, replyDomain);
+				ReplyDomain replyDomain = new ReplyDomain();
+				replyDomain.setIntDomain("恭喜你，等级达到了", updateLevelData.getNewLevel());
+				RoleExtension.notify(user, replyDomain);
+			}
 		}
-	}
+	};
 
 }

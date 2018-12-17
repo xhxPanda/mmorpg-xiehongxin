@@ -25,9 +25,8 @@ import com.hh.mmorpg.domain.SummonMonster;
 import com.hh.mmorpg.domain.TeamMate;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.NpcTalkData;
@@ -72,7 +71,10 @@ public class SceneService {
 
 		executorService = Executors.newScheduledThreadPool(10);
 
-		EventHandlerManager.INSATNCE.register(this);
+		// 注册事件
+		EventHandler.INSTANCE.addHandler(EventType.ROLE_CHANGE, roleChangeEvent);
+		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
+		EventHandler.INSTANCE.addHandler(EventType.MONSTER_DEAD, monsterDeadEvent);
 	}
 
 	/**
@@ -701,109 +703,116 @@ public class SceneService {
 		replyDomain.setStringDomain(npcRole.getName() + "说", npcRole.getTalk());
 
 		NpcTalkData data = new NpcTalkData(role, npcId);
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.TALK_TO_NPC, new EventDealData<NpcTalkData>(data));
+		EventHandler.INSTANCE.invodeMethod(EventType.TALK_TO_NPC, data);
 
 		return replyDomain;
 	}
 
 	// 用户下线，把他的缓存删除
-	@Event(eventType = EventType.USER_LOST)
-	public void handleUserLost(EventDealData<UserLostData> data) {
-		UserLostData userLostData = data.getData();
-		Role role = userLostData.getRole();
+	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {
 
-		if (role == null) {
-			return;
-		}
+		@Override
+		public void handler(UserLostData userLostData) {
+			Role role = userLostData.getRole();
 
-		int sceneId = role.getSceneId();
-		if (sceneId == 0) {
-			return;
-		}
-		Scene scene = sceneMap.get(sceneId);
-
-		role.setSceneId(0);
-		scene.userLeaveScene(userLostData.getUser().getUserId());
-		judgeScene(scene);
-
-		for (Monster monster : scene.getMonsterMap().values()) {
-			if (monster.getAttackObject() == null)
-				continue;
-			if (monster.getAttackObject().getId() == role.getId()) {
-				monster.setAttackObject(null);
+			if (role == null) {
+				return;
 			}
+
+			int sceneId = role.getSceneId();
+			if (sceneId == 0) {
+				return;
+			}
+			Scene scene = sceneMap.get(sceneId);
+
+			role.setSceneId(0);
+			scene.userLeaveScene(userLostData.getUser().getUserId());
+			judgeScene(scene);
+
+			for (Monster monster : scene.getMonsterMap().values()) {
+				if (monster.getAttackObject() == null)
+					continue;
+				if (monster.getAttackObject().getId() == role.getId()) {
+					monster.setAttackObject(null);
+				}
+			}
+
+			System.out.println("用户下线了");
 		}
+	};
+	
+	private EventBuilder<RoleChangeData> roleChangeEvent = new EventBuilder<RoleChangeData>() {
 
-		System.out.println("用户下线了");
-	}
+		@Override
+		public void handler(RoleChangeData userLostData) {
+			int userId =userLostData.getUserId();
 
-	// 用户切换角色后把场景中的角色移除
-	@Event(eventType = EventType.ROLE_CHANGE)
-	public void handleRoleChange(EventDealData<RoleChangeData> data) {
-		int userId = data.getData().getUserId();
+			Role oldRole = userLostData.getOldRole();
+			if (oldRole == null)
+				return;
 
-		Role oldRole = data.getData().getOldRole();
-		if (oldRole == null)
-			return;
+			Scene scene = sceneMap.get(oldRole.getSceneId());
 
-		Scene scene = sceneMap.get(oldRole.getSceneId());
-
-		scene.userLeaveScene(userId);
-		judgeScene(scene);
-	}
+			scene.userLeaveScene(userId);
+			judgeScene(scene);
+		}
+	};
 
 	// 监听怪兽死亡的事件，掉落物品
-	@Event(eventType = EventType.MONSTER_DEAD)
-	public void handleMonsterDead(EventDealData<MonsterDeadData> data) {
-		MonsterDeadData monsterDeadData = data.getData();
+	
+	private EventBuilder<MonsterDeadData> monsterDeadEvent = new EventBuilder<MonsterDeadData>() {
 
-		Scene scene = sceneMap.get(monsterDeadData.getSceneId());
+		@Override
+		public void handler(MonsterDeadData monsterDeadData) {
 
-		Monster monster = monsterDeadData.getMonster();
-		String bonus = monsterDeadBonus(monster.getKillFallItemMap());
+			Scene scene = sceneMap.get(monsterDeadData.getSceneId());
 
-		Role role = monsterDeadData.getKillRole();
-		User user = UserService.INSTANCE.getUser(role.getUserId());
+			Monster monster = monsterDeadData.getMonster();
+			String bonus = monsterDeadBonus(monster.getKillFallItemMap());
 
-		// 发放最后一击奖励， 不在线就不用发了
-		if (!monster.getLastAttackBonus().isEmpty()) {
-			MaterialService.INSTANCE.gainMasteral(user, role, monster.getLastAttackBonus());
-		}
+			Role role = monsterDeadData.getKillRole();
+			User user = UserService.INSTANCE.getUser(role.getUserId());
 
-		if (!bonus.isEmpty()) {
-			int id = IncrementManager.INSTANCE.increase("monsterBeKillBonus");
-			MonsterBeKillBonus monsterBeKillBonus = new MonsterBeKillBonus(id, role.getId(),
-					monsterDeadData.getMonster().getId(), System.currentTimeMillis(), bonus);
-			scene.addRoleKillMonsterBonus(monsterBeKillBonus);
-
-			ReplyDomain replyDomain = new ReplyDomain();
-			replyDomain.setStringDomain("bonus", monsterBeKillBonus.toString());
-			replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_ROLE_MONSTER_BONUS_FALL);
-
-			// 通知前端奖励加入场景
-			scene.notifyAllUser(replyDomain);
-		}
-
-		// 角色分配exp，队伍中的人都能获得经验
-		int teamId = role.getTeamId();
-		if (teamId == 0) {
-
-			MaterialService.INSTANCE.gainMasteral(user, role, "4:1:" + monster.getExp());
-			return;
-		}
-
-		Map<Integer, TeamMate> team = TeamService.INSTANCE.getTeam(teamId);
-		for (TeamMate teamMate : team.values()) {
-			if (!RoleService.INSTANCE.isOnline(teamMate.getRoleId())) {
-				continue;
+			// 发放最后一击奖励， 不在线就不用发了
+			if (!monster.getLastAttackBonus().isEmpty()) {
+				MaterialService.INSTANCE.gainMasteral(user, role, monster.getLastAttackBonus());
 			}
 
-			Role teamRole = RoleService.INSTANCE.getUserRole(teamMate.getUserId(), teamMate.getRoleId());
-			User teamMateUser = UserService.INSTANCE.getUser(teamMate.getUserId());
-			MaterialService.INSTANCE.gainMasteral(teamMateUser, teamRole, "4:1:" + monster.getExp());
-		}
+			if (!bonus.isEmpty()) {
+				int id = IncrementManager.INSTANCE.increase("monsterBeKillBonus");
+				MonsterBeKillBonus monsterBeKillBonus = new MonsterBeKillBonus(id, role.getId(),
+						monsterDeadData.getMonster().getId(), System.currentTimeMillis(), bonus);
+				scene.addRoleKillMonsterBonus(monsterBeKillBonus);
 
-	}
+				ReplyDomain replyDomain = new ReplyDomain();
+				replyDomain.setStringDomain("bonus", monsterBeKillBonus.toString());
+				replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_ROLE_MONSTER_BONUS_FALL);
+
+				// 通知前端奖励加入场景
+				scene.notifyAllUser(replyDomain);
+			}
+
+			// 角色分配exp，队伍中的人都能获得经验
+			int teamId = role.getTeamId();
+			if (teamId == 0) {
+
+				MaterialService.INSTANCE.gainMasteral(user, role, "4:1:" + monster.getExp());
+				return;
+			}
+
+			Map<Integer, TeamMate> team = TeamService.INSTANCE.getTeam(teamId);
+			for (TeamMate teamMate : team.values()) {
+				if (!RoleService.INSTANCE.isOnline(teamMate.getRoleId())) {
+					continue;
+				}
+
+				Role teamRole = RoleService.INSTANCE.getUserRole(teamMate.getUserId(), teamMate.getRoleId());
+				User teamMateUser = UserService.INSTANCE.getUser(teamMate.getUserId());
+				MaterialService.INSTANCE.gainMasteral(teamMateUser, teamRole, "4:1:" + monster.getExp());
+			}
+
+		}
+	};
 
 	// 判断该场景是否副本，是的话判断是否已经没人了，没人的话就移除
 	private void judgeScene(Scene scene) {

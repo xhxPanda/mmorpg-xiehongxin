@@ -1,7 +1,9 @@
 package com.hh.mmorpg.event;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 事件机制的处理
@@ -11,26 +13,30 @@ import java.lang.reflect.Method;
  */
 public class EventHandler {
 
-	private Object classInstance;
-	private Method method;
+	public static final EventHandler INSTANCE = new EventHandler();
 
-	public EventHandler(Object classInstance, Method method) {
-		this.classInstance = classInstance;
-		this.method = method;
+	private Map<Integer, List<EventBuilder>> eventBuilds;
+
+	private EventHandler() {
+		eventBuilds = new HashMap<>();
 	}
 
-	public void invodeMethod(EventDealData<?> eventData) {
-		try {
-			method.invoke(classInstance, eventData);
-		} catch (IllegalAccessException e) {
+	public void addHandler(int type, EventBuilder eventBuild) {
+		List<EventBuilder> builds = (List<EventBuilder>) eventBuilds.get(type);
 
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
+		if (builds == null) {
+			builds = new ArrayList<>();
+			eventBuilds.put(type, builds);
+		}
 
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		builds.add(eventBuild);
+	}
 
-			e.printStackTrace();
+	public void invodeMethod(int type, EventData eventData) {
+		List<EventBuilder> builds = (List<EventBuilder>) eventBuilds.get(type);
+
+		for (EventBuilder eventBuilder : builds) {
+			eventBuilder.handler(eventData);
 		}
 	}
 

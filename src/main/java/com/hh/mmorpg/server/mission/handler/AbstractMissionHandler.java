@@ -6,8 +6,7 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.EventData;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MissionCompeteData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -45,8 +44,7 @@ public abstract class AbstractMissionHandler<T extends EventData> {
 
 		// 抛出完成任务事件
 		MissionCompeteData missionCompeteData = new MissionCompeteData(mission.getMissionId(), role);
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.MISSION_COMPETE,
-				new EventDealData<MissionCompeteData>(missionCompeteData));
+		EventHandler.INSTANCE.invodeMethod(EventType.MISSION_COMPETE, missionCompeteData);
 	}
 	
 	public void notifyMissionStatusChange(Role role, RoleMission mission) {

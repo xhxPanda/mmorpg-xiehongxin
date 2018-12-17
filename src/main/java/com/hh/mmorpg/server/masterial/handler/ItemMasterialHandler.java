@@ -8,8 +8,7 @@ import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserItem;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GetMaterialData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -42,7 +41,7 @@ public class ItemMasterialHandler extends AbstractMaterialHandler {
 
 		// 抛出获得物品的事件
 		GetMaterialData data = new GetMaterialData(role, bagMaterial, 1);
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.GET_MATERIAL, new EventDealData<GetMaterialData>(data));
+		EventHandler.INSTANCE.invodeMethod(EventType.GET_MATERIAL, data);
 
 		return replyDomain;
 	}

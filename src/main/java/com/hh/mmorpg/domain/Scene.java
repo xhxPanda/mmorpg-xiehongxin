@@ -12,9 +12,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.PassCopyData;
@@ -90,7 +89,7 @@ public class Scene {
 		this.summonMonstermap = new HashMap<>();
 
 		// 监听怪物死亡事件
-		EventHandlerManager.INSATNCE.register(this);
+		EventHandler.INSTANCE.addHandler(EventType.MONSTER_DEAD, monsterDeadEvent);
 	}
 
 	public boolean isCanEnter(int id) {
@@ -465,30 +464,33 @@ public class Scene {
 	}
 
 	// 副本刷新怪物
-	@Event(eventType = EventType.MONSTER_DEAD)
-	public void handleMonsterDead(EventDealData<MonsterDeadData> data) {
-		if (isCopy) {
-			if (isAllMonsterDead()) {
+	public EventBuilder<MonsterDeadData> monsterDeadEvent = new EventBuilder<MonsterDeadData>() {
 
-				if (!refreshMonster()) {
-					// 完成所有轮数的怪物，副本结束
-					ReplyDomain replyDomain = new ReplyDomain();
-					replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
+		@Override
+		public void handler(MonsterDeadData data) {
+			if (isCopy) {
+				if (isAllMonsterDead()) {
 
-					// 完成副本后全场的用户都抛出完成副本的事件
-					for (SceneUserCache cache : userMap.values()) {
-						PassCopyData passCopyData = new PassCopyData(cache.getRole(), sceneTypeId);
-						EventHandlerManager.INSATNCE.methodInvoke(EventType.PASS_COPY,
-								new EventDealData<PassCopyData>(passCopyData));
+					if (!refreshMonster()) {
+						// 完成所有轮数的怪物，副本结束
+						ReplyDomain replyDomain = new ReplyDomain();
+						replyDomain.setStringDomain("cmd", SceneExtension.NOTIFY_USER_COPY_FINISH);
+
+						// 完成副本后全场的用户都抛出完成副本的事件
+						for (SceneUserCache cache : userMap.values()) {
+							PassCopyData passCopyData = new PassCopyData(cache.getRole(), sceneTypeId);
+							EventHandler.INSTANCE.invodeMethod(EventType.PASS_COPY, passCopyData);
+						}
+
+						// 完成副本60分钟后解散副本
+						SceneService.INSTANCE.finishScene(id);
+						notifyAllUser(replyDomain);
 					}
-
-					// 完成副本60分钟后解散副本
-					SceneService.INSTANCE.finishScene(id);
-					notifyAllUser(replyDomain);
 				}
 			}
 		}
-	}
+
+	};
 
 	@Override
 	public String toString() {

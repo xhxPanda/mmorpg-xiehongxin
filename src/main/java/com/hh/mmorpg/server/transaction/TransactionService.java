@@ -14,9 +14,8 @@ import com.hh.mmorpg.domain.Transaction;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.domain.UserTreasureType;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.TransactionData;
 import com.hh.mmorpg.event.data.UserLostData;
@@ -43,7 +42,8 @@ public class TransactionService {
 		this.transactionId = new AtomicInteger(0);
 		this.lock = new ReentrantLock();
 
-		EventHandlerManager.INSATNCE.register(this);
+		// 注册事件
+		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
 	}
 
 	/**
@@ -359,10 +359,9 @@ public class TransactionService {
 				TransactionData oneData = new TransactionData(role, anotherRole);
 				TransactionData twoData = new TransactionData(anotherRole, role);
 
-				EventHandlerManager.INSATNCE.methodInvoke(EventType.TRANSACTION,
-						new EventDealData<TransactionData>(oneData));
-				EventHandlerManager.INSATNCE.methodInvoke(EventType.TRANSACTION,
-						new EventDealData<TransactionData>(twoData));
+				
+				EventHandler.INSTANCE.invodeMethod(EventType.TRANSACTION, oneData);
+				EventHandler.INSTANCE.invodeMethod(EventType.JOIN_TEAM, twoData);
 			}
 			// 交易完成，关闭交易
 			transactionMap.remove(role.getTransactionPerson());
@@ -380,18 +379,19 @@ public class TransactionService {
 
 	}
 
-	// 用户下线，中断交易
-	@Event(eventType = EventType.USER_LOST)
-	public void handleUserLost(EventDealData<UserLostData> data) {
-		UserLostData userLostData = data.getData();
+	// 用户下线，交易终止
+	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {
 
-		Role role = userLostData.getRole();
+		@Override
+		public void handler(UserLostData userLostData) {
+			Role role = userLostData.getRole();
 
-		if (role == null) {
-			return;
+			if (role == null) {
+				return;
+			}
+
+			stopTransaction(role);
 		}
-
-		stopTransaction(role);
-	}
-
+	};
+	
 }

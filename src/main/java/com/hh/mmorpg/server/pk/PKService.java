@@ -5,9 +5,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.User;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.PKData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -24,7 +23,7 @@ public class PKService {
 	private PKService() {
 		lock = new ReentrantLock();
 
-		EventHandlerManager.INSATNCE.register(this);
+		EventHandler.INSTANCE.addHandler(EventType.PK, pkBuilder);;
 	}
 
 	/**
@@ -130,32 +129,35 @@ public class PKService {
 	 * 
 	 * @param data
 	 */
-	@Event(eventType = EventType.PK)
-	public void handleUserPK(EventDealData<PKData> data) {
-		PKData npcTalkData = data.getData();
-
-		int winRoleId = npcTalkData.getWinRoleId();
-		int loseRoleId = npcTalkData.getLoseRoleId();
-
-		Role winRole = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(winRoleId), winRoleId);
-		Role loseRole = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(loseRoleId), loseRoleId);
-
-		winRole.setPkRoleId(0);
-		loseRole.setPkRoleId(0);
-
-		// 如果pk结束了就给双方发出提示
-		if (RoleService.INSTANCE.isOnline(winRoleId)) {
-			User winUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(winRoleId));
-			ReplyDomain replyDomain = new ReplyDomain();
-			replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_PK_WIN);
-			PKExtension.notifyUserMessage(winUser, replyDomain);
-		}
+	EventBuilder<PKData> pkBuilder = new EventBuilder<PKData>() {
 		
-		if (RoleService.INSTANCE.isOnline(loseRoleId)) {
-			User loseUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(loseRoleId));
-			ReplyDomain replyDomain = new ReplyDomain();
-			replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_PK_LOSE);
-			PKExtension.notifyUserMessage(loseUser, replyDomain);
+		@Override
+		public void handler(PKData pkData) {
+
+			int winRoleId = pkData.getWinRoleId();
+			int loseRoleId = pkData.getLoseRoleId();
+
+			Role winRole = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(winRoleId), winRoleId);
+			Role loseRole = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(loseRoleId), loseRoleId);
+
+			winRole.setPkRoleId(0);
+			loseRole.setPkRoleId(0);
+
+			// 如果pk结束了就给双方发出提示
+			if (RoleService.INSTANCE.isOnline(winRoleId)) {
+				User winUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(winRoleId));
+				ReplyDomain replyDomain = new ReplyDomain();
+				replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_PK_WIN);
+				PKExtension.notifyUserMessage(winUser, replyDomain);
+			}
+			
+			if (RoleService.INSTANCE.isOnline(loseRoleId)) {
+				User loseUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(loseRoleId));
+				ReplyDomain replyDomain = new ReplyDomain();
+				replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_PK_LOSE);
+				PKExtension.notifyUserMessage(loseUser, replyDomain);
+			}
 		}
-	}
+	};
+	
 }

@@ -10,14 +10,14 @@ import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
 import com.hh.mmorpg.server.masterial.handler.AbstractMaterialHandler;
-import com.hh.mmorpg.server.masterial.handler.EquipmentMaterialHandle;
+import com.hh.mmorpg.server.masterial.handler.EquipmentMaterialHandler;
 import com.hh.mmorpg.server.masterial.handler.ExpMaterialHandler;
 import com.hh.mmorpg.server.masterial.handler.ItemMasterialHandler;
 import com.hh.mmorpg.server.masterial.handler.TreasureMaterialHandler;
@@ -40,12 +40,14 @@ public class MaterialService {
 	private MaterialService() {
 		// 配置material不同的handler
 		this.handlerMap = new HashMap<>();
-		this.handlerMap.put(MaterialType.EQUIPMENT_TYPE.getId(), new EquipmentMaterialHandle());
+		this.handlerMap.put(MaterialType.EQUIPMENT_TYPE.getId(), new EquipmentMaterialHandler());
 		this.handlerMap.put(MaterialType.ITEM_TYPE.getId(), new ItemMasterialHandler());
 		this.handlerMap.put(MaterialType.TREASURE_TYPE.getId(), new TreasureMaterialHandler());
 		this.handlerMap.put(MaterialType.EXP_TYPE.getId(), new ExpMaterialHandler());
 
 		goodsMap = GoodsXmlResolutionManager.INSTANCE.resolution();
+
+		EventHandler.INSTANCE.addHandler(EventType.ROLE_CHANGE, changeRoleEvent);
 	}
 
 	/**
@@ -211,7 +213,6 @@ public class MaterialService {
 			handlerMap.get(type).decMasterial(user, role, strs);
 		}
 
-
 		return ReplyDomain.SUCCESS;
 	}
 
@@ -301,13 +302,15 @@ public class MaterialService {
 		return handlerMap.get(type).getPileNum(materialId);
 	}
 
-	// 用户切换角色后将角色物品持久化
-	@Event(eventType = EventType.ROLE_CHANGE)
-	public void handleRoleChange(EventDealData<RoleChangeData> data) {
+	private EventBuilder<RoleChangeData> changeRoleEvent = new EventBuilder<RoleChangeData>() {
 
-		Role role = data.getData().getOldRole();
-		persistenceRoleMatetrial(role);
-	}
+		@Override
+		public void handler(RoleChangeData data) {
+
+			Role role = data.getOldRole();
+			persistenceRoleMatetrial(role);
+		}
+	};
 
 	/**
 	 * 用户下线后统一把物品持久化
@@ -315,6 +318,9 @@ public class MaterialService {
 	 * @param role
 	 */
 	public void persistenceRoleMatetrial(Role role) {
+		if (role == null) {
+			return;
+		}
 		for (BagMaterial bagMaterial : role.getMaterialMap().values()) {
 			if (bagMaterial == null) {
 				continue;

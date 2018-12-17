@@ -3,8 +3,7 @@ package com.hh.mmorpg.server.masterial.handler;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GainTreasureData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -23,8 +22,7 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler {
 		treasure.changeQuantity(num);
 
 		GainTreasureData gainTreasureData = new GainTreasureData(role, id, num);
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.TREASURE,
-				new EventDealData<GainTreasureData>(gainTreasureData));
+		EventHandler.INSTANCE.invodeMethod(EventType.TREASURE, gainTreasureData);
 
 		ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
 		notify.setStringDomain("cmd", "新增" + num + treasure.getName());

@@ -9,8 +9,7 @@ import com.hh.mmorpg.domain.MaterialType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GetMaterialData;
 import com.hh.mmorpg.event.data.UserEquimentData;
@@ -21,11 +20,11 @@ import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.MaterialExtension;
 import com.hh.mmorpg.server.masterial.handler.xmlManager.EquimentXmlResolutionManager;
 
-public class EquipmentMaterialHandle extends AbstractMaterialHandler {
+public class EquipmentMaterialHandler extends AbstractMaterialHandler {
 
 	private Map<Integer, EquimentDomain> equimentDomainMap;
 
-	public EquipmentMaterialHandle() {
+	public EquipmentMaterialHandler() {
 		equimentDomainMap = EquimentXmlResolutionManager.INSTANCE.resolution();
 	}
 
@@ -65,7 +64,7 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 
 		// 抛出获得物品的事件
 		GetMaterialData data = new GetMaterialData(role, bagMaterial, 1);
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.GET_MATERIAL, new EventDealData<GetMaterialData>(data));
+		EventHandler.INSTANCE.invodeMethod(EventType.GET_MATERIAL, data);
 
 		return ReplyDomain.SUCCESS;
 	}
@@ -86,9 +85,9 @@ public class EquipmentMaterialHandle extends AbstractMaterialHandler {
 
 		role.setEquipment(equipment);
 
+		// 抛出事件
 		UserEquimentData userEquimentData = new UserEquimentData(role);
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.WEAR_QUEIMENT,
-				new EventDealData<UserEquimentData>(userEquimentData));
+		EventHandler.INSTANCE.invodeMethod(EventType.WEAR_QUEIMENT, userEquimentData);
 		return ReplyDomain.SUCCESS;
 	}
 

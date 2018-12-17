@@ -17,9 +17,8 @@ import com.hh.mmorpg.domain.GuildTreasure;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GuildJoinData;
 import com.hh.mmorpg.event.data.RoleChangeData;
@@ -63,7 +62,9 @@ public class GuildSerivice {
 		}
 		this.lock = new ReentrantLock();
 
-		EventHandlerManager.INSATNCE.register(this);
+		// 注册事件
+		EventHandler.INSTANCE.addHandler(EventType.ROLE_CHANGE, changeRoleEvent);
+		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
 	}
 
 	/**
@@ -181,8 +182,7 @@ public class GuildSerivice {
 
 		// 抛出角色进入公会事件
 		GuildJoinData guildJoinData = new GuildJoinData(role, guild.getId());
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.JOIN_GUILD,
-				new EventDealData<GuildJoinData>(guildJoinData));
+		EventHandler.INSTANCE.invodeMethod(EventType.JOIN_GUILD, guildJoinData);
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 
@@ -287,8 +287,7 @@ public class GuildSerivice {
 
 				// 抛出角色进入公会事件
 				GuildJoinData guildJoinData = new GuildJoinData(applyRole, guild.getId());
-				EventHandlerManager.INSATNCE.methodInvoke(EventType.JOIN_GUILD,
-						new EventDealData<GuildJoinData>(guildJoinData));
+				EventHandler.INSTANCE.invodeMethod(EventType.JOIN_GUILD, guildJoinData);
 			}
 
 			// 最后删除申请
@@ -716,40 +715,45 @@ public class GuildSerivice {
 	 * 
 	 * @param data
 	 */
-	@Event(eventType = EventType.ROLE_CHANGE)
-	public void handleChangeRole(EventDealData<RoleChangeData> data) {
-		RoleChangeData roleChangeData = data.getData();
 
-		Role oldRole = roleChangeData.getOldRole();
-		if (oldRole != null && oldRole.getGuildId() != 0) {
-			Guild guild = guildCache.get(oldRole.getGuildId());
-			guild.getGuildMember(oldRole.getId()).setOnline(false);
+	private EventBuilder<RoleChangeData> changeRoleEvent = new EventBuilder<RoleChangeData>() {
+
+		@Override
+		public void handler(RoleChangeData roleChangeData) {
+
+			Role oldRole = roleChangeData.getOldRole();
+			if (oldRole != null && oldRole.getGuildId() != 0) {
+				Guild guild = guildCache.get(oldRole.getGuildId());
+				guild.getGuildMember(oldRole.getId()).setOnline(false);
+			}
+
+			Role newRole = roleChangeData.getNewRole();
+			if (newRole.getGuildId() != 0) {
+				Guild newGuild = guildCache.get(newRole.getGuildId());
+				newGuild.getGuildMember(newRole.getId()).setOnline(true);
+			}
 		}
 
-		Role newRole = roleChangeData.getNewRole();
-		if (newRole.getGuildId() != 0) {
-			Guild newGuild = guildCache.get(newRole.getGuildId());
-			newGuild.getGuildMember(newRole.getId()).setOnline(true);
+	};
+
+	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {
+
+		@Override
+		public void handler(UserLostData data) {
+
+			Role role = data.getRole();
+			if (role == null)
+				return;
+
+			if (role.getGuildId() == 0) {
+				return;
+			}
+
+			Guild guild = guildCache.get(role.getGuildId());
+			guild.getGuildMember(role.getId()).setOnline(false);
+
+			System.out.println("删除用户缓存使用角色");
 		}
+	};
 
-	}
-
-	// 用户下线，把他的缓存删除
-	@Event(eventType = EventType.USER_LOST)
-	public void handleUserLost(EventDealData<UserLostData> data) {
-		UserLostData userLostData = data.getData();
-
-		Role role = userLostData.getRole();
-		if (role == null)
-			return;
-
-		if (role.getGuildId() == 0) {
-			return;
-		}
-
-		Guild guild = guildCache.get(role.getGuildId());
-		guild.getGuildMember(role.getId()).setOnline(false);
-
-		System.out.println("删除用户缓存使用角色");
-	}
 }

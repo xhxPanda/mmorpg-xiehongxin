@@ -13,9 +13,8 @@ import com.hh.mmorpg.domain.FriendApply;
 import com.hh.mmorpg.domain.OccupationEmun;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.FriendData;
 import com.hh.mmorpg.event.data.RoleChangeData;
@@ -42,6 +41,8 @@ public class FriendService {
 		this.friendApplyMap = new ConcurrentHashMap<>();
 		this.cache = new ConcurrentHashMap<>();
 		this.lock = new ReentrantLock();
+		
+		EventHandler.INSTANCE.addHandler(EventType.BECOME_FRIEND, friendEvent);
 	}
 
 	public ReplyDomain getRoleFriends(User user) {
@@ -79,7 +80,7 @@ public class FriendService {
 		}
 
 		Map<Integer, FriendApply> map = getFriendApply(roleId);
-		
+
 		// 判断是否已经发送过请求了
 		if (map.containsKey(role.getId())) {
 			return ReplyDomain.HAS_SENT_APPLY;
@@ -186,10 +187,8 @@ public class FriendService {
 			Role applyRole = RoleService.INSTANCE.getUserRole(friendApply.getUserId(), roleId);
 			FriendData applyFriendData = new FriendData(applyRole, role.getId());
 
-			EventHandlerManager.INSATNCE.methodInvoke(EventType.BECOME_FRIEND,
-					new EventDealData<FriendData>(friendData));
-			EventHandlerManager.INSATNCE.methodInvoke(EventType.BECOME_FRIEND,
-					new EventDealData<FriendData>(applyFriendData));
+			EventHandler.INSTANCE.invodeMethod(EventType.BECOME_FRIEND, friendData);
+			EventHandler.INSTANCE.invodeMethod(EventType.BECOME_FRIEND, applyFriendData);
 
 		} finally {
 			lock.unlock();
@@ -242,7 +241,7 @@ public class FriendService {
 	 * @return
 	 */
 	public ReplyDomain getFriendsApplication(User user) {
-		
+
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
 		ReplyDomain replyDomain = new ReplyDomain();
@@ -295,7 +294,7 @@ public class FriendService {
 				map.put(friendApply.getApplyRoleId(), friendApply);
 			}
 		}
-		
+
 		return map;
 	}
 
@@ -306,7 +305,6 @@ public class FriendService {
 	 * @return
 	 */
 	private Map<Integer, Friend> getUserAllFriend(Integer roleId) {
-		
 
 		Map<Integer, Friend> map = new HashMap<>();
 		if (cache.containsKey(roleId)) {
@@ -328,25 +326,29 @@ public class FriendService {
 	}
 
 	// 用户使用角色后把旧角色的缓存移除，加入新角色的缓存
-	@Event(eventType = EventType.ROLE_CHANGE)
-	public void handleRoleChange(EventDealData<RoleChangeData> data) {
+	
+	private EventBuilder<RoleChangeData> friendEvent = new EventBuilder<RoleChangeData>() {
+		
+		@Override
+		public void handler(RoleChangeData data) {
 
-		Role oldRole = data.getData().getOldRole();
-		if (oldRole != null) {
-			friendApplyMap.remove(oldRole.getId());
-			cache.remove(oldRole.getId());
+			Role oldRole = data.getOldRole();
+			if (oldRole != null) {
+				friendApplyMap.remove(oldRole.getId());
+				cache.remove(oldRole.getId());
+			}
+
+			Role role = data.getNewRole();
+
+			// 新角色的申请列表加入缓存
+			List<FriendApply> applies = FriendDao.INSTANCE.getRoleFriendsApply(role.getId());
+			Map<Integer, FriendApply> appliesMap = applies.stream()
+					.collect(Collectors.toMap(FriendApply::getApplyRoleId, a -> a));
+			friendApplyMap.put(role.getId(), appliesMap);
+
+			// 好友缓存
+			cache.put(role.getId(), getUserAllFriend(role.getId()));
 		}
-
-		Role role = data.getData().getNewRole();
-
-		// 新角色的申请列表加入缓存
-		List<FriendApply> applies = FriendDao.INSTANCE.getRoleFriendsApply(role.getId());
-		Map<Integer, FriendApply> appliesMap = applies.stream()
-				.collect(Collectors.toMap(FriendApply::getApplyRoleId, a -> a));
-		friendApplyMap.put(role.getId(), appliesMap);
-
-		// 好友缓存
-		cache.put(role.getId(), getUserAllFriend(role.getId()));
-	}
+	};
 
 }

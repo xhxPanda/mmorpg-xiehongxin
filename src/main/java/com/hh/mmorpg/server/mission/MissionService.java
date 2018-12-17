@@ -10,9 +10,8 @@ import com.hh.mmorpg.domain.MissionType;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.domain.User;
-import com.hh.mmorpg.event.Event;
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventBuilder;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.FriendData;
 import com.hh.mmorpg.event.data.GainTreasureData;
@@ -81,7 +80,21 @@ public class MissionService {
 		handlerMap.put(MissionType.PK, new PKMissionHandler());
 
 		// 注册监听
-		EventHandlerManager.INSATNCE.register(this);
+		EventHandler.INSTANCE.addHandler(EventType.BECOME_FRIEND, addFriendEvent);
+		EventHandler.INSTANCE.addHandler(EventType.LEVEL_UP, levelUpEvent);
+		EventHandler.INSTANCE.addHandler(EventType.TALK_TO_NPC, npcTalkEvent);
+		EventHandler.INSTANCE.addHandler(EventType.GET_MATERIAL, getMaterialEvent);
+		EventHandler.INSTANCE.addHandler(EventType.WEAR_QUEIMENT, useEquimentEvent);
+		EventHandler.INSTANCE.addHandler(EventType.JOIN_GUILD, joinGuildEvent);
+		EventHandler.INSTANCE.addHandler(EventType.JOIN_TEAM, joinTeamEvent);
+		EventHandler.INSTANCE.addHandler(EventType.MONSTER_DEAD, killMonsterEvent);
+		EventHandler.INSTANCE.addHandler(EventType.MISSION_COMPETE, missionCompeteEvent);
+		EventHandler.INSTANCE.addHandler(EventType.PASS_COPY, passCopyEvent);
+		EventHandler.INSTANCE.addHandler(EventType.TREASURE, getTreasureEvent);
+		EventHandler.INSTANCE.addHandler(EventType.TRANSACTION, transactionEvent);
+		EventHandler.INSTANCE.addHandler(EventType.ROLE_CHANGE, changeRoleEvent);
+		EventHandler.INSTANCE.addHandler(EventType.PK, pkEvent);
+		
 	}
 
 	/**
@@ -219,173 +232,194 @@ public class MissionService {
 		return missionDomainMap.get(id);
 	}
 
-	// 处理用户升级的任务
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.LEVEL_UP)
-	public void handleUserLevelUp(EventDealData<UpdateLevelData> data) {
-		UpdateLevelData levelData = data.getData();
-		handlerMap.get(MissionType.LEVEL_MISSION).dealMission(levelData,
-				getRoleMissionByType(levelData.getRole(), MissionType.LEVEL_MISSION));
-	}
+	// 处理升级任务
+	private EventBuilder<UpdateLevelData> levelUpEvent = new EventBuilder<UpdateLevelData>() {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(UpdateLevelData levelData) {
+			handlerMap.get(MissionType.LEVEL_MISSION).dealMission(levelData,
+					getRoleMissionByType(levelData.getRole(), MissionType.LEVEL_MISSION));
+		}
+	};
 
 	// 处理用户与npc的任务
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.TALK_TO_NPC)
-	public void handleUsertalkToNpc(EventDealData<NpcTalkData> data) {
-		NpcTalkData npcTalkData = data.getData();
-		handlerMap.get(MissionType.TLAK_NPC).dealMission(npcTalkData,
-				getRoleMissionByType(npcTalkData.getRole(), MissionType.TLAK_NPC));
-	}
+	private EventBuilder<NpcTalkData> npcTalkEvent = new EventBuilder<NpcTalkData>() {
 
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(NpcTalkData npcTalkData) {
+			handlerMap.get(MissionType.TLAK_NPC).dealMission(npcTalkData,
+					getRoleMissionByType(npcTalkData.getRole(), MissionType.TLAK_NPC));
+		}
+	};
 	/**
 	 * 处理用户获得物品任务
 	 * 
 	 * @param data
 	 */
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.GET_MATERIAL)
-	public void handleUserGetMaterial(EventDealData<GetMaterialData> data) {
-		GetMaterialData getMaterialData = data.getData();
-		handlerMap.get(MissionType.MATERIAL_MISSION).dealMission(getMaterialData,
-				getRoleMissionByType(getMaterialData.getRole(), MissionType.MATERIAL_MISSION));
-	}
+	private EventBuilder<GetMaterialData> getMaterialEvent = new EventBuilder<GetMaterialData>() {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(GetMaterialData getMaterialData) {
+			handlerMap.get(MissionType.MATERIAL_MISSION).dealMission(getMaterialData,
+					getRoleMissionByType(getMaterialData.getRole(), MissionType.TLAK_NPC));
+		}
+	};
 
 	// 处理用户穿装备的事件
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.WEAR_QUEIMENT)
-	public void handleUserWearEquiment(EventDealData<UserEquimentData> data) {
-		UserEquimentData equimentLevelData = data.getData();
-		handlerMap.get(MissionType.EQUIMENT_MISSION).dealMission(equimentLevelData,
-				getRoleMissionByType(equimentLevelData.getRole(), MissionType.EQUIMENT_MISSION));
-	}
+	private EventBuilder<UserEquimentData> useEquimentEvent = new EventBuilder<UserEquimentData>() {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(UserEquimentData equimentLevelData) {
+			handlerMap.get(MissionType.EQUIMENT_MISSION).dealMission(equimentLevelData,
+					getRoleMissionByType(equimentLevelData.getRole(), MissionType.EQUIMENT_MISSION));
+		}
+	};
 
 	// 处理用户加入公会的事件
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.JOIN_GUILD)
-	public void handleUserJoinGuild(EventDealData<GuildJoinData> data) {
-		GuildJoinData guildJoinData = data.getData();
-		handlerMap.get(MissionType.GUILD_MISSION).dealMission(guildJoinData,
-				getRoleMissionByType(guildJoinData.getRole(), MissionType.GUILD_MISSION));
-	}
+	private EventBuilder<GuildJoinData> joinGuildEvent = new EventBuilder<GuildJoinData>() {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(GuildJoinData guildJoinData) {
+			handlerMap.get(MissionType.GUILD_MISSION).dealMission(guildJoinData,
+					getRoleMissionByType(guildJoinData.getRole(), MissionType.GUILD_MISSION));
+		}
+	};
 
 	// 处理用户加入队伍的事件
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.JOIN_TEAM)
-	public void handleUserJoinTeam(EventDealData<JoinTeamData> data) {
-		JoinTeamData joinTeamData = data.getData();
-		handlerMap.get(MissionType.TEAM_MISSION).dealMission(joinTeamData,
-				getRoleMissionByType(joinTeamData.getRole(), MissionType.TEAM_MISSION));
-	}
+	private EventBuilder<JoinTeamData> joinTeamEvent = new EventBuilder<JoinTeamData>() {
 
-	/**
-	 * 完成任务
-	 * 
-	 * @param data
-	 */
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.MISSION_COMPETE)
-	public void handleUserMissionCompete(EventDealData<MissionCompeteData> data) {
-		MissionCompeteData competeData = data.getData();
-		handlerMap.get(MissionType.MISSION_CONPETE).dealMission(competeData,
-				getRoleMissionByType(competeData.getRole(), MissionType.MISSION_CONPETE));
-	}
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(JoinTeamData joinTeamData) {
+			handlerMap.get(MissionType.TEAM_MISSION).dealMission(joinTeamData,
+					getRoleMissionByType(joinTeamData.getRole(), MissionType.TEAM_MISSION));
+		}
+	};
 
+	// 处理用户任务完成
+	private EventBuilder<MissionCompeteData> missionCompeteEvent = new EventBuilder<MissionCompeteData>() {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(MissionCompeteData competeData) {
+			handlerMap.get(MissionType.MISSION_CONPETE).dealMission(competeData,
+					getRoleMissionByType(competeData.getRole(), MissionType.MISSION_CONPETE));
+		}
+	};
+	
 	/**
 	 * 打怪
 	 * 
 	 * @param data
 	 */
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.MONSTER_DEAD)
-	public void handleMonsterDead(EventDealData<MonsterDeadData> data) {
-		MonsterDeadData monsterDeadData = data.getData();
-		handlerMap.get(MissionType.KILL_MONSTER).dealMission(monsterDeadData,
-				getRoleMissionByType(monsterDeadData.getKillRole(), MissionType.KILL_MONSTER));
-	}
+	private EventBuilder<MonsterDeadData> killMonsterEvent = new EventBuilder<MonsterDeadData>() {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(MonsterDeadData monsterDeadData) {
+			handlerMap.get(MissionType.KILL_MONSTER).dealMission(monsterDeadData,
+					getRoleMissionByType(monsterDeadData.getKillRole(), MissionType.KILL_MONSTER));
+		}
+	};
 
 	/**
 	 * 加为好友
 	 * 
 	 * @param data
 	 */
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.BECOME_FRIEND)
-	public void handleAddFriend(EventDealData<FriendData> data) {
-		FriendData friendData = data.getData();
-		handlerMap.get(MissionType.ADD_FIREND).dealMission(friendData,
-				getRoleMissionByType(friendData.getRole(), MissionType.ADD_FIREND));
-	}
+	private EventBuilder<FriendData> addFriendEvent = new EventBuilder<FriendData>() {
 
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(FriendData friendData) {
+			handlerMap.get(MissionType.ADD_FIREND).dealMission(friendData,
+					getRoleMissionByType(friendData.getRole(), MissionType.ADD_FIREND));
+		}
+	};
+	
 	/**
 	 * 通关副本
 	 * 
 	 * @param data
 	 */
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.PASS_COPY)
-	public void handlePassCopy(EventDealData<PassCopyData> data) {
-		PassCopyData passCopyData = data.getData();
-		handlerMap.get(MissionType.COPY).dealMission(passCopyData,
-				getRoleMissionByType(passCopyData.getRole(), MissionType.COPY));
-	}
+	private EventBuilder<PassCopyData> passCopyEvent = new EventBuilder<PassCopyData>() {
 
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(PassCopyData passCopyData) {
+			handlerMap.get(MissionType.COPY).dealMission(passCopyData,
+					getRoleMissionByType(passCopyData.getRole(), MissionType.COPY));
+		}
+	};
+	
 	/**
 	 * 获得财富
 	 * 
 	 * @param data
 	 */
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.TREASURE)
-	public void handleGainTreasure(EventDealData<GainTreasureData> data) {
-		GainTreasureData passCopyData = data.getData();
-		handlerMap.get(MissionType.TREASURE).dealMission(passCopyData,
-				getRoleMissionByType(passCopyData.getRole(), MissionType.TREASURE));
-	}
+	private EventBuilder<GainTreasureData> getTreasureEvent = new EventBuilder<GainTreasureData>() {
 
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(GainTreasureData gainTreasureData) {
+			handlerMap.get(MissionType.TREASURE).dealMission(gainTreasureData,
+					getRoleMissionByType(gainTreasureData.getRole(), MissionType.TREASURE));
+		}
+	};
+	
 	/**
 	 * 处理pk的任务
 	 * 
 	 * @param data
 	 */
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.PK)
-	public void handleUserPK(EventDealData<PKData> data) {
-		PKData pkData = data.getData();
-		Role winRole = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(pkData.getWinRoleId()),
-				pkData.getWinRoleId());
-		handlerMap.get(MissionType.PK).dealMission(pkData, getRoleMissionByType(winRole, MissionType.PK));
-	}
+	private EventBuilder<PKData> pkEvent = new EventBuilder<PKData>() {
 
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(PKData pkData) {
+			Role winRole = RoleService.INSTANCE.getUserRole(RoleService.INSTANCE.getUserId(pkData.getWinRoleId()),
+					pkData.getWinRoleId());
+			handlerMap.get(MissionType.PK).dealMission(pkData, getRoleMissionByType(winRole, MissionType.PK));
+		}
+	};
+	
 	/**
 	 * 处理交易的任务
 	 * 
 	 * @param data
 	 */
-	@SuppressWarnings("unchecked")
-	@Event(eventType = EventType.TRANSACTION)
-	public void handleUserTransaction(EventDealData<TransactionData> data) {
-		TransactionData transactionData = data.getData();
+	private EventBuilder<TransactionData> transactionEvent = new EventBuilder<TransactionData>() {
 
-		handlerMap.get(MissionType.TRANSCATION).dealMission(transactionData,
-				getRoleMissionByType(transactionData.getRole(), MissionType.TRANSCATION));
-	}
+		@SuppressWarnings("unchecked")
+		@Override
+		public void handler(TransactionData transactionData) {
+			handlerMap.get(MissionType.TRANSCATION).dealMission(transactionData,
+					getRoleMissionByType(transactionData.getRole(), MissionType.TRANSCATION));
+		}
+	};
+	
 
 	/**
 	 * 监听角色上线事件
 	 * 
 	 * @param data
 	 */
-	@Event(eventType = EventType.ROLE_CHANGE)
-	public void handleRoleChange(EventDealData<RoleChangeData> data) {
-		RoleChangeData roleChangeData = data.getData();
+	private EventBuilder<RoleChangeData> changeRoleEvent = new EventBuilder<RoleChangeData>() {
 
-		Role newRole = roleChangeData.getNewRole();
-		User user = UserService.INSTANCE.getUser(newRole.getId());
-		// 换角色后，应该提醒角色还有什么任务可以接
-		ReplyDomain replyDomain = showMissionCanAccept(user);
-		MissionExtension.notifyRoleMissionInfo(user, replyDomain);
-
-	}
+		@Override
+		public void handler(RoleChangeData roleChangeData) {
+			Role newRole = roleChangeData.getNewRole();
+			User user = UserService.INSTANCE.getUser(newRole.getId());
+			// 换角色后，应该提醒角色还有什么任务可以接
+			ReplyDomain replyDomain = showMissionCanAccept(user);
+			MissionExtension.notifyRoleMissionInfo(user, replyDomain);
+		}
+	};
 
 	/**
 	 * 根据任务类型获取玩家的已接受任务列表

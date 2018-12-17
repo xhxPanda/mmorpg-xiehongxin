@@ -2,8 +2,7 @@ package com.hh.mmorpg.domain;
 
 import java.util.Map;
 
-import com.hh.mmorpg.event.EventDealData;
-import com.hh.mmorpg.event.EventHandlerManager;
+import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -51,7 +50,7 @@ public class Monster extends LivingThing {
 
 		// 抛出最后一击的人
 		MonsterDeadData data = new MonsterDeadData(this, (Role) getAttackObject(), getSceneId());
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.MONSTER_DEAD, new EventDealData<MonsterDeadData>(data));
+		EventHandler.INSTANCE.invodeMethod(EventType.MONSTER_DEAD, data);
 
 		setAttackObject(null);
 	}
