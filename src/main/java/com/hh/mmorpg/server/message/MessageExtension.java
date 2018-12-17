@@ -13,7 +13,7 @@ import com.hh.mmorpg.server.ExtensionSender;
   *  消息处理
  */
 
-@Extension(id = 6)
+@Extension
 public class MessageExtension {
 	private MessageService service = MessageService.INSTANCE;
 
@@ -25,7 +25,7 @@ public class MessageExtension {
 
 	@CmdService(cmd = SEND_WORLD_MESSAGE)
 	public void sendWorldMessage(User user, CmdDomain cmDdomain) {
-		String content = cmDdomain.getStringParam(2);
+		String content = cmDdomain.getStringParam(1);
 
 		ReplyDomain replyDomain = service.sendWorldMessage(content);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -33,8 +33,8 @@ public class MessageExtension {
 
 	@CmdService(cmd = SEND_TO_USER)
 	public void sendToUser(User user, CmdDomain cmdDomain) {
-		String content = cmdDomain.getStringParam(2);
-		int userId = cmdDomain.getIntParam(3);
+		String content = cmdDomain.getStringParam(1);
+		int userId = cmdDomain.getIntParam(2);
 		
 		ReplyDomain replyDomain = service.sendMessageToUser(user, userId, content);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

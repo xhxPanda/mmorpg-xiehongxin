@@ -8,7 +8,7 @@ import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 11)
+@Extension
 public class TransactionExtension {
 
 	private TransactionService service = TransactionService.INSTANCE;
@@ -33,7 +33,7 @@ public class TransactionExtension {
 
 	@CmdService(cmd = REQUEST_DELL)
 	public void requestTransaction(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
+		int roleId = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = service.requestTransaction(user, roleId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -41,8 +41,8 @@ public class TransactionExtension {
 
 	@CmdService(cmd = DEAL_DELL_REQUEST)
 	public void dealTransactionRequest(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
-		boolean isAccept = cmdDomain.getBooleanParam(3);
+		int roleId = cmdDomain.getIntParam(1);
+		boolean isAccept = cmdDomain.getBooleanParam(2);
 
 		ReplyDomain replyDomain = service.dealDellRequest(user, roleId, isAccept);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -50,8 +50,8 @@ public class TransactionExtension {
 
 	@CmdService(cmd = SET_MATERIAL)
 	public void setMaterial(User user, CmdDomain cmdDomain) {
-		int index = cmdDomain.getIntParam(2);
-		int num = cmdDomain.getIntParam(3);
+		int index = cmdDomain.getIntParam(1);
+		int num = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.setMaterial(user, index, num);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -59,7 +59,7 @@ public class TransactionExtension {
 
 	@CmdService(cmd = SET_TREASURE)
 	public void setTreasure(User user, CmdDomain cmdDomain) {
-		int id = cmdDomain.getIntParam(2);
+		int id = cmdDomain.getIntParam(1);
 		int num = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.setTreasure(user, id, num);

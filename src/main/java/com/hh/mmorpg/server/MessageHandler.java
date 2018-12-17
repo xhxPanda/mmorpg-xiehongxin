@@ -18,7 +18,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<TextWebSocketFra
 		Channel channel = ctx.channel();
 		String cmdData = msg.text();
 
-		CmdManager.INSTANCE.dealCMD(new CmdDomain(channel, cmdData));
+		CmdManager.INSTANCE.dealCMD(channel, new CmdDomain(channel, cmdData));
 	}
 
 	@Override

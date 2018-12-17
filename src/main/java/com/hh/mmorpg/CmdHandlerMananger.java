@@ -72,7 +72,7 @@ public class CmdHandlerMananger {
 				}
 
 				try {
-					handler = new ServiceHandler(extension.id(), c.newInstance(), method);
+					handler = new ServiceHandler(c.newInstance(), method);
 				} catch (InstantiationException e) {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {

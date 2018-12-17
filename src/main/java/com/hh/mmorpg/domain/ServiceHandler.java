@@ -4,18 +4,12 @@ import java.lang.reflect.Method;
 
 public class ServiceHandler {
 
-	private int key;
 	private Object classInstance;
 	private Method method;
 
-	public ServiceHandler(int key, Object classInstance, Method method) {
-		this.key = key;
+	public ServiceHandler(Object classInstance, Method method) {
 		this.classInstance = classInstance;
 		this.method = method;
-	}
-
-	public int getKey() {
-		return key;
 	}
 
 	public Object getClassInstance() {

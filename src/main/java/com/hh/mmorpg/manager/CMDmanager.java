@@ -10,6 +10,8 @@ import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 import com.hh.mmorpg.service.user.UserService;
 
+import io.netty.channel.Channel;
+
 /**
  * 命令处理类
  * 
@@ -31,7 +33,7 @@ public class CmdManager {
 	 * 
 	 * @param cmdDomain
 	 */
-	public void dealCMD(CmdDomain cmdDomain) {
+	public void dealCMD(Channel channel, CmdDomain cmdDomain) {
 
 		executorService.execute(new Runnable() {
 			@Override
@@ -42,7 +44,7 @@ public class CmdManager {
 				} else {
 					Integer userId = cmdDomain.getIntParam(1);
 					if (userId != null) {
-						User user = UserService.INSTANCE.getUser(userId);
+						User user = UserService.INSTANCE.getUserByChannelId(channel.id().asShortText());
 						if (user == null) {
 							ExtensionSender.INSTANCE.sendReply(cmdDomain.getChannel(), ReplyDomain.FAILE);
 						}

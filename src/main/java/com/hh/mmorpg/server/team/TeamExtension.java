@@ -8,7 +8,7 @@ import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 10)
+@Extension
 public class TeamExtension {
 
 	private TeamService service = TeamService.INSTANCE;
@@ -36,7 +36,7 @@ public class TeamExtension {
 
 	@CmdService(cmd = INVITE_ROLE_ORGANIZE_TEAM)
 	public void inviteRoleOrganizeTeam(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
+		int roleId = cmdDomain.getIntParam(1);
 		ReplyDomain replyDomain = service.inviteRoleOrganizeTeam(user, roleId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -45,8 +45,8 @@ public class TeamExtension {
 	@CmdService(cmd = DEAL_TEAM_APPLY)
 	public void dealTeamApply(User user, CmdDomain cmdDomain) {
 
-		int roleId = cmdDomain.getIntParam(2);
-		boolean isAgree = cmdDomain.getBooleanParam(3);
+		int roleId = cmdDomain.getIntParam(1);
+		boolean isAgree = cmdDomain.getBooleanParam(2);
 
 		ReplyDomain replyDomain = service.dealTeamApply(user, roleId, isAgree);
 
@@ -61,7 +61,7 @@ public class TeamExtension {
 
 	@CmdService(cmd = TRANSFER_CHAPION)
 	public void transferCaptain(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
+		int roleId = cmdDomain.getIntParam(1);
 		ReplyDomain replyDomain = service.transferCaptain(user, roleId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -69,7 +69,7 @@ public class TeamExtension {
 
 	@CmdService(cmd = TICK_TEAM_MATE)
 	public void tickTeamMate(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
+		int roleId = cmdDomain.getIntParam(1);
 		ReplyDomain replyDomain = service.tickTeamMate(user, roleId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

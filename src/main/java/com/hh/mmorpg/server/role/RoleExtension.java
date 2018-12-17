@@ -8,7 +8,7 @@ import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 3)
+@Extension
 public class RoleExtension {
 
 	private RoleService service = RoleService.INSTANCE;
@@ -31,8 +31,8 @@ public class RoleExtension {
 
 	@CmdService(cmd = CREATE_ROLE)
 	public void creatRole(User user, CmdDomain cmdDomain) {
-		int occupationId = cmdDomain.getIntParam(2);
-		String name = cmdDomain.getStringParam(3);
+		int occupationId = cmdDomain.getIntParam(1);
+		String name = cmdDomain.getStringParam(2);
 
 		ReplyDomain replyDomain = service.creatRole(user, occupationId, name);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -40,7 +40,7 @@ public class RoleExtension {
 
 	@CmdService(cmd = USE_ROLE)
 	public void useRole(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
+		int roleId = cmdDomain.getIntParam(1);
 		ReplyDomain reply = service.userUseRole(user, roleId);
 		ExtensionSender.INSTANCE.sendReply(user, reply);
 	}
@@ -53,7 +53,7 @@ public class RoleExtension {
 
 	@CmdService(cmd = TRANSFER_OCCUPATION)
 	public void transferOccupation(User user, CmdDomain cmdDomain) {
-		int occupationId = cmdDomain.getIntParam(2);
+		int occupationId = cmdDomain.getIntParam(1);
 
 		ReplyDomain reply = service.transferOccupation(user, occupationId);
 		ExtensionSender.INSTANCE.sendReply(user, reply);

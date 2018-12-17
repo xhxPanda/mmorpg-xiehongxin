@@ -7,7 +7,7 @@ import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 7)
+@Extension
 public class UserEquimentExtension {
 	
 	private UserEquimentService service = UserEquimentService.INSTANCE;
@@ -23,7 +23,7 @@ public class UserEquimentExtension {
 	
 	@CmdService(cmd = TAKE_OFF_EQUIMENT)
 	public void takeOffEquiment(User user, CmdDomain cmdDomain) {
-		int equimentType = cmdDomain.getIntParam(2);
+		int equimentType = cmdDomain.getIntParam(1);
 		
 		ReplyDomain replyDomain = service.takeOffEquiment(user, equimentType);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

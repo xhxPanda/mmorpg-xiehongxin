@@ -12,7 +12,7 @@ import com.hh.mmorpg.server.ExtensionSender;
  * @author xhx 好友系统
  */
 
-@Extension(id = 9)
+@Extension
 public class FriendExtension {
 
 	private FriendService service = FriendService.INSTANCE;
@@ -40,16 +40,16 @@ public class FriendExtension {
 
 	@CmdService(cmd = APPLY_ADD_FRIEND)
 	public void applyAddFriend(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
-		String content = cmdDomain.getStringParam(3);
+		int roleId = cmdDomain.getIntParam(1);
+		String content = cmdDomain.getStringParam(1);
 		ReplyDomain replyDomain = service.applyAddFriend(user, roleId, content);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 
 	@CmdService(cmd = DEAL_FRIEND_APPLY)
 	public void dealFriendApply(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
-		boolean agree = cmdDomain.getBooleanParam(3);
+		int roleId = cmdDomain.getIntParam(1);
+		boolean agree = cmdDomain.getBooleanParam(1);
 
 		ReplyDomain replyDomain = service.dealFriendApply(user, roleId, agree);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -57,7 +57,7 @@ public class FriendExtension {
 
 	@CmdService(cmd = DELETE_FRIEND)
 	public void deleteFriend(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
+		int roleId = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = service.deleteFriend(user, roleId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

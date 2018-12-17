@@ -8,7 +8,7 @@ import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 12)
+@Extension
 public class MissionExtension {
 
 	private MissionService service = MissionService.INSTANCE;
@@ -39,7 +39,7 @@ public class MissionExtension {
 
 	@CmdService(cmd = ACCEPT_MISSION)
 	public void acceptMission(User user, CmdDomain cmdDomain) {
-		int missionId = cmdDomain.getIntParam(2);
+		int missionId = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = service.accpetMission(user, missionId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -47,7 +47,7 @@ public class MissionExtension {
 
 	@CmdService(cmd = MISSION_COMPETE)
 	public void missionCompete(User user, CmdDomain cmdDomain) {
-		int missionId = cmdDomain.getIntParam(2);
+		int missionId = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = service.missionCompete(user, missionId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -55,7 +55,7 @@ public class MissionExtension {
 
 	@CmdService(cmd = GIVE_UP_MISSION)
 	public void giveUpMission(User user, CmdDomain cmdDomain) {
-		int missionId = cmdDomain.getIntParam(2);
+		int missionId = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = service.giveUpMission(user, missionId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

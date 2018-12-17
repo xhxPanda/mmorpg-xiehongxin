@@ -27,7 +27,9 @@ public class UserService {
 
 	public static final UserService INSTANCE = new UserService();
 
+	// userId与user的map
 	private ConcurrentHashMap<Integer, User> userChannelMap;
+	// channel与userId的map
 	private ConcurrentHashMap<String, Integer> channelUserMap;
 
 	private UserService() {
@@ -37,6 +39,11 @@ public class UserService {
 		EventHandlerManager.INSATNCE.register(this);
 	}
 
+	/**
+	 * 登录与注册的分发器
+	 * 
+	 * @param cmdDomain
+	 */
 	public void doLoginOrRegister(CmdDomain cmdDomain) {
 		if (cmdDomain.getStringParam(0).equals(UserExtension.LOGIN)) {
 			doLogin(cmdDomain);
@@ -45,6 +52,11 @@ public class UserService {
 		}
 	}
 
+	/**
+	 * 真正处理注册的类
+	 * 
+	 * @param cmdDomain
+	 */
 	private void doRegister(CmdDomain cmdDomain) {
 		int userId = IncrementManager.INSTANCE.increase("userId");
 		String name = cmdDomain.getStringParam(1);
@@ -58,6 +70,11 @@ public class UserService {
 		UserExtension.notify(cmdDomain.getChannel(), replyDomain);
 	}
 
+	/**
+	 * 处理登录
+	 * 
+	 * @param cmdDomain
+	 */
 	private void doLogin(CmdDomain cmdDomain) {
 
 		int userId = cmdDomain.getIntParam(1);
@@ -70,13 +87,19 @@ public class UserService {
 			doLogin(user, cmdDomain.getChannel());
 
 			ReplyDomain replyDomain = new ReplyDomain("登录" + ResultCode.SUCCESS);
-			
+
 			ReplyDomain allRoleDomain = RoleService.INSTANCE.getAllRole(user);
 			UserExtension.notify(cmdDomain.getChannel(), replyDomain);
 			UserExtension.notify(cmdDomain.getChannel(), allRoleDomain);
 		}
 	}
 
+	/**
+	 * 因为登录跟注册都需要直接登录，所以就抽象一个方法出来
+	 * 
+	 * @param user
+	 * @param channel
+	 */
 	private void doLogin(User user, Channel channel) {
 
 		int userId = user.getUserId();
@@ -94,10 +117,36 @@ public class UserService {
 		userChannelMap.put(user.getUserId(), user);
 	}
 
+	/**
+	 * 获取user
+	 * 
+	 * @param userId
+	 * @return
+	 */
 	public User getUser(Integer userId) {
 		return userChannelMap.get(userId);
 	}
 
+	/**
+	 * 使用channle id获取User
+	 * @param channelId
+	 * @return
+	 */
+	public User getUserByChannelId(String channelId) {
+		Integer userId = channelUserMap.get(channelId);
+
+		if (userId == null) {
+			return null;
+		}
+
+		return userChannelMap.get(userId);
+	}
+
+	/**
+	 * 用户掉线的处理类
+	 * 
+	 * @param channel
+	 */
 	public void userLost(Channel channel) {
 		int userId = channelUserMap.remove(channel.id().asShortText());
 		User user = userChannelMap.remove(userId);

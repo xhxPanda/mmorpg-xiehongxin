@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.hh.mmorpg.domain.OccupationEmun;
 import com.hh.mmorpg.domain.Role;
@@ -40,11 +42,16 @@ public class TeamService {
 
 	private AtomicInteger teamId;
 
+	// 锁
+	private Lock lock;
+
 	private TeamService() {
 		this.teamsMap = new ConcurrentHashMap<>();
 		this.applyCache = new ConcurrentHashMap<>();
 
 		this.teamId = new AtomicInteger(0);
+
+		this.lock = new ReentrantLock();
 	}
 
 	public ReplyDomain getTeamInfo(User user) {
@@ -153,50 +160,57 @@ public class TeamService {
 			return ReplyDomain.OTHER_NOT_ONLINE;
 		}
 
-		User peopleUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(roleId));
-		Role peopleRole = RoleService.INSTANCE.getUserUsingRole(peopleUser.getUserId());
+		lock.lock();
+		try {
+			User peopleUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(roleId));
+			Role peopleRole = RoleService.INSTANCE.getUserUsingRole(peopleUser.getUserId());
 
-		Map<Integer, TeamMate> teamMate = null;
+			Map<Integer, TeamMate> teamMate = null;
 
-		// 新建队伍
-		if (peopleRole.getTeamId() == 0) {
-			int teamUniqueId = teamId.incrementAndGet();
+			// 新建队伍
+			if (peopleRole.getTeamId() == 0) {
+				int teamUniqueId = teamId.incrementAndGet();
 
-			teamMate = new HashMap<>();
-			teamsMap.put(teamUniqueId, teamMate);
+				teamMate = new HashMap<>();
+				teamsMap.put(teamUniqueId, teamMate);
 
-			// 邀请人成为队长
-			teamMate.put(peopleRole.getId(), new TeamMate(peopleRole.getId(), peopleRole.getUserId(),
-					peopleRole.getName(), OccupationEmun.getOccupationEmun(peopleRole.getOccupationId()), true, true));
+				// 邀请人成为队长
+				teamMate.put(peopleRole.getId(),
+						new TeamMate(peopleRole.getId(), peopleRole.getUserId(), peopleRole.getName(),
+								OccupationEmun.getOccupationEmun(peopleRole.getOccupationId()), true, true));
 
-			// 被邀请人成为队员
-			teamMate.put(role.getId(), new TeamMate(role.getId(), role.getUserId(), role.getName(),
-					OccupationEmun.getOccupationEmun(role.getOccupationId()), true, false));
+				// 被邀请人成为队员
+				teamMate.put(role.getId(), new TeamMate(role.getId(), role.getUserId(), role.getName(),
+						OccupationEmun.getOccupationEmun(role.getOccupationId()), true, false));
 
-			peopleRole.setTeamId(teamUniqueId);
+				peopleRole.setTeamId(teamUniqueId);
 
-		} else {
-			teamMate = teamsMap.get(peopleRole.getTeamId());
+			} else {
+				teamMate = teamsMap.get(peopleRole.getTeamId());
 
-			// 判断队伍是否满人了
-			if (teamMate.size() >= MAX_TEAM_CAPACITY) {
-				return ReplyDomain.TEAM_FULL;
+				// 判断队伍是否满人了
+				if (teamMate.size() >= MAX_TEAM_CAPACITY) {
+					return ReplyDomain.TEAM_FULL;
+				}
+
+				// 只能成为队员
+				teamMate.put(role.getId(), new TeamMate(role.getId(), role.getUserId(), role.getName(),
+						OccupationEmun.getOccupationEmun(role.getOccupationId()), true, false));
 			}
 
-			// 只能成为队员
-			teamMate.put(role.getId(), new TeamMate(role.getId(), role.getUserId(), role.getName(),
-					OccupationEmun.getOccupationEmun(role.getOccupationId()), true, false));
+			role.setTeamId(peopleRole.getTeamId());
+
+			JoinTeamData joinTeamData = new JoinTeamData(role, new ArrayList<>(teamMate.values()));
+			EventHandlerManager.INSATNCE.methodInvoke(EventType.JOIN_TEAM,
+					new EventDealData<JoinTeamData>(joinTeamData));
+
+			// 提醒双方组队成功
+			TeamExtension.notifyRole(peopleUser, getTeamInfo(peopleUser));
+			TeamExtension.notifyRole(user, getTeamInfo(user));
+
+		} finally {
+			lock.unlock();
 		}
-
-		role.setTeamId(peopleRole.getTeamId());
-
-		JoinTeamData joinTeamData = new JoinTeamData(role, new ArrayList<>(teamMate.values()));
-		EventHandlerManager.INSATNCE.methodInvoke(EventType.JOIN_TEAM, new EventDealData<JoinTeamData>(joinTeamData));
-
-		// 提醒双方组队成功
-		TeamExtension.notifyRole(peopleUser, getTeamInfo(peopleUser));
-		TeamExtension.notifyRole(user, getTeamInfo(user));
-
 		return ReplyDomain.SUCCESS;
 	}
 
@@ -221,19 +235,26 @@ public class TeamService {
 			return ReplyDomain.FAILE;
 		}
 
-		// 重置队伍状态
-		role.setTeamId(0);
+		lock.lock();
 
-		team.remove(role.getUniqueId());
-		// 如果队伍中已经没人了，就解散队伍
-		if (team.size() == 0) {
-			teamsMap.remove(role.getTeamId());
-		} else {
-			ReplyDomain replyDomain = new ReplyDomain();
-			replyDomain.setStringDomain("cmd", TeamExtension.NOTIFY_TEAM_MATE_QUIT);
-			replyDomain.setStringDomain("名称", role.getName());
-			notifyAllTeamMate(team, replyDomain);
+		try {
+			// 重置队伍状态
+			role.setTeamId(0);
 
+			team.remove(role.getUniqueId());
+			// 如果队伍中已经没人了，就解散队伍
+			if (team.size() == 0) {
+				teamsMap.remove(role.getTeamId());
+			} else {
+				ReplyDomain replyDomain = new ReplyDomain();
+				replyDomain.setStringDomain("cmd", TeamExtension.NOTIFY_TEAM_MATE_QUIT);
+				replyDomain.setStringDomain("名称", role.getName());
+				notifyAllTeamMate(team, replyDomain);
+
+			}
+
+		} finally {
+			lock.unlock();
 		}
 
 		return ReplyDomain.SUCCESS;
@@ -295,22 +316,28 @@ public class TeamService {
 			return ReplyDomain.FAILE;
 		}
 
-		team.remove(roleId);
+		lock.lock();
+		try {
+			team.remove(roleId);
 
-		Role peopleRole = RoleService.INSTANCE.getUserRole(team.get(role.getId()).getUserId(), roleId);
-		peopleRole.setTeamId(0);
-		if (!RoleService.INSTANCE.isOnline(roleId)) {
-			// 如果不在线，修改数据库中他的队伍信息
-			RoleDao.INSTANCE.updateRoleTeam(roleId, 0);
-		} else {
-			User peopleUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(roleId));
-			ReplyDomain replyDomain = new ReplyDomain();
-			replyDomain.setStringDomain("cmd", TeamExtension.NOTIFY_BE_TICKED);
-			replyDomain.setStringDomain("名称", team.get(role.getId()).getName());
-			TeamExtension.notifyRole(peopleUser, replyDomain);
+			Role peopleRole = RoleService.INSTANCE.getUserRole(team.get(role.getId()).getUserId(), roleId);
+			peopleRole.setTeamId(0);
+			if (!RoleService.INSTANCE.isOnline(roleId)) {
+				// 如果不在线，修改数据库中他的队伍信息
+				RoleDao.INSTANCE.updateRoleTeam(roleId, 0);
+			} else {
+				User peopleUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(roleId));
+				ReplyDomain replyDomain = new ReplyDomain();
+				replyDomain.setStringDomain("cmd", TeamExtension.NOTIFY_BE_TICKED);
+				replyDomain.setStringDomain("名称", team.get(role.getId()).getName());
+				TeamExtension.notifyRole(peopleUser, replyDomain);
+			}
+
+			team.remove(roleId);
+
+		} finally {
+			lock.unlock();
 		}
-
-		team.remove(roleId);
 
 		return ReplyDomain.SUCCESS;
 	}

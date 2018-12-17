@@ -3,6 +3,12 @@ package com.hh.mmorpg.event;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * 事件机制的处理
+ * 
+ * @author xhx
+ *
+ */
 public class EventHandler {
 
 	private Object classInstance;

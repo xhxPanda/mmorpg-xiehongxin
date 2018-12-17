@@ -132,12 +132,12 @@ public class SkillService {
 
 		if (needAttackLivingThings.size() != 0) {
 			for (LivingThing beAttackedObject : needAttackLivingThings) {
-				if(attackedObject instanceof SummonMonster) {
+				if (attackedObject instanceof SummonMonster) {
 					beAttackedObject.setAttackObject(((SummonMonster) attackedObject).getBelonger());
-				}else {
+				} else {
 					beAttackedObject.setAttackObject(attackedObject);
 				}
-				
+
 				for (Entry<Integer, Integer> entry : domain.getEffectAttribute().entrySet()) {
 					// 具有伤害性的技能，需要计算防御值等
 					if (entry.getKey() == AttributeEnum.HP.getId() && entry.getValue() < 0) {
@@ -177,8 +177,8 @@ public class SkillService {
 
 				SummonDomain summonDomain = summonDomainmap.get(summonId);
 				scene.addSummon(attackedObject.getId(),
-						new SummonMonster(attackedObject, 1, attackedObject.getSceneId(), summonDomain,
-								inistTime, livingThings, attackedObject.getAttackObject()));
+						new SummonMonster(attackedObject, 1, attackedObject.getSceneId(), summonDomain, inistTime,
+								livingThings, attackedObject.getAttackObject()));
 			}
 		}
 
@@ -251,6 +251,22 @@ public class SkillService {
 		}
 		ReplyDomain replyDomain = new ReplyDomain();
 		replyDomain.setListDomain("可学习的技能", skillDomains);
+		return replyDomain;
+	}
+
+	public ReplyDomain getSkill(User user) {
+		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+
+		Map<Integer, RoleSkill> skillMap = role.getSkillMap();
+
+		List<SkillDomain> skillDomains = new ArrayList<>();
+		for (RoleSkill roleSkill : skillMap.values()) {
+			skillDomains.add(skillDomainMap.get(roleSkill.getSkillId()));
+		}
+
+		ReplyDomain replyDomain = new ReplyDomain();
+		replyDomain.setListDomain("已学技能", skillDomains);
+
 		return replyDomain;
 	}
 }

@@ -8,7 +8,7 @@ import com.hh.mmorpg.result.NotifiesWarehouse;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 2)
+@Extension
 public class SceneExtension {
 
 	private static SceneService service = SceneService.INSTANCE;
@@ -48,7 +48,7 @@ public class SceneExtension {
 
 	@CmdService(cmd = JOIN_SCENE)
 	public void joinScene(User user, CmdDomain cmdDomain) {
-		int sceneId = cmdDomain.getIntParam(2);
+		int sceneId = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = service.userJoinScene(user, sceneId);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -69,8 +69,8 @@ public class SceneExtension {
 
 	@CmdService(cmd = ATTACK_MONSTER)
 	public void attackMonster(User user, CmdDomain cmdDomain) {
-		int skillId = cmdDomain.getIntParam(2);
-		int monsterId = cmdDomain.getIntParam(3);
+		int skillId = cmdDomain.getIntParam(1);
+		int monsterId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.attackMonster(user, skillId, monsterId);
 
@@ -79,8 +79,8 @@ public class SceneExtension {
 
 	@CmdService(cmd = ATTACK_ROLE)
 	public void attackRole(User user, CmdDomain cmdDomain) {
-		int skillId = cmdDomain.getIntParam(2);
-		int otherUserId = cmdDomain.getIntParam(3);
+		int skillId = cmdDomain.getIntParam(1);
+		int otherUserId = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = service.attackOtherRole(user, skillId, otherUserId);
 
@@ -96,7 +96,7 @@ public class SceneExtension {
 
 	@CmdService(cmd = GET_ROLE_KILL_MONSTER_BONUS)
 	public void getRoleKillMonster(User user, CmdDomain cmdDomain) {
-		int bonusId = cmdDomain.getIntParam(2);
+		int bonusId = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = service.getRoleKillMonsterBonus(user, bonusId);
 
@@ -105,7 +105,7 @@ public class SceneExtension {
 
 	@CmdService(cmd = TALK_TO_NPC)
 	public void takeToNpc(User user, CmdDomain cmdDomain) {
-		int npcId = cmdDomain.getIntParam(2);
+		int npcId = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = service.taklToNpc(user, npcId);
 
@@ -114,7 +114,7 @@ public class SceneExtension {
 
 	@CmdService(cmd = JOIN_COPY_SCENE)
 	public void joinCopyScene(User user, CmdDomain cmdDomain) {
-		int sceneTypeId = cmdDomain.getIntParam(2);
+		int sceneTypeId = cmdDomain.getIntParam(1);
 		ReplyDomain replyDomain = service.joinCopyScene(user, sceneTypeId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);

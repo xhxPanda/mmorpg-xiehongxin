@@ -7,7 +7,7 @@ import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
 
-@Extension(id = 5)
+@Extension
 public class MaterialExtension {
 
 	private static final String SHOW_GOODS = "showGoods";
@@ -29,8 +29,8 @@ public class MaterialExtension {
 
 	@CmdService(cmd = BUY_GOODS)
 	public void buyGoods(User user, CmdDomain cmDdomain) {
-		int goodsId = cmDdomain.getIntParam(2);
-		String numStr = cmDdomain.getStringParam(3);
+		int goodsId = cmDdomain.getIntParam(1);
+		String numStr = cmDdomain.getStringParam(2);
 
 		// 检验参数
 		if (numStr.length() >= 9) {
@@ -46,7 +46,7 @@ public class MaterialExtension {
 
 	@CmdService(cmd = SELL_GOODS)
 	public void sellGoods(User user, CmdDomain cmDdomain) {
-		String materialStr = cmDdomain.getStringParam(2);
+		String materialStr = cmDdomain.getStringParam(1);
 
 		ReplyDomain replyDomain = MaterialService.INSTANCE.sellGoods(user, materialStr);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -61,7 +61,7 @@ public class MaterialExtension {
 	@CmdService(cmd = USE_MATERIAL)
 	public void useMaterial(User user, CmdDomain cmdDomain) {
 
-		int index = cmdDomain.getIntParam(2);
+		int index = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = MaterialService.INSTANCE.useMaterial(user, index);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -75,8 +75,8 @@ public class MaterialExtension {
 
 	@CmdService(cmd = SORT_BAG)
 	public void sortBag(User user, CmdDomain cmdDomain) {
-		int fromIndex = cmdDomain.getIntParam(2);
-		int toIndex = cmdDomain.getIntParam(3);
+		int fromIndex = cmdDomain.getIntParam(1);
+		int toIndex = cmdDomain.getIntParam(2);
 		ReplyDomain replyDomain = MaterialService.INSTANCE.sortBag(user, fromIndex, toIndex);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}

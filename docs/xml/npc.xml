@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nps>
-	<npc id="1" name="新手指导员" talk="你可以在这个世界随意探索"></npc>
+	<npc id="1" name="新手指导员" talk="修行者你好啊，我已经在这里等了你很多年了！"></npc>
 	<npc id="2" name="守城老人" talk="这座城啊，已经好久没有像现在这样热闹了"></npc>
 	<npc id="3" name="小鱼儿" talk="你要跟我玩吗"></npc>
 	<npc id="4" name="古尔丹" talk="为了部落！！"></npc>
-	<npc id="5" name="血煞女王" talk="你还不下跪？！"></npc>
+	<npc id="5" name="血煞女王" talk="见到女王，你还不下跪？！"></npc>
 	<npc id="6" name="遗忘之城大将"
-		talk="100年前这座城就已经被遗忘者这些怪物占领了，我只是他们的奴仆，你还是走吧"></npc>
+		talk="100年前这座城就已经被遗忘者这些怪物占领了，我只是他们的奴仆，救我，救这座城池吧！"></npc>
 	<npc id="7" name="峡谷帝君" talk="这个峡谷是被你们毁了的！"></npc>
 	<npc id="8" name="帝君部下" talk="孩子你还太嫩"></npc>
 	<npc id="9" name="约翰" talk="这龙穴再凶险也比不上外面世界那么凶险"></npc>

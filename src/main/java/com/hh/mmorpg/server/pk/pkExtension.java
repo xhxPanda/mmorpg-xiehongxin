@@ -14,7 +14,7 @@ import com.hh.mmorpg.server.ExtensionSender;
  * @author xhx
  *
  */
-@Extension(id = 13)
+@Extension
 public class PKExtension {
 
 	private PKService service = PKService.INSATNCE;
@@ -33,7 +33,7 @@ public class PKExtension {
 
 	@CmdService(cmd = INVITE_ROLE_PK)
 	public void inviteRolePK(User user, CmdDomain cmDdomain) {
-		int roleId = cmDdomain.getIntParam(2);
+		int roleId = cmDdomain.getIntParam(1);
 		ReplyDomain domain = service.invitePK(user, roleId);
 
 		ExtensionSender.INSTANCE.sendReply(user, domain);
@@ -41,7 +41,7 @@ public class PKExtension {
 
 	@CmdService(cmd = DEAL_PK_APPLICATION)
 	public void dealPKApplication(User user, CmdDomain cmDdomain) {
-		int roleId = cmDdomain.getIntParam(2);
+		int roleId = cmDdomain.getIntParam(1);
 		ReplyDomain domain = service.dealPKApply(user, roleId);
 
 		ExtensionSender.INSTANCE.sendReply(user, domain);

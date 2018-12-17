@@ -13,7 +13,7 @@ import com.hh.mmorpg.server.ExtensionSender;
  * @author xhx 公会
  */
 
-@Extension(id = 8)
+@Extension
 public class GuildExtension {
 
 	private GuildSerivice serivice = GuildSerivice.INSTANCE;
@@ -76,8 +76,8 @@ public class GuildExtension {
 
 	@CmdService(cmd = CREAT_GUILD)
 	public void creatGuild(User user, CmdDomain cmdDomain) {
-		String name = cmdDomain.getStringParam(2);
-		String declaration = cmdDomain.getStringParam(3);
+		String name = cmdDomain.getStringParam(1);
+		String declaration = cmdDomain.getStringParam(2);
 
 		ReplyDomain replyDomain = serivice.creatGuild(user, name, declaration);
 
@@ -86,8 +86,8 @@ public class GuildExtension {
 
 	@CmdService(cmd = SEND_GUILD_APPLY)
 	public void sendGuildApply(User user, CmdDomain cmdDomain) {
-		int guildId = cmdDomain.getIntParam(2);
-		String content = cmdDomain.getStringParam(3);
+		int guildId = cmdDomain.getIntParam(1);
+		String content = cmdDomain.getStringParam(2);
 
 		ReplyDomain replyDomain = serivice.sendGuildApply(user, guildId, content);
 
@@ -96,8 +96,8 @@ public class GuildExtension {
 
 	@CmdService(cmd = EXAMINATION_APPLY)
 	public void eaminationApply(User user, CmdDomain cmdDomain) {
-		int applyId = cmdDomain.getIntParam(2);
-		boolean isAggre = cmdDomain.getBooleanParam(3);
+		int applyId = cmdDomain.getIntParam(1);
+		boolean isAggre = cmdDomain.getBooleanParam(2);
 
 		ReplyDomain replyDomain = serivice.eaminationApply(user, applyId, isAggre);
 
@@ -106,7 +106,7 @@ public class GuildExtension {
 
 	@CmdService(cmd = TICK_OUT_MEMBER)
 	public void tickOutMember(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
+		int roleId = cmdDomain.getIntParam(1);
 
 		ReplyDomain replyDomain = serivice.tickOutRole(user, roleId);
 
@@ -115,8 +115,8 @@ public class GuildExtension {
 
 	@CmdService(cmd = DONATE_MATERIAL)
 	public void donateMaterial(User user, CmdDomain cmdDomain) {
-		int index = cmdDomain.getIntParam(2);
-		int num = cmdDomain.getIntParam(3);
+		int index = cmdDomain.getIntParam(1);
+		int num = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = serivice.donateMaterial(user, index, num);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -124,8 +124,8 @@ public class GuildExtension {
 
 	@CmdService(cmd = DONATE_TREASURE)
 	public void donateTreasure(User user, CmdDomain cmdDomain) {
-		int id = cmdDomain.getIntParam(2);
-		int num = cmdDomain.getIntParam(3);
+		int id = cmdDomain.getIntParam(1);
+		int num = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = serivice.donateTreasure(user, id, num);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -133,8 +133,8 @@ public class GuildExtension {
 
 	@CmdService(cmd = EXTRACT_MATERIAL)
 	public void extractMaterial(User user, CmdDomain cmdDomain) {
-		int index = cmdDomain.getIntParam(2);
-		int num = cmdDomain.getIntParam(3);
+		int index = cmdDomain.getIntParam(1);
+		int num = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = serivice.extractMaterial(user, index, num);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -142,8 +142,8 @@ public class GuildExtension {
 
 	@CmdService(cmd = EXTRACT_TREASURE)
 	public void extractTreasure(User user, CmdDomain cmdDomain) {
-		int id = cmdDomain.getIntParam(2);
-		int num = cmdDomain.getIntParam(3);
+		int id = cmdDomain.getIntParam(1);
+		int num = cmdDomain.getIntParam(2);
 
 		ReplyDomain replyDomain = serivice.guildReimbursement(user, id, num);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
@@ -158,7 +158,7 @@ public class GuildExtension {
 
 	@CmdService(cmd = TRANSFER_GUILD)
 	public void transferGuild(User user, CmdDomain cmdDomain) {
-		int roleId = cmdDomain.getIntParam(2);
+		int roleId = cmdDomain.getIntParam(1);
 		ReplyDomain replyDomain = serivice.transferGuild(user, roleId);
 
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
