@@ -20,7 +20,6 @@ public class EmailDao {
 						email.getSenderRoleId(), email.getSenderRoleName() });
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Email> getRoleEmail(int roleId) {
 		try {
 			return (List<Email>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(GET_ROLE_EMAIL,

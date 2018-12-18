@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.PassCopyData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -89,7 +88,7 @@ public class Scene {
 		this.summonMonstermap = new HashMap<>();
 
 		// 监听怪物死亡事件
-		EventHandler.INSTANCE.addHandler(EventType.MONSTER_DEAD, monsterDeadEvent);
+		EventHandler.INSTANCE.addHandler(MonsterDeadData.class, monsterDeadEvent);
 	}
 
 	public boolean isCanEnter(int id) {
@@ -479,7 +478,7 @@ public class Scene {
 						// 完成副本后全场的用户都抛出完成副本的事件
 						for (SceneUserCache cache : userMap.values()) {
 							PassCopyData passCopyData = new PassCopyData(cache.getRole(), sceneTypeId);
-							EventHandler.INSTANCE.invodeMethod(EventType.PASS_COPY, passCopyData);
+							EventHandler.INSTANCE.invodeMethod(PassCopyData.class, passCopyData);
 						}
 
 						// 完成副本60分钟后解散副本

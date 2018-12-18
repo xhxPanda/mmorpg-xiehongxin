@@ -7,7 +7,6 @@ import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.PKData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.role.RoleService;
@@ -23,7 +22,7 @@ public class PKService {
 	private PKService() {
 		lock = new ReentrantLock();
 
-		EventHandler.INSTANCE.addHandler(EventType.PK, pkBuilder);;
+		EventHandler.INSTANCE.addHandler(PKData.class, pkBuilder);;
 	}
 
 	/**

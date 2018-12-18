@@ -26,7 +26,6 @@ public class RoleDao {
 
 	private static final String UPDATE_ROLE_TEAM_STATUS = "UPDATE role0 SET TeamId = ? WHERE roleId = ?";
 
-	@SuppressWarnings("unchecked")
 	public List<Role> selectUserRole(int userId) {
 		int dbIndex = userId / DB_INDEX;
 		List<Role> list = null;
@@ -78,7 +77,6 @@ public class RoleDao {
 				new Object[] { teamId, roleId });
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<RoleSkill> getRoleSkill(int roleId) {
 		List<RoleSkill> list = null;
 		try {

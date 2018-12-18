@@ -24,7 +24,7 @@ public class CmdManager {
 	private ExecutorService executorService;
 
 	private CmdManager() {
-		executorService = Executors.newFixedThreadPool(6);
+		executorService = Executors.newFixedThreadPool(1);
 	}
 
 	/**

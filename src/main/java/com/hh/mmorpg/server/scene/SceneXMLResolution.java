@@ -19,7 +19,6 @@ public class SceneXMLResolution {
 
 	public static final SceneXMLResolution INSTANCE = new SceneXMLResolution();
 
-	@SuppressWarnings("unchecked")
 	public Map<Integer, SceneDomain> resolution() {
 		Document document = null;
 		SAXReader saxReader = new SAXReader();

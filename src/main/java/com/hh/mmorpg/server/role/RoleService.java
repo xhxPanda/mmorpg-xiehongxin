@@ -23,7 +23,6 @@ import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UpdateLevelData;
 import com.hh.mmorpg.event.data.UserLostData;
@@ -68,8 +67,8 @@ public class RoleService {
 		this.roleToUser = new ConcurrentHashMap<>();
 
 		// 注册事件
-		EventHandler.INSTANCE.addHandler(EventType.LEVEL_UP, levelUpEvent);
-		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
+		EventHandler.INSTANCE.addHandler(UpdateLevelData.class, levelUpEvent);
+		EventHandler.INSTANCE.addHandler(UserLostData.class, userLostEvent);
 	}
 
 	/**
@@ -144,7 +143,7 @@ public class RoleService {
 
 		// 抛出替换角色的事件
 		RoleChangeData data = new RoleChangeData(userId, oldRole, role);
-		EventHandler.INSTANCE.invodeMethod(EventType.ROLE_CHANGE, data);
+		EventHandler.INSTANCE.invodeMethod(RoleChangeData.class, data);
 
 		roleToUser.put(roleId, userId);
 		ReplyDomain replyDomain = new ReplyDomain("使用角色" + ResultCode.SUCCESS);

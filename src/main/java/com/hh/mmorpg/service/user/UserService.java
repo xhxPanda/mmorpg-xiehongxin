@@ -11,7 +11,6 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.manager.CmdManager;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -43,7 +42,7 @@ public class UserService {
 		
 		executorService = Executors.newSingleThreadScheduledExecutor();
 		start();
-		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
+		EventHandler.INSTANCE.addHandler(UserLostData.class, userLostEvent);
 	}
 
 	/**
@@ -166,7 +165,7 @@ public class UserService {
 
 		// 抛出用户离线事件
 		UserLostData data = new UserLostData(user, role);
-		EventHandler.INSTANCE.invodeMethod(EventType.USER_LOST, data);
+		EventHandler.INSTANCE.invodeMethod(UserLostData.class, data);
 	}
 
 	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {

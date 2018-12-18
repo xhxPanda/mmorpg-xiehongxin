@@ -20,8 +20,7 @@ public abstract class LivingThing {
 	private int sceneId;
 
 	/**
-	 * 对于怪物来说，这个参数代表拉动它愤怒值最高的人，主要攻击那个人 
-	 * 对于人物来说，这个参数代表他现在需要主攻的对象是谁
+	 * 对于怪物来说，这个参数代表拉动它愤怒值最高的人，主要攻击那个人 对于人物来说，这个参数代表他现在需要主攻的对象是谁
 	 */
 	private LivingThing attackObject;
 
@@ -127,7 +126,7 @@ public abstract class LivingThing {
 	public LivingThing getAttackObject() {
 		return attackObject;
 	}
-	
+
 	public void setAttackObject(LivingThing attackObject) {
 		this.attackObject = attackObject;
 	}
@@ -148,11 +147,9 @@ public abstract class LivingThing {
 			buff.setLastUsedTime(System.currentTimeMillis());
 			for (Entry<Integer, Integer> entry : buff.getEffectValue().entrySet()) {
 				if (buff.isBuff()) {
-					effectAttribute(buff.getObjectId(), entry.getKey(), entry.getValue(),
-							buff.getName() +"buff作用");
+					effectAttribute(buff.getObjectId(), entry.getKey(), entry.getValue(), buff.getName() + "buff作用");
 				} else {
-					effectAttribute(buff.getObjectId(), entry.getKey(), -entry.getValue(),
-							buff.getName() + "buff作用");
+					effectAttribute(buff.getObjectId(), entry.getKey(), -entry.getValue(), buff.getName() + "buff作用");
 				}
 
 				buff.setLastUsedTime(now);
@@ -164,11 +161,9 @@ public abstract class LivingThing {
 			if (roleBuff.isResore()) {
 				for (Entry<Integer, Integer> entry : roleBuff.getEffectValue().entrySet()) {
 					if (!roleBuff.isBuff()) {
-						effectAttribute(0, entry.getKey(), -entry.getValue(),
-								roleBuff.getName() + "buff移除");
+						effectAttribute(0, entry.getKey(), -entry.getValue(), roleBuff.getName() + "buff移除");
 					} else {
-						effectAttribute(0, entry.getKey(), entry.getValue(),
-								roleBuff.getName() + "buff作用");
+						effectAttribute(0, entry.getKey(), entry.getValue(), roleBuff.getName() + "buff作用");
 					}
 				}
 			}
@@ -214,7 +209,7 @@ public abstract class LivingThing {
 			}
 		}
 
-		// 在改变属性这里上锁，确定
+		// 在改变属性这里上锁，确保扣血死亡的结果
 		lock.lock();
 		int newValue = 0;
 		try {

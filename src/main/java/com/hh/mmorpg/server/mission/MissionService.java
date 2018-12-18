@@ -12,7 +12,6 @@ import com.hh.mmorpg.domain.RoleMission;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.FriendData;
 import com.hh.mmorpg.event.data.GainTreasureData;
 import com.hh.mmorpg.event.data.GetMaterialData;
@@ -80,20 +79,20 @@ public class MissionService {
 		handlerMap.put(MissionType.PK, new PKMissionHandler());
 
 		// 注册监听
-		EventHandler.INSTANCE.addHandler(EventType.BECOME_FRIEND, addFriendEvent);
-		EventHandler.INSTANCE.addHandler(EventType.LEVEL_UP, levelUpEvent);
-		EventHandler.INSTANCE.addHandler(EventType.TALK_TO_NPC, npcTalkEvent);
-		EventHandler.INSTANCE.addHandler(EventType.GET_MATERIAL, getMaterialEvent);
-		EventHandler.INSTANCE.addHandler(EventType.WEAR_QUEIMENT, useEquimentEvent);
-		EventHandler.INSTANCE.addHandler(EventType.JOIN_GUILD, joinGuildEvent);
-		EventHandler.INSTANCE.addHandler(EventType.JOIN_TEAM, joinTeamEvent);
-		EventHandler.INSTANCE.addHandler(EventType.MONSTER_DEAD, killMonsterEvent);
-		EventHandler.INSTANCE.addHandler(EventType.MISSION_COMPETE, missionCompeteEvent);
-		EventHandler.INSTANCE.addHandler(EventType.PASS_COPY, passCopyEvent);
-		EventHandler.INSTANCE.addHandler(EventType.TREASURE, getTreasureEvent);
-		EventHandler.INSTANCE.addHandler(EventType.TRANSACTION, transactionEvent);
-		EventHandler.INSTANCE.addHandler(EventType.ROLE_CHANGE, changeRoleEvent);
-		EventHandler.INSTANCE.addHandler(EventType.PK, pkEvent);
+		EventHandler.INSTANCE.addHandler(FriendData.class, addFriendEvent);
+		EventHandler.INSTANCE.addHandler(UpdateLevelData.class, levelUpEvent);
+		EventHandler.INSTANCE.addHandler(NpcTalkData.class, npcTalkEvent);
+		EventHandler.INSTANCE.addHandler(GetMaterialData.class, getMaterialEvent);
+		EventHandler.INSTANCE.addHandler(UserEquimentData.class, useEquimentEvent);
+		EventHandler.INSTANCE.addHandler(GuildJoinData.class, joinGuildEvent);
+		EventHandler.INSTANCE.addHandler(JoinTeamData.class, joinTeamEvent);
+		EventHandler.INSTANCE.addHandler(MonsterDeadData.class, killMonsterEvent);
+		EventHandler.INSTANCE.addHandler(MissionCompeteData.class, missionCompeteEvent);
+		EventHandler.INSTANCE.addHandler(PassCopyData.class, passCopyEvent);
+		EventHandler.INSTANCE.addHandler(GainTreasureData.class, getTreasureEvent);
+		EventHandler.INSTANCE.addHandler(TransactionData.class, transactionEvent);
+		EventHandler.INSTANCE.addHandler(RoleChangeData.class, changeRoleEvent);
+		EventHandler.INSTANCE.addHandler(PKData.class, pkEvent);
 		
 	}
 
@@ -237,7 +236,7 @@ public class MissionService {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void handler(UpdateLevelData levelData) {
+		public  void handler(UpdateLevelData levelData) {
 			handlerMap.get(MissionType.LEVEL_MISSION).dealMission(levelData,
 					getRoleMissionByType(levelData.getRole(), MissionType.LEVEL_MISSION));
 		}

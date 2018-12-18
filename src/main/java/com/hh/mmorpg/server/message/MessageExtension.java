@@ -34,9 +34,9 @@ public class MessageExtension {
 	@CmdService(cmd = SEND_TO_USER)
 	public void sendToUser(User user, CmdDomain cmdDomain) {
 		String content = cmdDomain.getStringParam(1);
-		int userId = cmdDomain.getIntParam(2);
+		int roleId = cmdDomain.getIntParam(2);
 		
-		ReplyDomain replyDomain = service.sendMessageToUser(user, userId, content);
+		ReplyDomain replyDomain = service.sendMessageToUser(user, roleId, content);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
 	}
 	

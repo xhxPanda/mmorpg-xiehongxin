@@ -23,7 +23,6 @@ public class MissionDao {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<RoleMission> getRoleMissions(int roleId) {
 		List<RoleMission> list = null;
 		try {

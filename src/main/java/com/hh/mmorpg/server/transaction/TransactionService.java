@@ -16,7 +16,6 @@ import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.domain.UserTreasureType;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.TransactionData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -43,7 +42,7 @@ public class TransactionService {
 		this.lock = new ReentrantLock();
 
 		// 注册事件
-		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
+		EventHandler.INSTANCE.addHandler(UserLostData.class, userLostEvent);
 	}
 
 	/**
@@ -358,10 +357,9 @@ public class TransactionService {
 				// 抛出双方交易的事件
 				TransactionData oneData = new TransactionData(role, anotherRole);
 				TransactionData twoData = new TransactionData(anotherRole, role);
-
 				
-				EventHandler.INSTANCE.invodeMethod(EventType.TRANSACTION, oneData);
-				EventHandler.INSTANCE.invodeMethod(EventType.JOIN_TEAM, twoData);
+				EventHandler.INSTANCE.invodeMethod(TransactionData.class, oneData);
+				EventHandler.INSTANCE.invodeMethod(TransactionData.class, twoData);
 			}
 			// 交易完成，关闭交易
 			transactionMap.remove(role.getTransactionPerson());

@@ -33,7 +33,6 @@ public class FriendDao {
 						friendApply.getUserId(), friendApply.getRoleLevel(), friendApply.getContent() });
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Friend> getRoleFriends(int roleId) {
 		List<Friend> list = null;
 		try {
@@ -50,7 +49,6 @@ public class FriendDao {
 		JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_FRIENDS, new Object[] { roleId, friendId });
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<FriendApply> getRoleFriendsApply(int roleId) {
 		List<FriendApply> list = null;
 		try {

@@ -17,7 +17,6 @@ public class IncrementDao {
 
 	private static final String UPDATE_INCREMENT_DOMAIN = "UPDATE increment SET now = ? WHERE name = ?";
 
-	@SuppressWarnings("unchecked")
 	public List<IncrementDomain> getAllIncrementDomain() {
 		try {
 			return (List<IncrementDomain>) JDBCManager.INSTANCE.getConn("work").excuteObjectList(GET_INCREMENT_DOMAIN,

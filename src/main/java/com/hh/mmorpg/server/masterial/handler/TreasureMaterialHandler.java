@@ -4,7 +4,6 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GainTreasureData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
@@ -22,7 +21,7 @@ public class TreasureMaterialHandler extends AbstractMaterialHandler {
 		treasure.changeQuantity(num);
 
 		GainTreasureData gainTreasureData = new GainTreasureData(role, id, num);
-		EventHandler.INSTANCE.invodeMethod(EventType.TREASURE, gainTreasureData);
+		EventHandler.INSTANCE.invodeMethod(GainTreasureData.class, gainTreasureData);
 
 		ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
 		notify.setStringDomain("cmd", "新增" + num + treasure.getName());

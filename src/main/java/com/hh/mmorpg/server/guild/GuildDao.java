@@ -32,6 +32,9 @@ public class GuildDao {
 	private static final String SELECT_GUILD_MATERIAL = "SELECT * FROM `guildmaterial` WHERE guildId = ?";
 
 	private static final String UPDATE_GUILD_AUTHORITY = "REPLACE INTO `guildmemberauthority` (`guildId`, `guildMemberIdentityId`, `canTickMember`, `canSeeBank`, `takeBankMaterialNum`, `canSendPublicMessage`, `canUseGold`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	
+	@SuppressWarnings("unused")
+	// 这个功能暂时没用，但是之后会加上去的，用来
 	private static final String SELECT_GUILD_AUTHORITY = "SELECT * FROM `guildmemberauthority` WHERE `guildId` = ?";
 
 	private static final String SELECT_GUILD_TREASURE = "SELECT * FROM `guildtreasure` WHERE `guildId` = ?";
@@ -54,7 +57,6 @@ public class GuildDao {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Guild> getAllGuild() {
 		try {
 			return (List<Guild>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(GET_ALL_GUILD, new Object[] {},
@@ -83,7 +85,6 @@ public class GuildDao {
 	 * @param guildId
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<GuildApply> getAllGuildApply(int guildId) {
 		try {
 			return (List<GuildApply>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_APPLY,
@@ -112,7 +113,6 @@ public class GuildDao {
 	 * @param guildId
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<GuildMember> getGuildMembers(int guildId) {
 		try {
 			return (List<GuildMember>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_GUILD_MEMBER,
@@ -194,17 +194,16 @@ public class GuildDao {
 	 * @param guildId
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public List<GuildMemberAuthority> selectGuildMemberAuthority(int guildId) {
-		try {
-			return (List<GuildMemberAuthority>) JDBCManager.INSTANCE.getConn("part0")
-					.excuteObjectList(SELECT_GUILD_AUTHORITY, new Object[] { guildId }, Guild.BUILDER);
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-		}
-		return new ArrayList<GuildMemberAuthority>();
-	}
+//	public List<GuildMemberAuthority> selectGuildMemberAuthority(int guildId) {
+//		try {
+//			return JDBCManager.INSTANCE.getConn("part0")
+//					.excuteObjectList(SELECT_GUILD_AUTHORITY, new Object[] { guildId }, Guild.BUILDER);
+//		} catch (SQLException e) {
+//			
+//			e.printStackTrace();
+//		}
+//		return new ArrayList<GuildMemberAuthority>();
+//	}
 
 	/**
 	 * 获取公会仓库的物品
@@ -212,7 +211,6 @@ public class GuildDao {
 	 * @param guildId
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<BagMaterial> selectGuildMaterial(int guildId) {
 		try {
 			return (List<BagMaterial>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_GUILD_MATERIAL,
@@ -231,7 +229,6 @@ public class GuildDao {
 	 * @param treasureId
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<GuildTreasure> selectGuildTreasure(int guildId) {
 		try {
 			return (List<GuildTreasure>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_GUILD_TREASURE,

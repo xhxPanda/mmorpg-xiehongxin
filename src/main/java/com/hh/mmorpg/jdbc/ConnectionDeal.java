@@ -51,7 +51,7 @@ public class ConnectionDeal {
 		return getObject(result, builder);
 	}
 
-	public List<?> excuteObjectList(String sql, Object[] params, ResultBuilder<?> builder) throws SQLException {
+	public <T> List<T> excuteObjectList(String sql, Object[] params, ResultBuilder<T> builder) throws SQLException {
 
 		PreparedStatement pstmt;
 		ResultSet result = null;
@@ -68,7 +68,7 @@ public class ConnectionDeal {
 
 			e.printStackTrace();
 		}
-		List<Object> list = new ArrayList<Object>();
+		List<T> list = new ArrayList<T>();
 
 		while (result.next()) {
 			list.add(builder.build(result));
@@ -90,21 +90,20 @@ public class ConnectionDeal {
 		return object;
 	}
 
-	@SuppressWarnings("unused")
-	private List<Object> getObjectList(ResultSet result, ResultBuilder<?> builder) {
-		List<Object> list = new ArrayList<Object>();
-		try {
-			while (result.next()) {
-				Object object = builder.build(result);
-				list.add(object);
-			}
-		} catch (SQLException e) {
-
-			e.printStackTrace();
-		}
-
-		return list;
-	}
+//	private List<Object> getObjectList(ResultSet result, ResultBuilder<?> builder) {
+//		List<Object> list = new ArrayList<Object>();
+//		try {
+//			while (result.next()) {
+//				Object object = builder.build(result);
+//				list.add(object);
+//			}
+//		} catch (SQLException e) {
+//
+//			e.printStackTrace();
+//		}
+//
+//		return list;
+//	}
 
 	/**
 	 * 内部类，处理sql的元素

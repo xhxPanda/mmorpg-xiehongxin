@@ -15,7 +15,7 @@ public class MessageService {
 	public static final MessageService INSTANCE = new MessageService();
 
 	/**
-	 * 	其实如果发送的人在不同的服务器的话就需要用到RPC
+	 * 其实如果发送的人在不同的服务器的话就需要用到RPC
 	 * 
 	 */
 	public ReplyDomain sendWorldMessage(String content) {
@@ -30,8 +30,14 @@ public class MessageService {
 		return ReplyDomain.SUCCESS;
 	}
 
-	public ReplyDomain sendMessageToUser(User user, int userId, String content) {
-		User recipentUser = UserService.INSTANCE.getUser(userId);
+	public ReplyDomain sendMessageToUser(User user, int roleId, String content) {
+
+		if (!RoleService.INSTANCE.isOnline(roleId)) {
+			return ReplyDomain.OTHER_NOT_ONLINE;
+		}
+
+		User recipentUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(roleId));
+
 		if (recipentUser == null) {
 			return ReplyDomain.FAILE;
 		}

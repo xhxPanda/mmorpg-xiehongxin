@@ -1,17 +1,17 @@
 package com.hh.mmorpg.server.guild;
 
 import java.util.List;
-import java.util.Map;
+//import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 import com.hh.mmorpg.Increment.IncrementManager;
 import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.Guild;
 import com.hh.mmorpg.domain.GuildApply;
 import com.hh.mmorpg.domain.GuildMember;
-import com.hh.mmorpg.domain.GuildMemberAuthority;
+//import com.hh.mmorpg.domain.GuildMemberAuthority;
 import com.hh.mmorpg.domain.GuildMemberIdentity;
 import com.hh.mmorpg.domain.GuildTreasure;
 import com.hh.mmorpg.domain.Role;
@@ -19,7 +19,6 @@ import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GuildJoinData;
 import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.event.data.UserLostData;
@@ -63,8 +62,8 @@ public class GuildSerivice {
 		this.lock = new ReentrantLock();
 
 		// 注册事件
-		EventHandler.INSTANCE.addHandler(EventType.ROLE_CHANGE, changeRoleEvent);
-		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
+		EventHandler.INSTANCE.addHandler(RoleChangeData.class, changeRoleEvent);
+		EventHandler.INSTANCE.addHandler(UserLostData.class, userLostEvent);
 	}
 
 	/**
@@ -182,7 +181,7 @@ public class GuildSerivice {
 
 		// 抛出角色进入公会事件
 		GuildJoinData guildJoinData = new GuildJoinData(role, guild.getId());
-		EventHandler.INSTANCE.invodeMethod(EventType.JOIN_GUILD, guildJoinData);
+		EventHandler.INSTANCE.invodeMethod(GuildJoinData.class, guildJoinData);
 
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 
@@ -287,7 +286,7 @@ public class GuildSerivice {
 
 				// 抛出角色进入公会事件
 				GuildJoinData guildJoinData = new GuildJoinData(applyRole, guild.getId());
-				EventHandler.INSTANCE.invodeMethod(EventType.JOIN_GUILD, guildJoinData);
+				EventHandler.INSTANCE.invodeMethod(GuildJoinData.class, guildJoinData);
 			}
 
 			// 最后删除申请
@@ -669,15 +668,15 @@ public class GuildSerivice {
 		List<GuildMember> guildMembers = GuildDao.INSTANCE.getGuildMembers(guildId);
 		List<BagMaterial> guildMaterial = GuildDao.INSTANCE.selectGuildMaterial(guildId);
 
-		List<GuildMemberAuthority> guildMemberAuthorities = GuildDao.INSTANCE.selectGuildMemberAuthority(guildId);
-		Map<Integer, GuildMemberAuthority> authorityMap = guildMemberAuthorities.stream()
-				.collect(Collectors.toMap(GuildMemberAuthority::getGuildMemberIdentityId, a -> a));
+//		List<GuildMemberAuthority> guildMemberAuthorities = GuildDao.INSTANCE.selectGuildMemberAuthority(guildId);
+//		Map<Integer, GuildMemberAuthority> authorityMap = guildMemberAuthorities.stream()
+//				.collect(Collectors.toMap(GuildMemberAuthority::getGuildMemberIdentityId, a -> a));
 
 		List<GuildTreasure> treasures = GuildDao.INSTANCE.selectGuildTreasure(guildId);
 
 		guild.setguildApply(guildApplies);
 		guild.setGuildMember(guildMembers);
-		guild.setAuthorityMap(authorityMap);
+//		guild.setAuthorityMap(authorityMap);
 
 		for (BagMaterial bagMaterial : guildMaterial) {
 			guild.putMaterial(bagMaterial);

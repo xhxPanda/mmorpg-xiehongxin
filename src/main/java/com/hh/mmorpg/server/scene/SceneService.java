@@ -27,7 +27,6 @@ import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.NpcTalkData;
 import com.hh.mmorpg.event.data.RoleChangeData;
@@ -78,9 +77,9 @@ public class SceneService {
 		executorService = Executors.newScheduledThreadPool(10);
 
 		// 注册事件
-		EventHandler.INSTANCE.addHandler(EventType.ROLE_CHANGE, roleChangeEvent);
-		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
-		EventHandler.INSTANCE.addHandler(EventType.MONSTER_DEAD, monsterDeadEvent);
+		EventHandler.INSTANCE.addHandler(RoleChangeData.class, roleChangeEvent);
+		EventHandler.INSTANCE.addHandler(UserLostData.class, userLostEvent);
+		EventHandler.INSTANCE.addHandler(MonsterDeadData.class, monsterDeadEvent);
 	}
 
 	/**
@@ -709,7 +708,7 @@ public class SceneService {
 		replyDomain.setStringDomain(npcRole.getName() + "说", npcRole.getTalk());
 
 		NpcTalkData data = new NpcTalkData(role, npcId);
-		EventHandler.INSTANCE.invodeMethod(EventType.TALK_TO_NPC, data);
+		EventHandler.INSTANCE.invodeMethod(NpcTalkData.class, data);
 
 		return replyDomain;
 	}

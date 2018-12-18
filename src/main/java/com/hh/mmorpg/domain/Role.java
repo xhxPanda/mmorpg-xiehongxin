@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.GetMaterialData;
 import com.hh.mmorpg.event.data.PKData;
 import com.hh.mmorpg.jdbc.ResultBuilder;
@@ -156,7 +155,7 @@ public class Role extends LivingThing {
 		if (pkRoleId != 0) {
 
 			PKData data = new PKData(pkRoleId, id);
-			EventHandler.INSTANCE.invodeMethod(EventType.PK, data);
+			EventHandler.INSTANCE.invodeMethod(PKData.class, data);
 			resurrection();
 		}
 
@@ -247,7 +246,7 @@ public class Role extends LivingThing {
 		// 抛出获得物品的事件
 		if (addNum > 0) {
 			GetMaterialData data = new GetMaterialData(this, material, addNum);
-			EventHandler.INSTANCE.invodeMethod(EventType.GET_MATERIAL, data);
+			EventHandler.INSTANCE.invodeMethod(GetMaterialData.class, data);
 
 			ReplyDomain notify = new ReplyDomain(ResultCode.SUCCESS);
 			notify.setStringDomain("cmd", "获得" + material.getName());

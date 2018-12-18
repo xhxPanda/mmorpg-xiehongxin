@@ -13,6 +13,7 @@ public class NotifyXmlResolutionManager {
 
 	public static final NotifyXmlResolutionManager INSTANCE = new NotifyXmlResolutionManager();
 
+	@SuppressWarnings("unchecked")
 	public Map<String, String> resolution() {
 		Document document = null;
 		SAXReader saxReader = new SAXReader();
@@ -25,7 +26,6 @@ public class NotifyXmlResolutionManager {
 
 		Map<String, String> map = new HashMap<>();
 		Element rootElm = document.getRootElement();
-		@SuppressWarnings("unchecked")
 		List<Element> notifies = rootElm.elements("notify");
 		for (Element element : notifies) {
 			String name = element.attributeValue("name");

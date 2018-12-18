@@ -30,11 +30,10 @@ public class MaterialDao {
 	private MaterialDao() {
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<UserTreasure> getAllTreasure(int roleId) {
 		List<UserTreasure> list = null;
 		try {
-			list = (List<UserTreasure>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_TREASURE,
+			list = JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_TREASURE,
 					new Object[] { roleId }, UserTreasure.BUILDER);
 		} catch (SQLException e) {
 
@@ -43,7 +42,6 @@ public class MaterialDao {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<UserItem> getAllItem(int roleId) {
 		List<UserItem> list = null;
 		try {
@@ -56,7 +54,6 @@ public class MaterialDao {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<UserEquipment> getAllUserEquiment() {
 		List<UserEquipment> list = null;
 		try {
@@ -91,7 +88,6 @@ public class MaterialDao {
 		JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_MATERIAL, new Object[] { roleId, index });
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<BagMaterial> getallUserBagMaterial(int roleId) {
 		List<BagMaterial> list = null;
 		try {
@@ -104,7 +100,6 @@ public class MaterialDao {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<UserEquipment> getRoleEquiment(int roleId) {
 		List<UserEquipment> list = null;
 		try {

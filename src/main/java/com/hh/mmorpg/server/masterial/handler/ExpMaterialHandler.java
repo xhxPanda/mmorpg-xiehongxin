@@ -6,7 +6,6 @@ import java.util.Map;
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.UpdateLevelData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
@@ -71,7 +70,7 @@ public class ExpMaterialHandler extends AbstractMaterialHandler {
 
 			// 抛出升级事件
 			UpdateLevelData data = new UpdateLevelData(oldExp, nextLevel, role);
-			EventHandler.INSTANCE.invodeMethod(EventType.LEVEL_UP, data);
+			EventHandler.INSTANCE.invodeMethod(UpdateLevelData.class, data);
 		}
 
 		role.setExp(newExp);

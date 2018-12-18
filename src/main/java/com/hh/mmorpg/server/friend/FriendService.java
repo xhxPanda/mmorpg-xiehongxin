@@ -15,7 +15,6 @@ import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.FriendData;
 import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -42,7 +41,7 @@ public class FriendService {
 		this.cache = new ConcurrentHashMap<>();
 		this.lock = new ReentrantLock();
 		
-		EventHandler.INSTANCE.addHandler(EventType.BECOME_FRIEND, friendEvent);
+		EventHandler.INSTANCE.addHandler(RoleChangeData.class, roleChangeEvent);
 	}
 
 	public ReplyDomain getRoleFriends(User user) {
@@ -187,8 +186,8 @@ public class FriendService {
 			Role applyRole = RoleService.INSTANCE.getUserRole(friendApply.getUserId(), roleId);
 			FriendData applyFriendData = new FriendData(applyRole, role.getId());
 
-			EventHandler.INSTANCE.invodeMethod(EventType.BECOME_FRIEND, friendData);
-			EventHandler.INSTANCE.invodeMethod(EventType.BECOME_FRIEND, applyFriendData);
+			EventHandler.INSTANCE.invodeMethod(FriendData.class, friendData);
+			EventHandler.INSTANCE.invodeMethod(FriendData.class, applyFriendData);
 
 		} finally {
 			lock.unlock();
@@ -327,7 +326,7 @@ public class FriendService {
 
 	// 用户使用角色后把旧角色的缓存移除，加入新角色的缓存
 	
-	private EventBuilder<RoleChangeData> friendEvent = new EventBuilder<RoleChangeData>() {
+	private EventBuilder<RoleChangeData> roleChangeEvent = new EventBuilder<RoleChangeData>() {
 		
 		@Override
 		public void handler(RoleChangeData data) {

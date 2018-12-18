@@ -12,7 +12,6 @@ import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.domain.UserTreasure;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.RoleChangeData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.result.ResultCode;
@@ -47,7 +46,7 @@ public class MaterialService {
 
 		goodsMap = GoodsXmlResolutionManager.INSTANCE.resolution();
 
-		EventHandler.INSTANCE.addHandler(EventType.ROLE_CHANGE, changeRoleEvent);
+		EventHandler.INSTANCE.addHandler(RoleChangeData.class, changeRoleEvent);
 	}
 
 	/**

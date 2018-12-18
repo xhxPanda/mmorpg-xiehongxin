@@ -18,7 +18,6 @@ import com.hh.mmorpg.domain.TeamMate;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
-import com.hh.mmorpg.event.EventType;
 import com.hh.mmorpg.event.data.JoinTeamData;
 import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
@@ -58,7 +57,7 @@ public class TeamService {
 		this.lock = new ReentrantLock();
 		
 		// 注册事件
-		EventHandler.INSTANCE.addHandler(EventType.USER_LOST, userLostEvent);
+		EventHandler.INSTANCE.addHandler(UserLostData.class, userLostEvent);
 	}
 
 	public ReplyDomain getTeamInfo(User user) {
@@ -208,7 +207,7 @@ public class TeamService {
 			role.setTeamId(peopleRole.getTeamId());
 
 			JoinTeamData joinTeamData = new JoinTeamData(role, new ArrayList<>(teamMate.values()));
-			EventHandler.INSTANCE.invodeMethod(EventType.JOIN_TEAM, joinTeamData);
+			EventHandler.INSTANCE.invodeMethod(JoinTeamData.class, joinTeamData);
 
 			// 提醒双方组队成功
 			TeamExtension.notifyRole(peopleUser, getTeamInfo(peopleUser));
