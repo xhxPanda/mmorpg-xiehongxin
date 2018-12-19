@@ -24,7 +24,7 @@ public class CmdManager {
 	private ExecutorService executorService;
 
 	private CmdManager() {
-		executorService = Executors.newFixedThreadPool(1);
+		executorService = Executors.newFixedThreadPool(3);
 	}
 
 	/**
@@ -46,14 +46,12 @@ public class CmdManager {
 			});
 
 		} else {
-			Integer userId = cmdDomain.getIntParam(1);
-			if (userId != null) {
-				User user = UserService.INSTANCE.getUserByChannelId(channel.id().asShortText());
-				if (user == null) {
-					ExtensionSender.INSTANCE.sendReply(cmdDomain.getChannel(), ReplyDomain.FAILE);
-				}
-				user.addCmdDomain(new CmdRunner(user, cmdDomain));
+			User user = UserService.INSTANCE.getUserByChannelId(channel.id().asShortText());
+			if (user == null) {
+				ExtensionSender.INSTANCE.sendReply(cmdDomain.getChannel(), ReplyDomain.FAILE);
 			}
+			user.addCmdDomain(new CmdRunner(user, cmdDomain));
+
 		}
 	}
 

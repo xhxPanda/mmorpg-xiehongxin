@@ -2,8 +2,7 @@ package com.hh.mmorpg.domain;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.hh.mmorpg.jdbc.ResultBuilder;
 
@@ -23,14 +22,14 @@ public class User {
 	private Channel channel;
 
 	// 包
-	private BlockingQueue<Runnable> cmdDomains;
+	private ConcurrentLinkedQueue<Runnable> cmdDomains;
 
 	public User(int userId, String name, String password) {
 		this.password = password;
 		this.userId = userId;
 		this.name = name;
 
-		cmdDomains = new LinkedBlockingQueue<>();
+		cmdDomains = new ConcurrentLinkedQueue<>();
 	}
 
 	public int getUserId() {
@@ -62,7 +61,7 @@ public class User {
 		cmdDomains.add(cmdDomain);
 	}
 
-	public BlockingQueue<Runnable> getCmdDomains() {
+	public ConcurrentLinkedQueue<Runnable> getCmdDomains() {
 		return cmdDomains;
 	}
 

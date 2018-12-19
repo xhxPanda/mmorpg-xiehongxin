@@ -20,7 +20,6 @@ public class JDBCManager {
 
 		dbUrl.put("part0", "jdbc:mysql://127.0.0.1:3306/part0");
 		dbUrl.put("work", "jdbc:mysql://127.0.0.1:3306/work");
-
 	}
 
 	public ConnectionDeal getConn(String name) {

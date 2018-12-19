@@ -33,13 +33,13 @@ public class UserService {
 	private ConcurrentHashMap<Integer, User> userChannelMap;
 	// channel与userId的map
 	private ConcurrentHashMap<String, Integer> channelUserMap;
-	
+
 	ScheduledExecutorService executorService;
 
 	private UserService() {
 		this.userChannelMap = new ConcurrentHashMap<Integer, User>();
 		this.channelUserMap = new ConcurrentHashMap<String, Integer>();
-		
+
 		executorService = Executors.newSingleThreadScheduledExecutor();
 		start();
 		EventHandler.INSTANCE.addHandler(UserLostData.class, userLostEvent);
@@ -177,10 +177,9 @@ public class UserService {
 			System.out.println("userId为：" + userId + "的用户下线了");
 		}
 	};
-	
 
 	public void start() {
-		
+
 		executorService.scheduleAtFixedRate(new Runnable() {
 
 			@Override
@@ -195,12 +194,11 @@ public class UserService {
 	 */
 	public void runCmdDomain() {
 		for (User user : userChannelMap.values()) {
-			try {
-				CmdManager.INSTANCE.addTask(user.getCmdDomains().take());
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(user.getCmdDomains().isEmpty()) {
+				continue;
 			}
+			CmdManager.INSTANCE.addTask(user.getCmdDomains().poll());
+
 		}
 	}
 }

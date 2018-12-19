@@ -8,6 +8,7 @@ import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.data.PKData;
+import com.hh.mmorpg.event.data.UserLostData;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.role.RoleService;
 import com.hh.mmorpg.server.scene.SceneService;
@@ -22,7 +23,8 @@ public class PKService {
 	private PKService() {
 		lock = new ReentrantLock();
 
-		EventHandler.INSTANCE.addHandler(PKData.class, pkBuilder);;
+		EventHandler.INSTANCE.addHandler(PKData.class, pkBuilder);
+		EventHandler.INSTANCE.addHandler(UserLostData.class, userLostEvent);
 	}
 
 	/**
@@ -129,7 +131,7 @@ public class PKService {
 	 * @param data
 	 */
 	EventBuilder<PKData> pkBuilder = new EventBuilder<PKData>() {
-		
+
 		@Override
 		public void handler(PKData pkData) {
 
@@ -148,15 +150,53 @@ public class PKService {
 				ReplyDomain replyDomain = new ReplyDomain();
 				replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_PK_WIN);
 				PKExtension.notifyUserMessage(winUser, replyDomain);
+
 			}
-			
+
 			if (RoleService.INSTANCE.isOnline(loseRoleId)) {
 				User loseUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(loseRoleId));
 				ReplyDomain replyDomain = new ReplyDomain();
 				replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_PK_LOSE);
 				PKExtension.notifyUserMessage(loseUser, replyDomain);
 			}
+
+			// 抛出事件
+			PKData data = new PKData(winRoleId, loseRoleId);
+			EventHandler.INSTANCE.invodeMethod(PKData.class, data);
+		}
+
+	};
+
+	/**
+	 * pk中途掉线了，判定对方胜利并消除双方的pk状态
+	 */
+	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {
+
+		@Override
+		public void handler(UserLostData userLostData) {
+			Role role = userLostData.getRole();
+
+			if (role == null || role.getPkRoleId() == 0) {
+				return;
+			}
+
+			// 还原pkid
+			role.setPkRoleId(0);
+
+			int pkRoleId = role.getPkRoleId();
+
+			// 判定对方为赢
+
+			User winUser = UserService.INSTANCE.getUser(RoleService.INSTANCE.getUserId(pkRoleId));
+			if (winUser != null) {
+				ReplyDomain replyDomain = new ReplyDomain();
+				replyDomain.setStringDomain("cmd", PKExtension.NOTIFY_ROLE_PK_WIN);
+				PKExtension.notifyUserMessage(winUser, replyDomain);
+			}
+
+			// 抛出事件
+			PKData data = new PKData(pkRoleId, role.getId());
+			EventHandler.INSTANCE.invodeMethod(PKData.class, data);
 		}
 	};
-	
 }

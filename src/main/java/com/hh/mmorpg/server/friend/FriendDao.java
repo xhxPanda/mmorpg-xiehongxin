@@ -19,7 +19,7 @@ public class FriendDao {
 	private static final String DELETE_FRIENDS = "DELETE FROM friend where roleId = ? AND friendId = ?";
 
 	private static final String ADD_APPLICATION = "INSERT INTO `friendapply` (`friendId`, `roleId`, `roleName`, `userId`, `roleLevel`, `content`) VALUES (?, ?, ?, ?, ?, ?)";
-	private static final String SELECT_FRIEND_APPLY = "SELECT * FROM friend where friendRoleId = ?";
+	private static final String SELECT_FRIEND_APPLY = "SELECT * FROM friendapply where friendId = ?";
 	private static final String DELETE_FRIEND_APPLY = "DELETE FROM friendApply where friendId = ? AND roleId = ?";
 
 	public void insertFriend(Friend friend) {

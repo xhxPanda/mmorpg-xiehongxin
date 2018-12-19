@@ -43,7 +43,7 @@ public class EventHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends EventData, T extends EventData> void invodeMethod(Class<E> eClass, T eventData) {
+	public <T extends EventData> void invodeMethod(Class<T> eClass, T eventData) {
 		List<EventBuilder<T>> builds = (List<EventBuilder<T>>) eventBuilds.get(eClass);
 
 		for (EventBuilder<T> eventBuilder : builds) {
