@@ -63,6 +63,7 @@ public class MissionService {
 	private MissionService() {
 		missionDomainMap = MissionXmlResolution.INSTANCE.resolution();
 
+		// 任务的处理器
 		handlerMap = new HashMap<>();
 		handlerMap.put(MissionType.LEVEL_MISSION, new LevelUpMissionHandler());
 		handlerMap.put(MissionType.TLAK_NPC, new NpcTalkMissionHandler());

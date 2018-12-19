@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hh.mmorpg.domain.Email;
-import com.hh.mmorpg.jdbc.JDBCManager;
+import com.hh.mmorpg.jdbc.ConnectionDeal;
 
 public class EmailDao {
 	public static final EmailDao INSTANCE = new EmailDao();
@@ -15,14 +15,14 @@ public class EmailDao {
 	private static final String UPDATE_EMAIL_STATUS = "UPDATE `useremail0` set `read` = ?  WHERE  `roleId`=? AND `emailId`=?;";
 
 	public void sendEmail(Email email) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(SEND_EMAIL,
+		ConnectionDeal.INSTANCE.excuteObject(SEND_EMAIL,
 				new Object[] { email.getRoleId(), email.getId(), email.getContent(), email.getBonus(), email.isRead(),
 						email.getSenderRoleId(), email.getSenderRoleName() });
 	}
 
 	public List<Email> getRoleEmail(int roleId) {
 		try {
-			return (List<Email>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(GET_ROLE_EMAIL,
+			return (List<Email>) ConnectionDeal.INSTANCE.excuteObjectList(GET_ROLE_EMAIL,
 					new Object[] { roleId }, Email.BUILDER);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -31,7 +31,7 @@ public class EmailDao {
 	}
 
 	public void updateEmail(Email email) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_EMAIL_STATUS,
+		ConnectionDeal.INSTANCE.excuteObject(UPDATE_EMAIL_STATUS,
 				new Object[] { email.isRead(), email.getRoleId(), email.getId() });
 	}
 }

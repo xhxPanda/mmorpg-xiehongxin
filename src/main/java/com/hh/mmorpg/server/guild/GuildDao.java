@@ -10,7 +10,7 @@ import com.hh.mmorpg.domain.GuildApply;
 import com.hh.mmorpg.domain.GuildMember;
 import com.hh.mmorpg.domain.GuildMemberAuthority;
 import com.hh.mmorpg.domain.GuildTreasure;
-import com.hh.mmorpg.jdbc.JDBCManager;
+import com.hh.mmorpg.jdbc.ConnectionDeal;
 
 public class GuildDao {
 
@@ -47,7 +47,7 @@ public class GuildDao {
 	 * @return
 	 */
 	public void creatGuild(Guild guild) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(CREAT_GUILD,
+		ConnectionDeal.INSTANCE.excuteObject(CREAT_GUILD,
 				new Object[] { guild.getId(), guild.getName(), guild.getGuildDeclaration(), guild.getGuildDonatePoint(),
 						guild.getLevel(), guild.getGuildWarehouseCapasity() });
 	}
@@ -59,7 +59,7 @@ public class GuildDao {
 	 */
 	public List<Guild> getAllGuild() {
 		try {
-			return (List<Guild>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(GET_ALL_GUILD, new Object[] {},
+			return (List<Guild>) ConnectionDeal.INSTANCE.excuteObjectList(GET_ALL_GUILD, new Object[] {},
 					Guild.BUILDER);
 		} catch (SQLException e) {
 			
@@ -75,7 +75,7 @@ public class GuildDao {
 	 * @return
 	 */
 	public void insertApply(GuildApply apply) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(INSERT_APPLY, new Object[] { apply.getGuildId(),
+		ConnectionDeal.INSTANCE.excuteObject(INSERT_APPLY, new Object[] { apply.getGuildId(),
 				apply.getRoleId(), apply.getUserId(), apply.getName(), apply.getContent() });
 	}
 
@@ -87,7 +87,7 @@ public class GuildDao {
 	 */
 	public List<GuildApply> getAllGuildApply(int guildId) {
 		try {
-			return (List<GuildApply>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_APPLY,
+			return (List<GuildApply>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_APPLY,
 					new Object[] { guildId }, GuildApply.BUILDER);
 		} catch (SQLException e) {
 			
@@ -104,7 +104,7 @@ public class GuildDao {
 	 * @return
 	 */
 	public void deleteApply(int roleId, int guildId) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_APPLY, new Object[] { roleId, guildId });
+		 ConnectionDeal.INSTANCE.excuteObject(DELETE_APPLY, new Object[] { roleId, guildId });
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class GuildDao {
 	 */
 	public List<GuildMember> getGuildMembers(int guildId) {
 		try {
-			return (List<GuildMember>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_GUILD_MEMBER,
+			return (List<GuildMember>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_GUILD_MEMBER,
 					new Object[] { guildId }, GuildMember.BUILDER);
 		} catch (SQLException e) {
 			
@@ -132,7 +132,7 @@ public class GuildDao {
 	 * @return
 	 */
 	public void deleteMember(int roleId, int guildId) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_MEMBER, new Object[] { roleId, guildId });
+		 ConnectionDeal.INSTANCE.excuteObject(DELETE_MEMBER, new Object[] { roleId, guildId });
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class GuildDao {
 	 * @return
 	 */
 	public void insertGuildMember(GuildMember guildMember) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(INSERT_GUILD_MEMBER,
+		 ConnectionDeal.INSTANCE.excuteObject(INSERT_GUILD_MEMBER,
 				new Object[] { guildMember.getRoleId(), guildMember.getGuildId(), guildMember.getUserId(),
 						guildMember.getRoleName(), guildMember.getLevel(), guildMember.getMemberIdentityId(),
 						guildMember.getContributionPoint() });
@@ -157,7 +157,7 @@ public class GuildDao {
 	 * @return
 	 */
 	public void insertGuildMaterial(int guildId, int index, BagMaterial bagMaterial) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_GUILD_MATERIAL,
+		 ConnectionDeal.INSTANCE.excuteObject(UPDATE_GUILD_MATERIAL,
 				new Object[] { guildId, bagMaterial.getUniqueId(), index, bagMaterial.getId(), bagMaterial.getTypeId(),
 						bagMaterial.getName(), bagMaterial.getQuantity(), bagMaterial.getSellPrice(),
 						bagMaterial.getRoleId(), bagMaterial.getTypeId() });
@@ -171,7 +171,7 @@ public class GuildDao {
 	 * @return
 	 */
 	public void deleteGuildMaterialIndex(int guildId, int index) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_GUILD_MATERIAL,
+		 ConnectionDeal.INSTANCE.excuteObject(DELETE_GUILD_MATERIAL,
 				new Object[] { guildId, index });
 	}
 
@@ -182,7 +182,7 @@ public class GuildDao {
 	 * @return
 	 */
 	public void updateGuildMemberAuthority(GuildMemberAuthority authority) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_GUILD_AUTHORITY,
+		 ConnectionDeal.INSTANCE.excuteObject(UPDATE_GUILD_AUTHORITY,
 				new Object[] { authority.getGuildId(), authority.getGuildMemberIdentityId(),
 						authority.isCanTickMember(), authority.isCanSeeBank(), authority.isCanSendPublicMessage(),
 						authority.getCanUseGold() });
@@ -196,7 +196,7 @@ public class GuildDao {
 	 */
 //	public List<GuildMemberAuthority> selectGuildMemberAuthority(int guildId) {
 //		try {
-//			return JDBCManager.INSTANCE.getConn("part0")
+//			return ConnectionDeal.INSTANCE
 //					.excuteObjectList(SELECT_GUILD_AUTHORITY, new Object[] { guildId }, Guild.BUILDER);
 //		} catch (SQLException e) {
 //			
@@ -213,7 +213,7 @@ public class GuildDao {
 	 */
 	public List<BagMaterial> selectGuildMaterial(int guildId) {
 		try {
-			return (List<BagMaterial>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_GUILD_MATERIAL,
+			return (List<BagMaterial>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_GUILD_MATERIAL,
 					new Object[] { guildId }, BagMaterial.BUILDER);
 		} catch (SQLException e) {
 			
@@ -231,7 +231,7 @@ public class GuildDao {
 	 */
 	public List<GuildTreasure> selectGuildTreasure(int guildId) {
 		try {
-			return (List<GuildTreasure>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_GUILD_TREASURE,
+			return (List<GuildTreasure>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_GUILD_TREASURE,
 					new Object[] { guildId }, GuildTreasure.BUILDER);
 		} catch (SQLException e) {
 			
@@ -241,7 +241,7 @@ public class GuildDao {
 	}
 
 	public void updateGuildTreasure(int guildId, int id, long quantity) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_GUILD_TREASURE,
+		 ConnectionDeal.INSTANCE.excuteObject(UPDATE_GUILD_TREASURE,
 				new Object[] { guildId, id, quantity });
 	}
 }

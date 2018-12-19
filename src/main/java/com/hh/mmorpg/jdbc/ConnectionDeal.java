@@ -1,5 +1,7 @@
 package com.hh.mmorpg.jdbc;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,18 +11,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
-
 public class ConnectionDeal {
+	
+	public static final ConnectionDeal INSTANCE = new ConnectionDeal();
 
 	private Connection conn;
 
 	private ScheduledExecutorService executorService;
 	private ConcurrentLinkedQueue<SqlExcutor> blockingQueue;
 
-	public ConnectionDeal(Connection conn) {
-		this.conn = conn;
+	private ConnectionDeal() {
+		try {
+			this.conn = JDBCUtils.getConnection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		blockingQueue = new ConcurrentLinkedQueue<>();
 
@@ -36,7 +42,8 @@ public class ConnectionDeal {
 		PreparedStatement pstmt;
 		ResultSet result = null;
 		try {
-			pstmt = (PreparedStatement) conn.prepareStatement(sql);
+			
+			pstmt = (java.sql.PreparedStatement) conn.prepareStatement(sql);
 			for (int i = 0; i < params.length; i++) {
 				pstmt.setObject(i + 1, params[i]);
 			}

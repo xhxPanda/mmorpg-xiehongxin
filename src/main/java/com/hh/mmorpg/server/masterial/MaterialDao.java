@@ -7,7 +7,7 @@ import com.hh.mmorpg.domain.BagMaterial;
 import com.hh.mmorpg.domain.UserEquipment;
 import com.hh.mmorpg.domain.UserItem;
 import com.hh.mmorpg.domain.UserTreasure;
-import com.hh.mmorpg.jdbc.JDBCManager;
+import com.hh.mmorpg.jdbc.ConnectionDeal;
 
 public class MaterialDao {
 
@@ -33,7 +33,7 @@ public class MaterialDao {
 	public List<UserTreasure> getAllTreasure(int roleId) {
 		List<UserTreasure> list = null;
 		try {
-			list = JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_TREASURE,
+			list = ConnectionDeal.INSTANCE.excuteObjectList(SELECT_ROLE_TREASURE,
 					new Object[] { roleId }, UserTreasure.BUILDER);
 		} catch (SQLException e) {
 
@@ -45,7 +45,7 @@ public class MaterialDao {
 	public List<UserItem> getAllItem(int roleId) {
 		List<UserItem> list = null;
 		try {
-			list = (List<UserItem>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_ITEM,
+			list = (List<UserItem>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_ROLE_ITEM,
 					new Object[] { roleId }, UserItem.BUILDER);
 		} catch (SQLException e) {
 
@@ -57,7 +57,7 @@ public class MaterialDao {
 	public List<UserEquipment> getAllUserEquiment() {
 		List<UserEquipment> list = null;
 		try {
-			list = (List<UserEquipment>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_EQUIMENT,
+			list = (List<UserEquipment>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_EQUIMENT,
 					new Object[] {}, UserEquipment.BUILDER);
 		} catch (SQLException e) {
 
@@ -67,17 +67,17 @@ public class MaterialDao {
 	}
 
 	public void updateRoleTreasure(UserTreasure treasure) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_TREASURE,
+		ConnectionDeal.INSTANCE.excuteObject(UPDATE_TREASURE,
 				new Object[] { treasure.getRoleId(), treasure.getId(), treasure.getName(), treasure.getQuantity() });
 	}
 
 	public void updateRoleItem(UserItem userItem) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ITEM,
+		ConnectionDeal.INSTANCE.excuteObject(UPDATE_ITEM,
 				new Object[] { userItem.getRoleId(), userItem.getMaterialId(), userItem.getLastUsedTime() });
 	}
 
 	public void updateRoleEquiment(UserEquipment equipment) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_EQUIMENT,
+		ConnectionDeal.INSTANCE.excuteObject(UPDATE_EQUIMENT,
 				new Object[] { equipment.getUniqueId(), equipment.getRoleId(), equipment.getMaterialId(),
 						equipment.getName(), equipment.getAttributeStr(), equipment.getEquimentType(),
 						equipment.getMaxDurability(), equipment.getDurability(), equipment.getSellPrice(),
@@ -85,13 +85,13 @@ public class MaterialDao {
 	}
 
 	public void deleteMaterial(int typeId, int roleId, int index) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_MATERIAL, new Object[] { roleId, index });
+		ConnectionDeal.INSTANCE.excuteObject(DELETE_MATERIAL, new Object[] { roleId, index });
 	}
 
 	public List<BagMaterial> getallUserBagMaterial(int roleId) {
 		List<BagMaterial> list = null;
 		try {
-			list = (List<BagMaterial>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_USER_MATERIAL,
+			list = (List<BagMaterial>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_USER_MATERIAL,
 					new Object[] { roleId }, BagMaterial.BUILDER);
 		} catch (SQLException e) {
 
@@ -103,7 +103,7 @@ public class MaterialDao {
 	public List<UserEquipment> getRoleEquiment(int roleId) {
 		List<UserEquipment> list = null;
 		try {
-			list = (List<UserEquipment>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_EQUIMENT,
+			list = (List<UserEquipment>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_ROLE_EQUIMENT,
 					new Object[] { roleId }, UserEquipment.BUILDER);
 		} catch (SQLException e) {
 
@@ -113,7 +113,7 @@ public class MaterialDao {
 	}
 
 	public void updateRoleMaterial(BagMaterial bagMaterial) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_BAGMATERIAL,
+		ConnectionDeal.INSTANCE.excuteObject(UPDATE_BAGMATERIAL,
 				new Object[] { bagMaterial.getRoleId(), bagMaterial.getUniqueId(), bagMaterial.getIndex(),
 						bagMaterial.getId(), bagMaterial.getQuantity(), bagMaterial.getSellPrice(),
 						bagMaterial.getName(), bagMaterial.getTypeId() });

@@ -3,7 +3,7 @@ package com.hh.mmorpg.service.user;
 import java.sql.SQLException;
 
 import com.hh.mmorpg.domain.User;
-import com.hh.mmorpg.jdbc.JDBCManager;
+import com.hh.mmorpg.jdbc.ConnectionDeal;
 
 public class UserDao {
 
@@ -15,7 +15,7 @@ public class UserDao {
 	public User selectUser(int userId, String password) {
 		User user = null;
 		try {
-			user = (User) JDBCManager.INSTANCE.getConn("part0").excuteObject(SELECT_USER,
+			user = (User) ConnectionDeal.INSTANCE.excuteObject(SELECT_USER,
 					new Object[] { userId, password }, User.BUILDER);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -25,7 +25,7 @@ public class UserDao {
 	}
 
 	public void insertUser(User user) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(INSERT_USER,
+		ConnectionDeal.INSTANCE.excuteObject(INSERT_USER,
 				new Object[] { user.getUserId(), user.getPassword(), user.getName() });
 	}
 }

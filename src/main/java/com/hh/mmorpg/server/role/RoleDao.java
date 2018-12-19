@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.hh.mmorpg.domain.Role;
 import com.hh.mmorpg.domain.RoleSkill;
-import com.hh.mmorpg.jdbc.JDBCManager;
+import com.hh.mmorpg.jdbc.ConnectionDeal;
 
 public class RoleDao {
 
@@ -30,7 +30,7 @@ public class RoleDao {
 		int dbIndex = userId / DB_INDEX;
 		List<Role> list = null;
 		try {
-			list = (List<Role>) JDBCManager.INSTANCE.getConn("part0")
+			list = (List<Role>) ConnectionDeal.INSTANCE
 					.excuteObjectList(String.format(SELECT_USER_ROLE, dbIndex), new Object[] { userId }, Role.BUILDER);
 		} catch (SQLException e) {
 			
@@ -43,7 +43,7 @@ public class RoleDao {
 	public Role selectRole(int roleId) {
 		Role list = null;
 		try {
-			list = (Role) JDBCManager.INSTANCE.getConn("part0").excuteObject(SELECT_ROLE, new Object[] { roleId },
+			list = (Role) ConnectionDeal.INSTANCE.excuteObject(SELECT_ROLE, new Object[] { roleId },
 					Role.BUILDER);
 		} catch (SQLException e) {
 			
@@ -54,7 +54,7 @@ public class RoleDao {
 	}
 
 	public void insertRole(Role role) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(INSERT_USER_ROLE,
+		 ConnectionDeal.INSTANCE.excuteObject(INSERT_USER_ROLE,
 				new Object[] { role.getUserId(), role.getId(), role.getOccupationId(), role.getName(),
 						role.getCapacity(), role.getTeamId(), role.getExp(), role.getLevel(), role.getLastJoinScene(),
 						role.getAttributeStr(), role.getGuildId() });
@@ -62,25 +62,25 @@ public class RoleDao {
 	}
 
 	public void updateRoleGuild(int roleId, int userId, int guildId) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_USER_GUILD,
+		 ConnectionDeal.INSTANCE.excuteObject(UPDATE_USER_GUILD,
 				new Object[] { guildId, roleId, userId });
 
 	}
 
 	public void updateRoleSkill(RoleSkill roleSkill) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ROLE_SKILL, new Object[] {
+		 ConnectionDeal.INSTANCE.excuteObject(UPDATE_ROLE_SKILL, new Object[] {
 				roleSkill.getRoleId(), roleSkill.getSkillId(), roleSkill.getLevel(), roleSkill.getLastUsedTime() });
 	}
 
 	public void updateRoleTeam(int roleId, int teamId) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_ROLE_TEAM_STATUS,
+		 ConnectionDeal.INSTANCE.excuteObject(UPDATE_ROLE_TEAM_STATUS,
 				new Object[] { teamId, roleId });
 	}
 
 	public List<RoleSkill> getRoleSkill(int roleId) {
 		List<RoleSkill> list = null;
 		try {
-			list = (List<RoleSkill>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_ROLE_SKILL,
+			list = (List<RoleSkill>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_ROLE_SKILL,
 					new Object[] { roleId }, RoleSkill.BUILDER);
 		} catch (SQLException e) {
 			
@@ -91,7 +91,7 @@ public class RoleDao {
 	}
 
 	public void updateRole(Role role) {
-		 JDBCManager.INSTANCE.getConn("part0").excuteObject(UPDATE_USER_ROLE,
+		 ConnectionDeal.INSTANCE.excuteObject(UPDATE_USER_ROLE,
 				new Object[] { role.getUserId(), role.getId(), role.getOccupationId(), role.getName(),
 						role.getCapacity(), role.getTeamId(), role.getExp(), role.getLevel(), role.getLastJoinScene(),
 						role.getAttributeStr(), role.getGuildId() });

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.hh.mmorpg.domain.Friend;
 import com.hh.mmorpg.domain.FriendApply;
-import com.hh.mmorpg.jdbc.JDBCManager;
+import com.hh.mmorpg.jdbc.ConnectionDeal;
 
 public class FriendDao {
 
@@ -23,12 +23,12 @@ public class FriendDao {
 	private static final String DELETE_FRIEND_APPLY = "DELETE FROM friendApply where friendId = ? AND roleId = ?";
 
 	public void insertFriend(Friend friend) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(ADD_FRIEND,
+		ConnectionDeal.INSTANCE.excuteObject(ADD_FRIEND,
 				new Object[] { friend.getRoleId(), friend.getFriendId(), friend.getTime() });
 	}
 
 	public void insertFriendApply(FriendApply friendApply) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(ADD_APPLICATION,
+		ConnectionDeal.INSTANCE.excuteObject(ADD_APPLICATION,
 				new Object[] { friendApply.getApplyRoleId(), friendApply.getRoleId(), friendApply.getRoleName(),
 						friendApply.getUserId(), friendApply.getRoleLevel(), friendApply.getContent() });
 	}
@@ -36,7 +36,7 @@ public class FriendDao {
 	public List<Friend> getRoleFriends(int roleId) {
 		List<Friend> list = null;
 		try {
-			list = (List<Friend>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_FRIENDS,
+			list = (List<Friend>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_FRIENDS,
 					new Object[] { roleId }, Friend.BUILDER);
 		} catch (SQLException e) {
 
@@ -46,13 +46,13 @@ public class FriendDao {
 	}
 
 	public void deleteFriend(int roleId, int friendId) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_FRIENDS, new Object[] { roleId, friendId });
+		ConnectionDeal.INSTANCE.excuteObject(DELETE_FRIENDS, new Object[] { roleId, friendId });
 	}
 
 	public List<FriendApply> getRoleFriendsApply(int roleId) {
 		List<FriendApply> list = null;
 		try {
-			list = (List<FriendApply>) JDBCManager.INSTANCE.getConn("part0").excuteObjectList(SELECT_FRIEND_APPLY,
+			list = (List<FriendApply>) ConnectionDeal.INSTANCE.excuteObjectList(SELECT_FRIEND_APPLY,
 					new Object[] { roleId }, FriendApply.BUILDER);
 		} catch (SQLException e) {
 
@@ -62,6 +62,6 @@ public class FriendDao {
 	}
 
 	public void deleteFriendApply(int roleId, int appId) {
-		JDBCManager.INSTANCE.getConn("part0").excuteObject(DELETE_FRIEND_APPLY, new Object[] { roleId, appId });
+		ConnectionDeal.INSTANCE.excuteObject(DELETE_FRIEND_APPLY, new Object[] { roleId, appId });
 	}
 }
