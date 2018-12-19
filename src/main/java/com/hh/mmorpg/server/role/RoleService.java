@@ -32,6 +32,7 @@ import com.hh.mmorpg.server.equiment.UserEquimentService;
 import com.hh.mmorpg.server.masterial.MaterialDao;
 import com.hh.mmorpg.server.masterial.MaterialService;
 import com.hh.mmorpg.server.mission.MissionDao;
+import com.hh.mmorpg.server.mission.MissionService;
 import com.hh.mmorpg.server.scene.SceneService;
 import com.hh.mmorpg.server.skill.SkillService;
 import com.hh.mmorpg.server.team.TeamService;
@@ -163,7 +164,7 @@ public class RoleService {
 		if (userId == null) {
 			return false;
 		}
-
+		
 		if (SceneService.INSTANCE.getUserScene(userId) == null) {
 			return false;
 		}
@@ -171,10 +172,22 @@ public class RoleService {
 		return true;
 	}
 
+	/**
+	 * 获取用户userid
+	 * 
+	 * @param roleId
+	 * @return
+	 */
 	public Integer getUserId(int roleId) {
 		return roleToUser.get(roleId);
 	}
 
+	/**
+	 * 获取用户当前角色
+	 * 
+	 * @param user
+	 * @return
+	 */
 	public ReplyDomain getUserUsingRole(User user) {
 		ReplyDomain replyDomain = new ReplyDomain();
 		Role role = getUserUsingRole(user.getUserId());
@@ -186,6 +199,12 @@ public class RoleService {
 		return replyDomain;
 	}
 
+	/**
+	 * 获取用户当前角色
+	 * 
+	 * @param userId
+	 * @return
+	 */
 	public Role getUserUsingRole(int userId) {
 		Role role = userRoleMap.get(userId);
 		return role;
@@ -210,6 +229,10 @@ public class RoleService {
 		RoleDao.INSTANCE.insertRole(role);
 
 		assemblingRole(role);
+
+		// 令角色接收所有成就类型的任务
+		MissionService.INSTANCE.acceptAchievemnetMission(role);
+
 		// 更新缓存
 		getUserAllRole(user.getUserId()).put(role.getId(), role);
 
@@ -323,7 +346,10 @@ public class RoleService {
 
 		return map;
 	}
-	
+
+	/**
+	 * 处理用户掉线事件
+	 */
 	private EventBuilder<UserLostData> userLostEvent = new EventBuilder<UserLostData>() {
 
 		@Override
@@ -346,7 +372,7 @@ public class RoleService {
 		}
 	};
 
-	// 处理升级任务
+	// 处理升级的事务
 	private EventBuilder<UpdateLevelData> levelUpEvent = new EventBuilder<UpdateLevelData>() {
 
 		@Override

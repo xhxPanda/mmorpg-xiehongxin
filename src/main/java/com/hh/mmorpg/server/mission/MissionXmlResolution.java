@@ -39,15 +39,17 @@ public class MissionXmlResolution {
 			String missionCondition = element.attributeValue("missionCondition");
 			int type = Integer.parseInt(element.attributeValue("type"));
 			int needLevel = Integer.parseInt(element.attributeValue("needLevel"));
-
-			MissionDomain missionDomain = new MissionDomain(id, name, bonus, dec, type, needLevel, missionCondition);
+			boolean isAchievement = Boolean.parseBoolean(element.attributeValue("isAchievement"));
+			
+			MissionDomain missionDomain = new MissionDomain(id, name, bonus, dec, type, needLevel, missionCondition,
+					isAchievement);
 			map.put(missionDomain.getId(), missionDomain);
 		}
 
 		return map;
 
 	}
-	
+
 //	public static final void main(String args[]) {
 //		MissionXmlResolution.INSTANCE.resolution();
 //	}

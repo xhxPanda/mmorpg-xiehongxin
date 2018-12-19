@@ -294,29 +294,30 @@ public class TransactionService {
 	 * @param role
 	 * @return
 	 */
-	/**
-	 * @param role
-	 * @return
-	 */
 	private ReplyDomain stopTransaction(Role role) {
 
 		Transaction transaction = transactionMap.get(role.getTransactionPerson());
 		if (transaction == null) {
 			return ReplyDomain.FAILE;
 		}
-		role.setTransactionPerson(0);
+		lock.lock();
+		try {
+			role.setTransactionPerson(0);
 
-		Role anotherRoleId = transaction.getAnotherRole(role.getId());
-		anotherRoleId.setTransactionPerson(0);
+			Role anotherRoleId = transaction.getAnotherRole(role.getId());
+			anotherRoleId.setTransactionPerson(0);
 
-		User anOtherUser = UserService.INSTANCE.getUser(anotherRoleId.getUserId());
+			User anOtherUser = UserService.INSTANCE.getUser(anotherRoleId.getUserId());
 
-		// 在线的话发消息
-		if (anOtherUser != null) {
-			ReplyDomain notify = new ReplyDomain();
+			// 在线的话发消息
+			if (anOtherUser != null) {
+				ReplyDomain notify = new ReplyDomain();
 
-			notify.setStringDomain("cmd", TransactionExtension.NOTIFY_TRANSACTION_SHUTDOWN);
-			TransactionExtension.notifyRole(anOtherUser, notify);
+				notify.setStringDomain("cmd", TransactionExtension.NOTIFY_TRANSACTION_SHUTDOWN);
+				TransactionExtension.notifyRole(anOtherUser, notify);
+			}
+		} finally {
+			lock.unlock();
 		}
 		return ReplyDomain.SUCCESS;
 	}
@@ -340,39 +341,44 @@ public class TransactionService {
 			return ReplyDomain.HAS_COMFIRM;
 		}
 
-		Role anotherRole = transaction.getAnotherRole(role.getId());
+		lock.lock();
+		try {
+			Role anotherRole = transaction.getAnotherRole(role.getId());
 
-		// 对方不在线，交易关闭
-		if (!RoleService.INSTANCE.isOnline(anotherRole.getId())) {
-			stopTransaction(role);
-			return ReplyDomain.OTHER_NOT_ONLINE;
-		}
-
-		transaction.confirm(role.getId());
-
-		if (transaction.judgeIsAllAccept()) {
-			ReplyDomain replyDomain = transaction.startTrade();
-
-			if (replyDomain.isSuccess()) {
-				// 抛出双方交易的事件
-				TransactionData oneData = new TransactionData(role, anotherRole);
-				TransactionData twoData = new TransactionData(anotherRole, role);
-				
-				EventHandler.INSTANCE.invodeMethod(TransactionData.class, oneData);
-				EventHandler.INSTANCE.invodeMethod(TransactionData.class, twoData);
+			// 对方不在线，交易关闭
+			if (!RoleService.INSTANCE.isOnline(anotherRole.getId())) {
+				stopTransaction(role);
+				return ReplyDomain.OTHER_NOT_ONLINE;
 			}
-			// 交易完成，关闭交易
-			transactionMap.remove(role.getTransactionPerson());
-			anotherRole.setTransactionPerson(0);
-			role.setTransactionPerson(0);
 
-			return replyDomain;
-		} else {
-			User anOtherUser = UserService.INSTANCE.getUser(anotherRole.getUserId());
-			ReplyDomain notify = new ReplyDomain();
-			notify.setStringDomain("r", "对方已确认交易内容");
-			TransactionExtension.notifyRole(anOtherUser, notify);
-			return ReplyDomain.SUCCESS;
+			transaction.confirm(role.getId());
+
+			if (transaction.judgeIsAllAccept()) {
+				ReplyDomain replyDomain = transaction.startTrade();
+
+				if (replyDomain.isSuccess()) {
+					// 抛出双方交易的事件
+					TransactionData oneData = new TransactionData(role, anotherRole);
+					TransactionData twoData = new TransactionData(anotherRole, role);
+
+					EventHandler.INSTANCE.invodeMethod(TransactionData.class, oneData);
+					EventHandler.INSTANCE.invodeMethod(TransactionData.class, twoData);
+				}
+				// 交易完成，关闭交易
+				transactionMap.remove(role.getTransactionPerson());
+				anotherRole.setTransactionPerson(0);
+				role.setTransactionPerson(0);
+
+				return replyDomain;
+			} else {
+				User anOtherUser = UserService.INSTANCE.getUser(anotherRole.getUserId());
+				ReplyDomain notify = new ReplyDomain();
+				notify.setStringDomain("r", "对方已确认交易内容");
+				TransactionExtension.notifyRole(anOtherUser, notify);
+				return ReplyDomain.SUCCESS;
+			}
+		} finally {
+			lock.unlock();
 		}
 
 	}
@@ -391,5 +397,5 @@ public class TransactionService {
 			stopTransaction(role);
 		}
 	};
-	
+
 }

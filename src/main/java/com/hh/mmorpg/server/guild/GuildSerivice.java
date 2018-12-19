@@ -67,6 +67,19 @@ public class GuildSerivice {
 	}
 
 	/**
+	 * 展示所有的公会
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public ReplyDomain showAllGuild(User user) {
+		ReplyDomain replyDomain = new ReplyDomain();
+
+		replyDomain.setListDomain("公会列表", guildCache.values());
+		return replyDomain;
+	}
+
+	/**
 	 * 展示公会基本资料
 	 * 
 	 * @param user

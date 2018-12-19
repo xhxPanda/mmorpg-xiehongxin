@@ -4,9 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -18,12 +17,12 @@ public class ConnectionDeal {
 	private Connection conn;
 
 	private ScheduledExecutorService executorService;
-	private BlockingQueue<SqlExcutor> blockingQueue;
+	private ConcurrentLinkedQueue<SqlExcutor> blockingQueue;
 
 	public ConnectionDeal(Connection conn) {
 		this.conn = conn;
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
-		blockingQueue = new LinkedBlockingQueue<>();
+		blockingQueue = new ConcurrentLinkedQueue<>();
 
 		start();
 	}
@@ -135,24 +134,21 @@ public class ConnectionDeal {
 		if (blockingQueue.isEmpty()) {
 			return;
 		}
+		SqlExcutor sqlExcutor = blockingQueue.poll();
+		PreparedStatement pstmt;
 		try {
-			SqlExcutor sqlExcutor = blockingQueue.take();
-			PreparedStatement pstmt;
-			try {
-				pstmt = (PreparedStatement) conn.prepareStatement(sqlExcutor.getSql());
-				Object[] objects = sqlExcutor.getObjects();
-				for (int i = 0; i < objects.length; i++) {
-					pstmt.setObject(i + 1, objects[i]);
-				}
-
-				pstmt.executeUpdate();
-			} catch (SQLException e) {
-
-				e.printStackTrace();
+			pstmt = (PreparedStatement) conn.prepareStatement(sqlExcutor.getSql());
+			Object[] objects = sqlExcutor.getObjects();
+			for (int i = 0; i < objects.length; i++) {
+				pstmt.setObject(i + 1, objects[i]);
 			}
-		} catch (InterruptedException e) {
+
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+
 			e.printStackTrace();
 		}
+
 	}
 
 	// 数据库心跳

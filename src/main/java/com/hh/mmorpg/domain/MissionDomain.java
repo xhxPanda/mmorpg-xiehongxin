@@ -15,11 +15,12 @@ public class MissionDomain {
 
 	private int type; // 任务类型
 	private int needLevel; // 所需等级
+	private boolean isAchievement; // 是不是成就类型的
 
 	private Map<String, MissionAttribute> competeAttribute;
 
 	public MissionDomain(int id, String name, String bonus, String dec, int type, int needLevel,
-			String competeAttributeStr) {
+			String competeAttributeStr, boolean isAchievement) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -37,7 +38,7 @@ public class MissionDomain {
 			int value = Integer.parseInt(attributes[2]);
 			competeAttribute.put(key, new MissionAttribute(key, processDec, 0, value));
 		}
-
+		this.isAchievement = isAchievement;
 	}
 
 	public int getId() {
@@ -68,9 +69,12 @@ public class MissionDomain {
 		return dec;
 	}
 
+	public boolean isAchievement() {
+		return isAchievement;
+	}
+
 	@Override
 	public String toString() {
 		return "任务 [id=" + id + ", 名称=" + name + ", 任务描述=" + dec + "]";
 	}
-
 }

@@ -93,7 +93,7 @@ public class MissionService {
 		EventHandler.INSTANCE.addHandler(TransactionData.class, transactionEvent);
 		EventHandler.INSTANCE.addHandler(RoleChangeData.class, changeRoleEvent);
 		EventHandler.INSTANCE.addHandler(PKData.class, pkEvent);
-		
+
 	}
 
 	/**
@@ -106,6 +106,10 @@ public class MissionService {
 	public ReplyDomain accpetMission(User user, int missionId) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
+		return accpetMission(role, missionId);
+	}
+
+	private ReplyDomain accpetMission(Role role, int missionId) {
 		MissionDomain missionDomain = missionDomainMap.get(missionId);
 		if (missionDomain == null) {
 			return ReplyDomain.FAILE;
@@ -124,6 +128,7 @@ public class MissionService {
 				missionDomain.getDec(), missionDomain.getType(), -1, missionDomain.getCompeteAttribute());
 		role.reciveMission(roleMission);
 
+		MissionDao.INSTANCE.accectMission(roleMission);
 		return ReplyDomain.SUCCESS;
 	}
 
@@ -231,12 +236,25 @@ public class MissionService {
 		return missionDomainMap.get(id);
 	}
 
+	/**
+	 * 领取成就任务
+	 * 
+	 * @param role
+	 */
+	public void acceptAchievemnetMission(Role role) {
+		for (MissionDomain missionDomain : missionDomainMap.values()) {
+			if (missionDomain.isAchievement()) {
+				accpetMission(role, missionDomain.getId());
+			}
+		}
+	}
+
 	// 处理升级任务
 	private EventBuilder<UpdateLevelData> levelUpEvent = new EventBuilder<UpdateLevelData>() {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public  void handler(UpdateLevelData levelData) {
+		public void handler(UpdateLevelData levelData) {
 			handlerMap.get(MissionType.LEVEL_MISSION).dealMission(levelData,
 					getRoleMissionByType(levelData.getRole(), MissionType.LEVEL_MISSION));
 		}
@@ -310,7 +328,7 @@ public class MissionService {
 					getRoleMissionByType(competeData.getRole(), MissionType.MISSION_CONPETE));
 		}
 	};
-	
+
 	/**
 	 * 打怪
 	 * 
@@ -340,7 +358,7 @@ public class MissionService {
 					getRoleMissionByType(friendData.getRole(), MissionType.ADD_FIREND));
 		}
 	};
-	
+
 	/**
 	 * 通关副本
 	 * 
@@ -355,7 +373,7 @@ public class MissionService {
 					getRoleMissionByType(passCopyData.getRole(), MissionType.COPY));
 		}
 	};
-	
+
 	/**
 	 * 获得财富
 	 * 
@@ -370,7 +388,7 @@ public class MissionService {
 					getRoleMissionByType(gainTreasureData.getRole(), MissionType.TREASURE));
 		}
 	};
-	
+
 	/**
 	 * 处理pk的任务
 	 * 
@@ -386,7 +404,7 @@ public class MissionService {
 			handlerMap.get(MissionType.PK).dealMission(pkData, getRoleMissionByType(winRole, MissionType.PK));
 		}
 	};
-	
+
 	/**
 	 * 处理交易的任务
 	 * 
@@ -401,7 +419,6 @@ public class MissionService {
 					getRoleMissionByType(transactionData.getRole(), MissionType.TRANSCATION));
 		}
 	};
-	
 
 	/**
 	 * 监听角色上线事件
@@ -413,7 +430,7 @@ public class MissionService {
 		@Override
 		public void handler(RoleChangeData roleChangeData) {
 			Role newRole = roleChangeData.getNewRole();
-			User user = UserService.INSTANCE.getUser(newRole.getId());
+			User user = UserService.INSTANCE.getUser(newRole.getUserId());
 			// 换角色后，应该提醒角色还有什么任务可以接
 			ReplyDomain replyDomain = showMissionCanAccept(user);
 			MissionExtension.notifyRoleMissionInfo(user, replyDomain);

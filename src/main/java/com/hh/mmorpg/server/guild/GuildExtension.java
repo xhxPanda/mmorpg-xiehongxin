@@ -18,6 +18,7 @@ public class GuildExtension {
 
 	private GuildSerivice serivice = GuildSerivice.INSTANCE;
 
+	private static final String SHOW_ALL_GUILD = "showAllGuild";// 展示所有公会
 	private static final String SHOW_GUILD_INFO = "showGuildInfo";// 展示公会信息
 	private static final String SHOW_GUILD_MEMBER = "showGuildMember"; // 展示公会会员
 
@@ -47,8 +48,15 @@ public class GuildExtension {
 	public static final String NOTIFY_PRESIDENT_CHANGE = NotifiesWarehouse.INSTANCE
 			.getNotifyContent("NOTIFY_PRESIDENT_CHANGE");
 
+	@CmdService(cmd = SHOW_ALL_GUILD)
+	public void showAllGuild(User user, CmdDomain cmdDomain) {
+
+		ReplyDomain replyDomain = serivice.showAllGuild(user);
+		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
+	}
+	
 	@CmdService(cmd = SHOW_GUILD_INFO)
-	public void SHOW_GUILD_INFO(User user, CmdDomain cmdDomain) {
+	public void showGuildInfo(User user, CmdDomain cmdDomain) {
 
 		ReplyDomain replyDomain = serivice.showGuildInfo(user);
 		ExtensionSender.INSTANCE.sendReply(user, replyDomain);
