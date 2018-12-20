@@ -203,12 +203,14 @@ public class SceneService {
 		if (scene == null || scene.isCopyFinish()) {
 			scene = sceneMap.get(1);
 			scene.userEnterScene(sceneUserCache);
-			role.setSceneId(scene.getId());
+			
 		} else {
 			// 如果不是就送到上一次的场景中
 			scene.userEnterScene(sceneUserCache);
 		}
-
+		
+		role.setSceneId(scene.getId());
+		
 		ReplyDomain replyDomain = new ReplyDomain(ResultCode.SUCCESS);
 		replyDomain.setStringDomain("场景名称", scene.getName());
 		replyDomain.setStringDomain("场景名称", scene.getName());

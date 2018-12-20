@@ -41,6 +41,8 @@ public class TransactionService {
 		this.transactionId = new AtomicInteger(0);
 		this.lock = new ReentrantLock();
 
+		this.applyCache = new ConcurrentHashMap<>();
+		
 		// 注册事件
 		EventHandler.INSTANCE.addHandler(UserLostData.class, userLostEvent);
 	}
@@ -55,6 +57,12 @@ public class TransactionService {
 	public ReplyDomain requestTransaction(User user, int roleId) {
 
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
+		
+		// 不能自己给自己发交易请求
+		if(role.getId() == roleId) {
+			return ReplyDomain.FAILE;
+		}
+		
 		Scene scene = SceneService.INSTANCE.getUserScene(user.getUserId());
 		if (scene == null) {
 			return ReplyDomain.NOT_IN_SCENE;

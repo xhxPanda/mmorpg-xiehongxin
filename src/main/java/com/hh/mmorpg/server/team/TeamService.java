@@ -92,6 +92,10 @@ public class TeamService {
 		Scene myScene = SceneService.INSTANCE.getUserScene(user.getUserId());
 		Scene peopleScene = SceneService.INSTANCE.getUserScene(peopleUser.getUserId());
 
+		if(myScene == null || peopleScene == null) {
+			return ReplyDomain.FAILE;
+		}
+		
 		// 不在同一个场景
 		if (myScene.getId() != peopleScene.getId()) {
 			return ReplyDomain.NOT_IN_SCENE;
@@ -104,7 +108,7 @@ public class TeamService {
 		}
 
 		// 已经发过邀请了
-		Set<Integer> applySet = applyCache.get(people.getId());
+		Set<Integer> applySet = applyCache.get(roleId);
 		if (applySet != null && applySet.size() > 0) {
 			if (applySet.contains(role.getId())) {
 				return ReplyDomain.HAS_SENT_APPLY;
@@ -148,16 +152,14 @@ public class TeamService {
 	public ReplyDomain dealTeamApply(User user, int roleId, boolean isAgree) {
 		Role role = RoleService.INSTANCE.getUserUsingRole(user.getUserId());
 
-		// 无论怎样都先移除申请缓存
-		removeTeamInvition(role.getId(), roleId);
-
 		if (!isAgree) {
+			removeTeamInvition(role.getId(), roleId);
 			return ReplyDomain.SUCCESS;
 		}
 
-		Set<Integer> applySet = applyCache.get(roleId);
+		Set<Integer> applySet = applyCache.get(role.getId());
 		// 邀请不存在
-		if (applySet == null || !applySet.contains(role.getId())) {
+		if (applySet == null || !applySet.contains(roleId)) {
 			return ReplyDomain.FAILE;
 		}
 
@@ -216,6 +218,8 @@ public class TeamService {
 		} finally {
 			lock.unlock();
 		}
+		
+		removeTeamInvition(role.getId(), roleId);
 		return ReplyDomain.SUCCESS;
 	}
 
