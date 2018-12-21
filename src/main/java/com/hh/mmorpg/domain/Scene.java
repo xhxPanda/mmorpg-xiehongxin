@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +17,7 @@ import com.hh.mmorpg.event.EventBuilder;
 import com.hh.mmorpg.event.EventHandler;
 import com.hh.mmorpg.event.data.MonsterDeadData;
 import com.hh.mmorpg.event.data.PassCopyData;
+import com.hh.mmorpg.manager.CmdManager;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.scene.SceneExtension;
 import com.hh.mmorpg.server.scene.SceneService;
@@ -55,6 +57,9 @@ public class Scene {
 
 	private AtomicInteger monsterRound;
 
+	// 包
+	private ConcurrentLinkedQueue<Runnable> cmdDomains;
+
 	public Scene(SceneDomain domain, int id) {
 		this.id = id;
 		this.name = domain.getName();
@@ -86,6 +91,8 @@ public class Scene {
 		this.npcRoleMap = domain.getNpcRoleMap();
 
 		this.summonMonstermap = new HashMap<>();
+		
+		this.cmdDomains = new ConcurrentLinkedQueue<>();
 
 		// 监听怪物死亡事件
 		EventHandler.INSTANCE.addHandler(MonsterDeadData.class, monsterDeadEvent);
@@ -308,6 +315,11 @@ public class Scene {
 				summonMonstermap.remove(summonMonster.getUniqueId());
 			}
 		}
+		
+		if(!cmdDomains.isEmpty()) {
+			CmdManager.INSTANCE.addTask(cmdDomains.poll());
+		}
+		
 	}
 
 	/**
@@ -460,6 +472,19 @@ public class Scene {
 		monsterMap.clear();
 		userMap.clear();
 		executorService.shutdown();
+	}
+
+	/**
+	 * 把包放进队列中
+	 * 
+	 * @param cmdDomain
+	 */
+	public void addCmdDomain(Runnable cmdDomain) {
+		cmdDomains.add(cmdDomain);
+	}
+
+	public ConcurrentLinkedQueue<Runnable> getCmdDomains() {
+		return cmdDomains;
 	}
 
 	// 副本刷新怪物

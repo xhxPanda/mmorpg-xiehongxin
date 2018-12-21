@@ -3,10 +3,13 @@ package com.hh.mmorpg.manager;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.hh.mmorpg.CmdHandlerMananger;
 import com.hh.mmorpg.domain.CmdDomain;
+import com.hh.mmorpg.domain.Scene;
 import com.hh.mmorpg.domain.User;
 import com.hh.mmorpg.result.ReplyDomain;
 import com.hh.mmorpg.server.ExtensionSender;
+import com.hh.mmorpg.server.scene.SceneService;
 import com.hh.mmorpg.service.user.UserService;
 
 import io.netty.channel.Channel;
@@ -46,11 +49,26 @@ public class CmdManager {
 			});
 
 		} else {
+			
 			User user = UserService.INSTANCE.getUserByChannelId(channel.id().asShortText());
 			if (user == null) {
 				ExtensionSender.INSTANCE.sendReply(cmdDomain.getChannel(), ReplyDomain.FAILE);
 			}
-			user.addCmdDomain(new CmdRunner(user, cmdDomain));
+			Scene scene = SceneService.INSTANCE.getUserScene(user.getUserId());	
+			if(scene == null) {
+				// 用户有可能处于一个游离于场景的状态，比如还没选人物的时候，或者是在创建人物角色的时候
+				addTask(new Runnable() {
+
+					@Override
+					public void run() {
+						CmdHandlerMananger.INSATANCE.invokeHandler(user, cmdDomain);
+					}
+				});
+				
+			} else {
+				scene.addCmdDomain(new CmdRunner(user, cmdDomain));
+			}
+			
 
 		}
 	}

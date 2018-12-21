@@ -34,7 +34,7 @@ public class GuildSerivice {
 
 	public static final GuildSerivice INSTANCE = new GuildSerivice();
 
-	// 热点数据，用户角色数据缓存
+	// 热点数据，公会数据缓存
 	ConcurrentHashMap<Integer, Guild> guildCache;
 
 	// 角色创建公会最小等级

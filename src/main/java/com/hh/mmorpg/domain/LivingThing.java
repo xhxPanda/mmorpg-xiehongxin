@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class LivingThing {
 
@@ -26,8 +25,6 @@ public abstract class LivingThing {
 
 	private ConcurrentHashMap<Integer, RoleBuff> buffsMap;
 
-	private ReentrantLock lock;
-
 	public LivingThing(int id, int uniqueId, String name) {
 		this.id = id;
 		this.uniqueId = uniqueId;
@@ -37,8 +34,6 @@ public abstract class LivingThing {
 		this.buffsMap = new ConcurrentHashMap<>();
 		this.status = true;
 		this.beKilledTime = 0;
-
-		this.lock = new ReentrantLock();
 	}
 
 	public void addBuff(RoleBuff buff) {
@@ -209,24 +204,16 @@ public abstract class LivingThing {
 			}
 		}
 
-		// 在改变属性这里上锁，确保扣血死亡的结果
-		lock.lock();
-		int newValue = 0;
-		try {
-			int oldValue = attribute.getValue();
+		int oldValue = attribute.getValue();
 
-			newValue = attribute.changeValue(value);
-			if (isDead()) {
-				// 如果死了，定义最后一击的人
-				afterDead();
-			}
+		int newValue = attribute.changeValue(value);
+		if (isDead()) {
+			// 如果死了，定义最后一击的人
+			afterDead();
+		}
 
-			if (oldValue != newValue) {
-				notifyAttributeChange(attribute, reason);
-			}
-
-		} finally {
-			lock.unlock();
+		if (oldValue != newValue) {
+			notifyAttributeChange(attribute, reason);
 		}
 
 		if (attribute.getId() == AttributeEnum.MAX_MP.getId()
