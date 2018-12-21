@@ -260,7 +260,7 @@ public class Scene {
 			public void run() {
 				sceneHeartBeat();
 			}
-		}, 0, 1, TimeUnit.SECONDS);
+		}, 0, 200, TimeUnit.MICROSECONDS);
 	}
 
 	/**

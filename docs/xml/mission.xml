@@ -49,7 +49,7 @@
 		missionCondition="提升自我:1:1,都城保卫战:2:1" isAchievement="false"></mission>
 
 	<mission id="12" name="闯龙穴" type="10" dec="通过龙穴副本一次，任务奖励：100金币"
-		bonus="3:1:100" needLevel="5" missionCondition="龙穴:c:1"
+		bonus="3:1:100" needLevel="5" missionCondition="龙穴:c:100"
 		isAchievement="false"></mission>
 
 	<mission id="13" name="富甲一方" type="11"

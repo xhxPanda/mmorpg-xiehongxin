@@ -75,6 +75,9 @@ public class RoleMission {
 	}
 
 	public void updateMissionProcess(String key, int process) {
+		if(attMap.get(key) == null) {
+			return;
+		}
 		attMap.get(key).changeProcess(process);
 	}
 
