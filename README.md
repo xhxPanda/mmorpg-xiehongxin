@@ -109,7 +109,8 @@
 	显示可接任务：showMissionCanAccept 
 	显示已接任务：showMissionAccept 
 
-pk(pk)
+-pk(pk)
+
 	邀请对方pk：inviteRolePK 角色id
 	处理pk的请求：dealPKApplication 邀请人id
 
