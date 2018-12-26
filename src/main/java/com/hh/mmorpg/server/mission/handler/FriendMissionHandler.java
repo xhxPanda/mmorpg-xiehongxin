@@ -13,6 +13,7 @@ public class FriendMissionHandler extends AbstractMissionHandler<FriendData> {
 	@Override
 	public void dealMission(FriendData eventData, List<RoleMission> missions) {
 		Role role = eventData.getRole();
+
 		if (missions.size() == 0) {
 			return;
 		}
@@ -24,8 +25,8 @@ public class FriendMissionHandler extends AbstractMissionHandler<FriendData> {
 			if (roleMission.isMissionCompete()) {
 				continue;
 			}
-
 			roleMission.updateMissionProcess(MISSION_ATT_KEY_FRIEND, 1);
+			notifyMissionStatusChange(role, roleMission);
 			if (roleMission.isMissionCompete()) {
 				dealFinishMission(role, roleMission);
 			}

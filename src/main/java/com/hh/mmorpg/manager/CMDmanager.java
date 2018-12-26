@@ -54,7 +54,7 @@ public class CmdManager {
 			if (user == null) {
 				ExtensionSender.INSTANCE.sendReply(cmdDomain.getChannel(), ReplyDomain.FAILE);
 			}
-			Scene scene = SceneService.INSTANCE.getUserScene(user.getUserId());	
+			Scene scene = SceneService.  INSTANCE.getUserScene(user.getUserId());	
 			if(scene == null) {
 				// 用户有可能处于一个游离于场景的状态，比如还没选人物的时候，或者是在创建人物角色的时候
 				addTask(new Runnable() {
