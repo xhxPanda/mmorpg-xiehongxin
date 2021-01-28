@@ -1,8 +1,8 @@
 package com.hh.mmorpg.manager;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.hh.mmorpg.CmdHandlerMananger;
 import com.hh.mmorpg.domain.CmdDomain;
 import com.hh.mmorpg.domain.Scene;
@@ -24,10 +24,15 @@ public class CmdManager {
 
 	public static final CmdManager INSTANCE = new CmdManager();
 
-	private ExecutorService executorService;
+	private static ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+			.setNameFormat("demo-pool-%d").build();
+
+	private static ExecutorService executorService;
 
 	private CmdManager() {
-		executorService = Executors.newFixedThreadPool(3);
+		executorService = new ThreadPoolExecutor(5, 200,
+				0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
 	}
 
 	/**
